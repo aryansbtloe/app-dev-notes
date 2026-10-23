@@ -1,2 +1,35 @@
-# app-dev-notes
-Alok Singh's app development notes (iOS, Swift, Android)
+# App Development Notes
+
+24 iOS, Swift and SwiftUI app-development articles by Alok Kumar Singh, mirrored here as docs. Read them on docs.page: https://docs.page/aryansbtloe/app-dev-notes
+
+Originals (canonical) are on [bestlatestapps.com/blog](https://bestlatestapps.com/blog/):
+
+1. [Tic Tac Toe in SwiftUI, Done Properly: Value-Type Game State, Win Detection and an Unbeatable Minimax Opponent](https://bestlatestapps.com/blog/tic-tac-toe-in-swiftui-done-properly/)
+2. [The Sending Side of APNs: A Mac Push Tester with Keychain Certificates, URLSession Client Auth and HTTP/2](https://bestlatestapps.com/blog/the-sending-side-of-apns/)
+3. [The Device Side of APNs: Building a Push Notification Test Client in Swift](https://bestlatestapps.com/blog/the-device-side-of-apns/)
+4. [Text Plus Audio, Fully Offline: Building a Prayer App with AVAudioPlayer and Lock-Screen Controls](https://bestlatestapps.com/blog/text-plus-audio-fully-offline/)
+5. [Stop Hand-Rolling Unit Conversions: Foundation's Measurement, Dimension and MeasurementFormatter in Practice](https://bestlatestapps.com/blog/stop-hand-rolling-unit-conversions/)
+6. [Shipping a 4K Wallpaper App Without Running Out of Memory: ImageIO Downsampling, Core Image Blur and Add-Only Photos Access](https://bestlatestapps.com/blog/shipping-a-4k-wallpaper-app-without-running-out-of-memory/)
+7. [Medication Reminders That Actually Fire: Local Notifications, the 64-Notification Limit and Supply Math](https://bestlatestapps.com/blog/medication-reminders-that-actually-fire/)
+8. [From Barcode to PDF: Building a Private, Offline Medication Tracker with VisionKit, WidgetKit and PDFKit](https://bestlatestapps.com/blog/from-barcode-to-pdf/)
+9. [Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game, Updated for iOS 26](https://bestlatestapps.com/blog/drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game/)
+10. [Convert-As-You-Type Currency Conversion in Swift: Decimal Maths, Cached Rates and Locale-Aware Formatting](https://bestlatestapps.com/blog/convert-as-you-type-currency-conversion-in-swift/)
+11. [Building an Offline-First Bible Reader on iOS: Bundled SQLite, Full-Text Search and iCloud-Synced Notes](https://bestlatestapps.com/blog/building-an-offline-first-bible-reader-on-ios/)
+12. [Building an Offline eBook Reader for iOS: Downloads, Typography Settings, Reading Progress That Survives Font Changes, and Highlights in the iOS 26 Text APIs](https://bestlatestapps.com/blog/building-an-offline-ebook-reader-for-ios/)
+13. [Building an Offline Quotes App in SwiftUI: a 50,000-Quote Library, a Daily Quote Without a Server, Honest Streaks and Share-as-Image](https://bestlatestapps.com/blog/building-an-offline-quotes-app-in-swiftui/)
+14. [Building an AdMob Earnings Dashboard for iOS: Google OAuth with PKCE, the AdMob Reporting API, Pacific-Time 'Today', and Offline Caching](https://bestlatestapps.com/blog/building-an-admob-earnings-dashboard-for-ios/)
+15. [Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI: Physics, Cluster Matching, Timers, Lives and Power-Ups](https://bestlatestapps.com/blog/building-a-tap-to-match-marble-game-with-spritekit-and-swiftui/)
+16. [Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine](https://bestlatestapps.com/blog/building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine/)
+17. [Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioEngine](https://bestlatestapps.com/blog/building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe/)
+18. [Building a Live iOS Component Catalogue: UIKit and SwiftUI Side by Side, Real Demos, and Code Snippets That Don't Rot](https://bestlatestapps.com/blog/building-a-live-ios-component-catalogue/)
+19. [Building a Live Temple Darshan App for iOS: HLS Streaming, Picture-in-Picture, Time-Zone-Correct Aarti Reminders and Notification Actions](https://bestlatestapps.com/blog/building-a-live-temple-darshan-app-for-ios/)
+20. [Building a Hashtag Copier for iOS: Clean Tags, Editable Lists, Clipboard Privacy and Instagram's New Five-Hashtag Limit](https://bestlatestapps.com/blog/building-a-hashtag-copier-for-ios/)
+21. [Building a Chromatic Guitar Tuner on iOS: Real-Time Pitch Detection with AVAudioEngine and Accelerate](https://bestlatestapps.com/blog/building-a-chromatic-guitar-tuner-on-ios/)
+22. [Animating Algorithms in SwiftUI: A Step-Recorder Pattern for Visualising Sorts, Searches and Graphs](https://bestlatestapps.com/blog/animating-algorithms-in-swiftui/)
+23. [A Practical Guide to iOS Haptics: UIFeedbackGenerator, SwiftUI sensoryFeedback and Core Haptics with AHAP](https://bestlatestapps.com/blog/a-practical-guide-to-ios-haptics/)
+24. [A Document Scanner in an Afternoon: VisionKit's Camera, Core Image Clean-Up and AirPrint](https://bestlatestapps.com/blog/a-document-scanner-in-an-afternoon/)
+
+## Layout
+
+- `docs.json` + `docs/*.mdx`: the docs.page site.
+- `mintlify/`: the Mintlify project (its own `docs.json` and pages). Set the Mintlify docs path to `/mintlify`.

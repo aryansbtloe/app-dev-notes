@@ -1,0 +1,117 @@
+{
+  "$schema": "https://docs.page/schema.json",
+  "name": "Alok Singh · App Development Notes",
+  "description": "24 iOS, Swift and SwiftUI app-development articles by Alok Kumar Singh (originals at bestlatestapps.com/blog).",
+  "sidebar": [
+    {
+      "group": "Start",
+      "pages": [
+        {
+          "title": "All articles",
+          "href": "/"
+        }
+      ]
+    },
+    {
+      "group": "Articles",
+      "pages": [
+        {
+          "title": "Tic Tac Toe in SwiftUI, Done Properly",
+          "href": "/tic-tac-toe-in-swiftui-done-properly"
+        },
+        {
+          "title": "The Sending Side of APNs",
+          "href": "/the-sending-side-of-apns"
+        },
+        {
+          "title": "The Device Side of APNs",
+          "href": "/the-device-side-of-apns"
+        },
+        {
+          "title": "Text Plus Audio, Fully Offline",
+          "href": "/text-plus-audio-fully-offline"
+        },
+        {
+          "title": "Stop Hand-Rolling Unit Conversions",
+          "href": "/stop-hand-rolling-unit-conversions"
+        },
+        {
+          "title": "Shipping a 4K Wallpaper App Without Running Out of Memory",
+          "href": "/shipping-a-4k-wallpaper-app-without-running-out-of-memory"
+        },
+        {
+          "title": "Medication Reminders That Actually Fire",
+          "href": "/medication-reminders-that-actually-fire"
+        },
+        {
+          "title": "From Barcode to PDF",
+          "href": "/from-barcode-to-pdf"
+        },
+        {
+          "title": "Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game, Updated f",
+          "href": "/drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game"
+        },
+        {
+          "title": "Convert-As-You-Type Currency Conversion in Swift",
+          "href": "/convert-as-you-type-currency-conversion-in-swift"
+        },
+        {
+          "title": "Building an Offline-First Bible Reader on iOS",
+          "href": "/building-an-offline-first-bible-reader-on-ios"
+        },
+        {
+          "title": "Building an Offline eBook Reader for iOS",
+          "href": "/building-an-offline-ebook-reader-for-ios"
+        },
+        {
+          "title": "Building an Offline Quotes App in SwiftUI",
+          "href": "/building-an-offline-quotes-app-in-swiftui"
+        },
+        {
+          "title": "Building an AdMob Earnings Dashboard for iOS",
+          "href": "/building-an-admob-earnings-dashboard-for-ios"
+        },
+        {
+          "title": "Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI",
+          "href": "/building-a-tap-to-match-marble-game-with-spritekit-and-swiftui"
+        },
+        {
+          "title": "Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine",
+          "href": "/building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine"
+        },
+        {
+          "title": "Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioEngine",
+          "href": "/building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe"
+        },
+        {
+          "title": "Building a Live iOS Component Catalogue",
+          "href": "/building-a-live-ios-component-catalogue"
+        },
+        {
+          "title": "Building a Live Temple Darshan App for iOS",
+          "href": "/building-a-live-temple-darshan-app-for-ios"
+        },
+        {
+          "title": "Building a Hashtag Copier for iOS",
+          "href": "/building-a-hashtag-copier-for-ios"
+        },
+        {
+          "title": "Building a Chromatic Guitar Tuner on iOS",
+          "href": "/building-a-chromatic-guitar-tuner-on-ios"
+        },
+        {
+          "title": "Animating Algorithms in SwiftUI",
+          "href": "/animating-algorithms-in-swiftui"
+        },
+        {
+          "title": "A Practical Guide to iOS Haptics",
+          "href": "/a-practical-guide-to-ios-haptics"
+        },
+        {
+          "title": "A Document Scanner in an Afternoon",
+          "href": "/a-document-scanner-in-an-afternoon"
+        }
+      ]
+    }
+  ]
+}
