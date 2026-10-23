@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>The Sending Side of APNs: A Mac Push Tester with Keychain Certificates, URLSession Client Auth and HTTP/2 | Alok Singh, App Dev Notes</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="modulepreload" href="./_observablehq/client.097df403.js">
+<link rel="modulepreload" href="./_observablehq/runtime.fa9f71c0.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.60afab10.js">
+<link rel="canonical" href="https://bestlatestapps.com/blog/the-sending-side-of-apns/"><meta name="description" content="Finding push certificates in the Keychain, importing .p12 files, answering APNs's client-certificate challenge in URLSession, building the exact request…">
+<script type="module">
+
+import "./_observablehq/client.097df403.js";
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Alok Singh, App Dev Notes</a></li>
+  </ol>
+  <div id="observablehq-search"><input type="search" placeholder="Search"></div>
+  <div id="observablehq-search-results"></div>
+  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.755d897f.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
+  <ol>
+    <li class="observablehq-link"><a href="./tic-tac-toe-in-swiftui-done-properly">Tic Tac Toe in SwiftUI, Done Properly</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./the-sending-side-of-apns">The Sending Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./the-device-side-of-apns">The Device Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./text-plus-audio-fully-offline">Text Plus Audio, Fully Offline</a></li>
+    <li class="observablehq-link"><a href="./stop-hand-rolling-unit-conversions">Stop Hand-Rolling Unit Conversions</a></li>
+    <li class="observablehq-link"><a href="./shipping-a-4k-wallpaper-app-without-running-out-of-memory">Shipping a 4K Wallpaper App Without Running Out of Memory</a></li>
+    <li class="observablehq-link"><a href="./medication-reminders-that-actually-fire">Medication Reminders That Actually Fire</a></li>
+    <li class="observablehq-link"><a href="./from-barcode-to-pdf">From Barcode to PDF</a></li>
+    <li class="observablehq-link"><a href="./drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game">Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game,</a></li>
+    <li class="observablehq-link"><a href="./convert-as-you-type-currency-conversion-in-swift">Convert-As-You-Type Currency Conversion in Swift</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-first-bible-reader-on-ios">Building an Offline-First Bible Reader on iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-ebook-reader-for-ios">Building an Offline eBook Reader for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-quotes-app-in-swiftui">Building an Offline Quotes App in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-an-admob-earnings-dashboard-for-ios">Building an AdMob Earnings Dashboard for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-tap-to-match-marble-game-with-spritekit-and-swiftui">Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine">Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine</a></li>
+    <li class="observablehq-link"><a href="./building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe">Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioE</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-ios-component-catalogue">Building a Live iOS Component Catalogue</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-temple-darshan-app-for-ios">Building a Live Temple Darshan App for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-hashtag-copier-for-ios">Building a Hashtag Copier for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-chromatic-guitar-tuner-on-ios">Building a Chromatic Guitar Tuner on iOS</a></li>
+    <li class="observablehq-link"><a href="./animating-algorithms-in-swiftui">Animating Algorithms in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./a-practical-guide-to-ios-haptics">A Practical Guide to iOS Haptics</a></li>
+    <li class="observablehq-link"><a href="./a-document-scanner-in-an-afternoon">A Document Scanner in an Afternoon</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#1-two-ways-to-authenticate-with-apns-and-why-a-tester-uses-certificates">1. Two ways to authenticate with APNs, and why a tester uses certificates</a></li>
+<li class="observablehq-secondary-link"><a href="#2-finding-push-identities-in-the-keychain">2. Finding push identities in the Keychain</a></li>
+<li class="observablehq-secondary-link"><a href="#3-importing-a-p12-file">3. Importing a .p12 file</a></li>
+<li class="observablehq-secondary-link"><a href="#4-answering-the-client-certificate-challenge-in-url-session">4. Answering the client-certificate challenge in URLSession</a></li>
+<li class="observablehq-secondary-link"><a href="#5-building-the-request-path-headers-payload">5. Building the request: path, headers, payload</a></li>
+<li class="observablehq-secondary-link"><a href="#6-alerts-badges-sounds-and-silent-pushes">6. Alerts, badges, sounds and silent pushes</a></li>
+<li class="observablehq-secondary-link"><a href="#7-sending-and-reading-apnss-answer">7. Sending, and reading APNs&#x27;s answer</a></li>
+<li class="observablehq-secondary-link"><a href="#8-real-world-example-push-notification-tester">8. Real-world example: Push Notification - Tester</a></li>
+<li class="observablehq-secondary-link"><a href="#9-before-you-trust-a-push-test-a-checklist">9. Before you trust a push test: a checklist</a></li>
+<li class="observablehq-secondary-link"><a href="#wrapping-up">Wrapping up</a></li>
+</ol>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="the-sending-side-of-apns-a-mac-push-tester-with-keychain-certificates-url-session-client-auth-and-http-2" tabindex="-1"><a class="observablehq-header-anchor" href="#the-sending-side-of-apns-a-mac-push-tester-with-keychain-certificates-url-session-client-auth-and-http-2">The Sending Side of APNs: A Mac Push Tester with Keychain Certificates, URLSession Client Auth and HTTP/2</a></h1>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/the-sending-side-of-apns/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/the-sending-side-of-apns/</a></em></p>
+<p><em>Finding push certificates in the Keychain, importing .p12 files, answering APNs's client-certificate challenge in URLSession, building the exact request (path, headers, payload), sandbox vs production, silent pushes, and reading APNs's error responses, all without a server</em></p>
+<p><img src="https://bestlatestapps.com/assets/blog/the-sending-side-of-apns/push-notification-tester-icon-512.jpg" alt="Push Notification"></p>
+<p>In my article on <strong>Push Notification – Client</strong>, I covered the device side of APNs: permission, registration, device tokens and showing what arrives. This is the other end of the pipe.</p>
+<p>When you're building push notifications, the slowest part of the loop is often the sending side. The backend isn't ready. Or it's owned by another team, or every test means deploying a change to a server just to see whether a payload renders. <strong>Push Notification – Tester</strong> is my Mac app for skipping all of that. You choose a push certificate from Keychain, paste a device token, write a JSON payload, pick Development (sandbox) or Production, and send. There's no server dependency.</p>
+<p>This article shows how a tool like that works under the hood. It's all standard Apple API: the Security framework to find identities, <code>URLSession</code> to authenticate with a client certificate over HTTP/2, and Apple's documented APNs request format. The protocol facts are taken from Apple's APNs documentation. Where I describe how I'd build something rather than the shipped app, I say so.</p>
+<hr>
+<h2 id="1-two-ways-to-authenticate-with-apns-and-why-a-tester-uses-certificates" tabindex="-1"><a class="observablehq-header-anchor" href="#1-two-ways-to-authenticate-with-apns-and-why-a-tester-uses-certificates">1. Two ways to authenticate with APNs, and why a tester uses certificates</a></h2>
+<p>APNs accepts two kinds of provider authentication:</p>
+<ul>
+<li><strong>Token-based</strong> (a <code>.p8</code> signing key): you sign a short-lived JWT and send it in an <code>authorization: bearer …</code> header. One key works for all your apps.</li>
+<li><strong>Certificate-based</strong> (a push certificate, often exported as <code>.p12</code>): the TLS connection itself proves who you are, using a client certificate.</li>
+</ul>
+<p>Apple's docs show both. For a desktop testing tool, certificates have a practical advantage: developers already have them in their <strong>Keychain</strong>, and the whole authentication step happens in the TLS handshake. Nothing needs to be signed per request.</p>
+<p>One consequence, straight from Apple's documentation of the request headers: the <code>authorization: bearer &lt;provider_token&gt;</code> header is for token auth only, and "APNs ignores this header if you use certificate-based authentication." <code>apns-topic</code> is still required: "In general, the topic is your app's bundle ID/app ID." Keep the two modes clearly separate in your code.</p>
+<hr>
+<h2 id="2-finding-push-identities-in-the-keychain" tabindex="-1"><a class="observablehq-header-anchor" href="#2-finding-push-identities-in-the-keychain">2. Finding push identities in the Keychain</a></h2>
+<p>An <strong>identity</strong> in Keychain terms is a certificate plus its private key, which is what TLS client auth needs. <code>SecItemCopyMatching</code> with <code>kSecClassIdentity</code> lists them. I'd filter to push certificates by their subject summary, which for APNs certificates names the push service and your bundle ID:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> Security
+<span class="hljs-keyword">import</span> Foundation
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">PushIdentity</span>: <span class="hljs-title class_ inherited__">Identifiable</span>, <span class="hljs-title class_ inherited__">Hashable</span> {
+    <span class="hljs-keyword">let</span> id: <span class="hljs-type">String</span>              <span class="hljs-comment">// subject summary, also used as the display name</span>
+    <span class="hljs-keyword">let</span> identity: <span class="hljs-type">SecIdentity</span>
+    <span class="hljs-keyword">var</span> isProbablyPush: <span class="hljs-type">Bool</span> { id.localizedCaseInsensitiveContains(<span class="hljs-string">"Push"</span>) }
+}
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">KeychainIdentities</span> {
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">all</span>() -&gt; [<span class="hljs-type">PushIdentity</span>] {
+        <span class="hljs-keyword">let</span> query: [<span class="hljs-type">String</span>: <span class="hljs-keyword">Any</span>] <span class="hljs-operator">=</span> [
+            kSecClass <span class="hljs-keyword">as</span> <span class="hljs-type">String</span>: kSecClassIdentity,
+            kSecReturnRef <span class="hljs-keyword">as</span> <span class="hljs-type">String</span>: <span class="hljs-literal">true</span>,
+            kSecMatchLimit <span class="hljs-keyword">as</span> <span class="hljs-type">String</span>: kSecMatchLimitAll
+        ]
+        <span class="hljs-keyword">var</span> result: <span class="hljs-type">CFTypeRef</span>?
+        <span class="hljs-keyword">guard</span> <span class="hljs-type">SecItemCopyMatching</span>(query <span class="hljs-keyword">as</span> <span class="hljs-type">CFDictionary</span>, <span class="hljs-operator">&amp;</span>result) <span class="hljs-operator">==</span> errSecSuccess,
+              <span class="hljs-keyword">let</span> identities <span class="hljs-operator">=</span> result <span class="hljs-keyword">as?</span> [<span class="hljs-type">SecIdentity</span>] <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> [] }
+
+        <span class="hljs-keyword">return</span> identities.compactMap { identity <span class="hljs-keyword">in</span>
+            <span class="hljs-keyword">var</span> cert: <span class="hljs-type">SecCertificate</span>?
+            <span class="hljs-keyword">guard</span> <span class="hljs-type">SecIdentityCopyCertificate</span>(identity, <span class="hljs-operator">&amp;</span>cert) <span class="hljs-operator">==</span> errSecSuccess, <span class="hljs-keyword">let</span> cert,
+                  <span class="hljs-keyword">let</span> summary <span class="hljs-operator">=</span> <span class="hljs-type">SecCertificateCopySubjectSummary</span>(cert) <span class="hljs-keyword">as</span> <span class="hljs-type">String</span>? <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span> }
+            <span class="hljs-keyword">return</span> <span class="hljs-type">PushIdentity</span>(id: summary, identity: identity)
+        }
+        .sorted { (<span class="hljs-variable">$0</span>.isProbablyPush <span class="hljs-operator">?</span> <span class="hljs-number">0</span> : <span class="hljs-number">1</span>, <span class="hljs-variable">$0</span>.id) <span class="hljs-operator">&lt;</span> (<span class="hljs-variable">$1</span>.isProbablyPush <span class="hljs-operator">?</span> <span class="hljs-number">0</span> : <span class="hljs-number">1</span>, <span class="hljs-variable">$1</span>.id) }
+    }
+}
+</code></pre>
+<p>Sorting push certificates to the top and keeping the others is deliberate. Names vary by certificate type and era, and a tester that hides the one certificate you need is worse than one that shows a few extras.</p>
+<hr>
+<h2 id="3-importing-a-p12-file" tabindex="-1"><a class="observablehq-header-anchor" href="#3-importing-a-p12-file">3. Importing a .p12 file</a></h2>
+<p>The listing mentions ".p12 / .pem workflows". For a <code>.p12</code> (PKCS #12), the Security framework does the parsing. <code>SecPKCS12Import</code> returns the identity inside, given the export password:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">enum</span> <span class="hljs-title class_">P12Import</span> {
+    <span class="hljs-keyword">enum</span> <span class="hljs-title class_">Failure</span>: <span class="hljs-title class_ inherited__">Error</span> { <span class="hljs-keyword">case</span> wrongPassword, noIdentity, status(<span class="hljs-type">OSStatus</span>) }
+
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">identity</span>(<span class="hljs-params">from</span> <span class="hljs-params">data</span>: <span class="hljs-type">Data</span>, <span class="hljs-params">password</span>: <span class="hljs-type">String</span>) <span class="hljs-keyword">throws</span> -&gt; <span class="hljs-type">SecIdentity</span> {
+        <span class="hljs-keyword">let</span> options <span class="hljs-operator">=</span> [kSecImportExportPassphrase <span class="hljs-keyword">as</span> <span class="hljs-type">String</span>: password] <span class="hljs-keyword">as</span> <span class="hljs-type">CFDictionary</span>
+        <span class="hljs-keyword">var</span> items: <span class="hljs-type">CFArray</span>?
+        <span class="hljs-keyword">let</span> status <span class="hljs-operator">=</span> <span class="hljs-type">SecPKCS12Import</span>(data <span class="hljs-keyword">as</span> <span class="hljs-type">CFData</span>, options, <span class="hljs-operator">&amp;</span>items)
+        <span class="hljs-keyword">switch</span> status {
+        <span class="hljs-keyword">case</span> errSecSuccess: <span class="hljs-keyword">break</span>
+        <span class="hljs-keyword">case</span> errSecAuthFailed: <span class="hljs-keyword">throw</span> <span class="hljs-type">Failure</span>.wrongPassword
+        <span class="hljs-keyword">default</span>: <span class="hljs-keyword">throw</span> <span class="hljs-type">Failure</span>.status(status)
+        }
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> first <span class="hljs-operator">=</span> (items <span class="hljs-keyword">as?</span> [[String: <span class="hljs-keyword">Any</span>]])<span class="hljs-operator">?</span>.first,
+              <span class="hljs-keyword">let</span> identity <span class="hljs-operator">=</span> first[kSecImportItemIdentity <span class="hljs-keyword">as</span> <span class="hljs-type">String</span>] <span class="hljs-keyword">else</span> { <span class="hljs-keyword">throw</span> <span class="hljs-type">Failure</span>.noIdentity }
+        <span class="hljs-keyword">return</span> identity <span class="hljs-keyword">as!</span> <span class="hljs-type">SecIdentity</span>      <span class="hljs-comment">// CF type bridging: the dictionary value is a SecIdentity</span>
+    }
+}
+</code></pre>
+<p>A clear "wrong password" message matters more than it looks. It's by far the most common failure when importing a <code>.p12</code>, and a generic error code makes people think the certificate itself is broken.</p>
+<p><code>.pem</code> files hold the certificate and key as text. The approach I'd recommend is to convert them to <code>.p12</code> with <code>openssl pkcs12 -export</code> and import that. The import path then stays the same either way.</p>
+<hr>
+<h2 id="4-answering-the-client-certificate-challenge-in-url-session" tabindex="-1"><a class="observablehq-header-anchor" href="#4-answering-the-client-certificate-challenge-in-url-session">4. Answering the client-certificate challenge in URLSession</a></h2>
+<p>When <code>URLSession</code> connects to APNs, the server asks for a client certificate. You answer in a delegate method by building a <code>URLCredential</code> from the identity:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> Foundation
+
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">APNsClient</span>: <span class="hljs-title class_ inherited__">NSObject</span>, <span class="hljs-title class_ inherited__">URLSessionDelegate</span> {
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> identity: <span class="hljs-type">SecIdentity</span>
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">lazy</span> <span class="hljs-keyword">var</span> session <span class="hljs-operator">=</span> <span class="hljs-type">URLSession</span>(configuration: .ephemeral, delegate: <span class="hljs-keyword">self</span>, delegateQueue: <span class="hljs-literal">nil</span>)
+
+    <span class="hljs-keyword">init</span>(<span class="hljs-params">identity</span>: <span class="hljs-type">SecIdentity</span>) { <span class="hljs-keyword">self</span>.identity <span class="hljs-operator">=</span> identity }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">urlSession</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">session</span>: <span class="hljs-type">URLSession</span>, <span class="hljs-params">didReceive</span> <span class="hljs-params">challenge</span>: <span class="hljs-type">URLAuthenticationChallenge</span>,
+                    <span class="hljs-params">completionHandler</span>: <span class="hljs-keyword">@escaping</span> (<span class="hljs-type">URLSession</span>.<span class="hljs-type">AuthChallengeDisposition</span>, <span class="hljs-type">URLCredential</span>?) -&gt; <span class="hljs-type">Void</span>) {
+        <span class="hljs-keyword">switch</span> challenge.protectionSpace.authenticationMethod {
+        <span class="hljs-keyword">case</span> <span class="hljs-type">NSURLAuthenticationMethodClientCertificate</span>:
+            <span class="hljs-keyword">let</span> credential <span class="hljs-operator">=</span> <span class="hljs-type">URLCredential</span>(identity: identity, certificates: <span class="hljs-literal">nil</span>, persistence: .forSession)
+            completionHandler(.useCredential, credential)
+        <span class="hljs-keyword">default</span>:
+            <span class="hljs-comment">// Server trust etc.: let the system evaluate Apple's certificate normally.</span>
+            completionHandler(.performDefaultHandling, <span class="hljs-literal">nil</span>)
+        }
+    }
+}
+</code></pre>
+<p>Two notes:</p>
+<ul>
+<li><strong>Use a session-level delegate.</strong> The client-certificate challenge is a connection-level challenge, delivered to <code>urlSession(_:didReceive:completionHandler:)</code>. There's also a task-level variant; implement the session one at minimum.</li>
+<li><strong>Don't override server trust.</strong> <code>.performDefaultHandling</code> for everything else means the system still validates Apple's server certificate. A testing tool is no excuse to disable TLS validation.</li>
+</ul>
+<p><code>URLSession</code> negotiates <strong>HTTP/2</strong> automatically with servers that support it, and APNs requires HTTP/2 and TLS 1.2 or later. You don't need a custom HTTP/2 library.</p>
+<hr>
+<h2 id="5-building-the-request-path-headers-payload" tabindex="-1"><a class="observablehq-header-anchor" href="#5-building-the-request-path-headers-payload">5. Building the request: path, headers, payload</a></h2>
+<p>Apple's documentation spells out the request precisely: a <code>POST</code> to <code>/3/device/&lt;device token&gt;</code> on one of two hosts. I'd model it directly:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">enum</span> <span class="hljs-title class_">APNsEnvironment</span>: <span class="hljs-title class_ inherited__">String</span>, <span class="hljs-title class_ inherited__">CaseIterable</span> {
+    <span class="hljs-keyword">case</span> development, production
+    <span class="hljs-keyword">var</span> host: <span class="hljs-type">String</span> {
+        <span class="hljs-keyword">switch</span> <span class="hljs-keyword">self</span> {
+        <span class="hljs-keyword">case</span> .development: <span class="hljs-string">"api.sandbox.push.apple.com"</span>
+        <span class="hljs-keyword">case</span> .production:  <span class="hljs-string">"api.push.apple.com"</span>
+        }
+    }
+}
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">PushType</span>: <span class="hljs-title class_ inherited__">String</span>, <span class="hljs-title class_ inherited__">CaseIterable</span> { <span class="hljs-keyword">case</span> alert, background }
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">PushRequest</span> {
+    <span class="hljs-keyword">var</span> environment: <span class="hljs-type">APNsEnvironment</span>
+    <span class="hljs-keyword">var</span> deviceToken: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">var</span> topic: <span class="hljs-type">String</span>                 <span class="hljs-comment">// usually your bundle ID</span>
+    <span class="hljs-keyword">var</span> pushType: <span class="hljs-type">PushType</span>
+    <span class="hljs-keyword">var</span> payloadJSON: <span class="hljs-type">String</span>
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">urlRequest</span>() <span class="hljs-keyword">throws</span> -&gt; <span class="hljs-type">URLRequest</span> {
+        <span class="hljs-keyword">let</span> token <span class="hljs-operator">=</span> deviceToken.filter(\.isHexDigit).lowercased()   <span class="hljs-comment">// tolerate pasted spaces and &lt;&gt;</span>
+        <span class="hljs-keyword">var</span> request <span class="hljs-operator">=</span> <span class="hljs-type">URLRequest</span>(url: <span class="hljs-type">URL</span>(string: <span class="hljs-string">"https://<span class="hljs-subst">\(environment.host)</span>/3/device/<span class="hljs-subst">\(token)</span>"</span>)<span class="hljs-operator">!</span>)
+        request.httpMethod <span class="hljs-operator">=</span> <span class="hljs-string">"POST"</span>
+        request.setValue(topic, forHTTPHeaderField: <span class="hljs-string">"apns-topic"</span>)
+        request.setValue(pushType.rawValue, forHTTPHeaderField: <span class="hljs-string">"apns-push-type"</span>)
+        request.setValue(pushType <span class="hljs-operator">==</span> .background <span class="hljs-operator">?</span> <span class="hljs-string">"5"</span> : <span class="hljs-string">"10"</span>, forHTTPHeaderField: <span class="hljs-string">"apns-priority"</span>)
+        request.setValue(<span class="hljs-type">UUID</span>().uuidString.lowercased(), forHTTPHeaderField: <span class="hljs-string">"apns-id"</span>)
+
+        <span class="hljs-keyword">let</span> body <span class="hljs-operator">=</span> <span class="hljs-type">Data</span>(payloadJSON.utf8)
+        <span class="hljs-keyword">_</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> <span class="hljs-type">JSONSerialization</span>.jsonObject(with: body)          <span class="hljs-comment">// fail fast on invalid JSON</span>
+        <span class="hljs-keyword">guard</span> body.count <span class="hljs-operator">&lt;=</span> <span class="hljs-number">4096</span> <span class="hljs-keyword">else</span> { <span class="hljs-keyword">throw</span> <span class="hljs-type">PushError</span>.payloadTooLarge(body.count) }
+        request.httpBody <span class="hljs-operator">=</span> body
+        <span class="hljs-keyword">return</span> request
+    }
+}
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">PushError</span>: <span class="hljs-title class_ inherited__">Error</span> { <span class="hljs-keyword">case</span> payloadTooLarge(<span class="hljs-type">Int</span>) }
+</code></pre>
+<p>Each line maps to Apple's documentation:</p>
+<ul>
+<li><strong>Hosts.</strong> <code>api.sandbox.push.apple.com</code> is the development server and <code>api.push.apple.com</code> is production. A device token from a debug build only works against the sandbox, which is the single most common "my push never arrives" cause.</li>
+<li><strong><code>apns-push-type</code>.</strong> It must "accurately reflect the contents of your notification's payload". It's required for watchOS and recommended for iOS, macOS, tvOS and iPadOS.</li>
+<li><strong>Payload size.</strong> Apple's docs say it's limited to "a maximum size of 4 KB (4096 bytes)", and must not be compressed. Checking it locally saves a round trip and a <code>413</code> response.</li>
+<li><strong><code>apns-id</code>.</strong> It's optional, but setting your own UUID makes it easy to match a response to a request in your log.</li>
+</ul>
+<hr>
+<h2 id="6-alerts-badges-sounds-and-silent-pushes" tabindex="-1"><a class="observablehq-header-anchor" href="#6-alerts-badges-sounds-and-silent-pushes">6. Alerts, badges, sounds and silent pushes</a></h2>
+<p>The listing promises "Custom JSON payloads for alerts, badges, sounds, and silent content". I'd offer templates for each, since the shape of <code>aps</code> is where most mistakes happen:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">enum</span> <span class="hljs-title class_">PayloadTemplate</span>: <span class="hljs-title class_ inherited__">String</span>, <span class="hljs-title class_ inherited__">CaseIterable</span> {
+    <span class="hljs-keyword">case</span> alert, badge, sound, silent
+
+    <span class="hljs-keyword">var</span> json: <span class="hljs-type">String</span> {
+        <span class="hljs-keyword">switch</span> <span class="hljs-keyword">self</span> {
+        <span class="hljs-keyword">case</span> .alert:  <span class="hljs-string">#"{ "aps": { "alert": { "title": "Hello", "body": "From my Mac" } } }"#</span>
+        <span class="hljs-keyword">case</span> .badge:  <span class="hljs-string">#"{ "aps": { "badge": 3 } }"#</span>
+        <span class="hljs-keyword">case</span> .sound:  <span class="hljs-string">#"{ "aps": { "alert": "Ding", "sound": "default" } }"#</span>
+        <span class="hljs-keyword">case</span> .silent: <span class="hljs-string">#"{ "aps": { "content-available": 1 }, "refresh": "inbox" }"#</span>
+        }
+    }
+    <span class="hljs-keyword">var</span> pushType: <span class="hljs-type">PushType</span> { <span class="hljs-keyword">self</span> <span class="hljs-operator">==</span> .silent <span class="hljs-operator">?</span> .background : .alert }
+}
+</code></pre>
+<p>The silent template follows Apple's "Pushing background updates to your app" guide: the <code>aps</code> dictionary contains <strong>only</strong> <code>content-available</code>, with custom keys alongside it, and the request uses <code>apns-push-type: background</code> with <code>apns-priority: 5</code>. The same guide warns that the system treats background notifications as low priority and "doesn't guarantee their delivery", and may throttle them. A tester should say that in the UI, so nobody spends an afternoon debugging a throttled silent push.</p>
+<hr>
+<h2 id="7-sending-and-reading-apnss-answer" tabindex="-1"><a class="observablehq-header-anchor" href="#7-sending-and-reading-apnss-answer">7. Sending, and reading APNs's answer</a></h2>
+<p>APNs replies with an HTTP status and, on failure, a small JSON body with a <code>reason</code>. Surfacing that reason verbatim is the most useful thing a tester does:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">extension</span> <span class="hljs-title class_">APNsClient</span> {
+    <span class="hljs-keyword">struct</span> <span class="hljs-title class_">Outcome</span> { <span class="hljs-keyword">let</span> status: <span class="hljs-type">Int</span>; <span class="hljs-keyword">let</span> apnsID: <span class="hljs-type">String</span>?; <span class="hljs-keyword">let</span> reason: <span class="hljs-type">String</span>? }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">send</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">push</span>: <span class="hljs-type">PushRequest</span>) <span class="hljs-keyword">async</span> <span class="hljs-keyword">throws</span> -&gt; <span class="hljs-type">Outcome</span> {
+        <span class="hljs-keyword">let</span> (data, response) <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> session.data(for: <span class="hljs-keyword">try</span> push.urlRequest())
+        <span class="hljs-keyword">let</span> http <span class="hljs-operator">=</span> response <span class="hljs-keyword">as!</span> <span class="hljs-type">HTTPURLResponse</span>
+        <span class="hljs-keyword">let</span> reason <span class="hljs-operator">=</span> (<span class="hljs-keyword">try?</span> <span class="hljs-type">JSONSerialization</span>.jsonObject(with: data) <span class="hljs-keyword">as?</span> [String: <span class="hljs-keyword">Any</span>])<span class="hljs-operator">?</span>[<span class="hljs-string">"reason"</span>] <span class="hljs-keyword">as?</span> <span class="hljs-type">String</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-type">Outcome</span>(status: http.statusCode,
+                       apnsID: http.value(forHTTPHeaderField: <span class="hljs-string">"apns-id"</span>),
+                       reason: reason)
+    }
+}
+</code></pre>
+<p>And a human explanation for the common reasons, taken from Apple's "Handling notification responses from APNs":</p>
+<table>
+<thead>
+<tr>
+<th>Status / reason</th>
+<th>What it means in practice</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>200</code></td>
+<td>Accepted by APNs. Delivery to the device is a separate step.</td>
+</tr>
+<tr>
+<td><code>400 BadDeviceToken</code></td>
+<td>The token is invalid. Usually a sandbox token sent to production, or the reverse; Apple says to check "that the token matches the environment".</td>
+</tr>
+<tr>
+<td><code>403 BadCertificate</code> / <code>BadCertificateEnvironment</code></td>
+<td>The certificate is invalid, or doesn't match the server you chose.</td>
+</tr>
+<tr>
+<td><code>410 Unregistered</code> / <code>ExpiredToken</code></td>
+<td>"The device token is inactive for the specified topic", or has expired. Typically the app was deleted or the token changed; stop sending to it.</td>
+</tr>
+<tr>
+<td><code>413 PayloadTooLarge</code></td>
+<td>Over 4 KB.</td>
+</tr>
+<tr>
+<td><code>429 TooManyRequests</code></td>
+<td>Too many pushes to the same token. Apple says you can retry with a delay.</td>
+</tr>
+</tbody>
+</table>
+<p>Apple's guidance is explicit that you shouldn't retry <code>BadDeviceToken</code>, <code>DeviceTokenNotForTopic</code>, <code>Forbidden</code>, <code>ExpiredToken</code>, <code>Unregistered</code> or <code>PayloadTooLarge</code>. A tester can turn that into a "fix this first" hint instead of a Retry button.</p>
+<hr>
+<h2 id="8-real-world-example-push-notification-tester" tabindex="-1"><a class="observablehq-header-anchor" href="#8-real-world-example-push-notification-tester">8. Real-world example: Push Notification - Tester</a></h2>
+<p>This is the approach behind <strong><a href="https://apps.apple.com/us/app/push-notification-tester/id1516154713" target="_blank" rel="noopener noreferrer">Push Notification - Tester</a></strong>. The code above is written for this article, not the app's source.</p>
+<p><img src="https://bestlatestapps.com/assets/blog/the-sending-side-of-apns/push-notification-tester-screenshot-1.jpg" alt="Push Notification"></p>
+<p>At the time of writing, its Mac App Store listing shows:</p>
+<ul>
+<li><strong>Free</strong>, in <strong>Developer Tools</strong></li>
+<li>First released in <strong>June 2020</strong></li>
+<li>No ratings yet in the US store</li>
+<li>Requires <strong>macOS 14.6 or later</strong></li>
+</ul>
+<p>How the listing maps to this article:</p>
+<table>
+<thead>
+<tr>
+<th>What the listing says</th>
+<th>Where it's covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Select the push certificate directly from Keychain (.p12 / .pem workflows)"</td>
+<td>Keychain identities and PKCS #12 import (sections 2–3)</td>
+</tr>
+<tr>
+<td>"Send APNs pushes from your Mac with no server dependency"</td>
+<td><code>URLSession</code> client-certificate auth over HTTP/2 (section 4)</td>
+</tr>
+<tr>
+<td>"Paste any device token and send in seconds"</td>
+<td>Token clean-up and the request path (section 5)</td>
+</tr>
+<tr>
+<td>"Target Development (sandbox) or Production environments"</td>
+<td>The two APNs hosts (section 5)</td>
+</tr>
+<tr>
+<td>"Custom JSON payloads for alerts, badges, sounds, and silent content"</td>
+<td>Payload templates and silent-push rules (section 6)</td>
+</tr>
+<tr>
+<td>"Perfect for verifying device tokens, validating certificates…"</td>
+<td>Reading APNs's status and reason (section 7)</td>
+</tr>
+</tbody>
+</table>
+<p><img src="https://bestlatestapps.com/assets/blog/the-sending-side-of-apns/push-notification-tester-screenshot-2.jpg" alt="Push Notification"></p>
+<p>Pair it with its iOS sibling, <strong><a href="https://apps.apple.com/us/app/push-notification-client/id1516378834" target="_blank" rel="noopener noreferrer">Push Notification – Client</a></strong>, which shows the device token to paste and displays what arrives. Between the two, you can test both ends without a backend.</p>
+<hr>
+<h2 id="9-before-you-trust-a-push-test-a-checklist" tabindex="-1"><a class="observablehq-header-anchor" href="#9-before-you-trust-a-push-test-a-checklist">9. Before you trust a push test: a checklist</a></h2>
+<ol>
+<li><strong>The environment matches the build.</strong> Debug and development builds use the sandbox; TestFlight and App Store builds use production.</li>
+<li><strong>The topic is the bundle ID</strong> the certificate was issued for.</li>
+<li><strong><code>apns-push-type</code> matches the payload</strong>: <code>alert</code> for visible pushes, <code>background</code> (priority 5) for silent ones.</li>
+<li><strong>The payload is valid JSON, under 4,096 bytes</strong>, and not compressed.</li>
+<li><strong>Server trust is never disabled.</strong> Only answer the client-certificate challenge.</li>
+<li><strong>The <code>reason</code> string is read</strong>, and non-retryable errors aren't retried.</li>
+<li><strong>Silent pushes aren't expected to be guaranteed.</strong> Throttling is normal.</li>
+<li><strong>Certificates expire.</strong> Check the expiry date when you pick an identity.</li>
+<li><strong>For production backends</strong>, consider token-based (<code>.p8</code>) auth. Certificates are handy for testing, but tokens don't need yearly renewal.</li>
+</ol>
+<hr>
+<h2 id="wrapping-up" tabindex="-1"><a class="observablehq-header-anchor" href="#wrapping-up">Wrapping up</a></h2>
+<p>Sending a push is less magic than it seems: an identity from the Keychain, a credential in a <code>URLSession</code> delegate, and a <code>POST</code> to <code>/3/device/&lt;token&gt;</code> with four headers and a small JSON body. A good tester makes each step visible and turns APNs's terse reasons into plain advice, so the next time a push "doesn't arrive", you know within a minute whether it's the token, the environment, the certificate or the payload.</p>
+<p>Try the app, or explore my other work:</p>
+<ul>
+<li><strong>Push Notification - Tester (Mac):</strong> <a href="https://apps.apple.com/us/app/push-notification-tester/id1516154713" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/push-notification-tester/id1516154713</a></li>
+<li><strong>Push Notification – Client (iOS):</strong> <a href="https://apps.apple.com/us/app/push-notification-client/id1516378834" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/push-notification-client/id1516378834</a></li>
+<li><strong>All of my apps:</strong> <a href="https://apps.apple.com/us/developer/alok-singh/id1508795536" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/developer/alok-singh/id1508795536</a></li>
+<li><strong>My portfolio:</strong> <a href="https://bestlatestapps.com/alok/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/alok/</a></li>
+</ul>
+<p>What's the strangest push-delivery bug you've chased? Share it in the comments.</p>
+<p><em>— Alok Kumar Singh</em></p>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/the-sending-side-of-apns/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/the-sending-side-of-apns/</a></em></p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./tic-tac-toe-in-swiftui-done-properly"><span>Tic Tac Toe in SwiftUI, Done Properly</span></a><a rel="next" href="./the-device-side-of-apns"><span>The Device Side of APNs</span></a></nav>
+<div>Articles by Alok Kumar Singh. Originals at <a href="https://bestlatestapps.com/blog/" target="_blank" rel="noopener noreferrer">bestlatestapps.com/blog</a>.</div>
+</footer>
+</div>
+</body>
+</html>

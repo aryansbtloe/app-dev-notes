@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>A Practical Guide to iOS Haptics: UIFeedbackGenerator, SwiftUI sensoryFeedback and Core Haptics with AHAP | Alok Singh, App Dev Notes</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="modulepreload" href="./_observablehq/client.097df403.js">
+<link rel="modulepreload" href="./_observablehq/runtime.fa9f71c0.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.60afab10.js">
+<link rel="canonical" href="https://bestlatestapps.com/blog/a-practical-guide-to-ios-haptics/"><meta name="description" content="The three layers of haptic APIs, when to use each, building custom patterns with intensity and sharpness, AHAP files, looping and speed control, and two…">
+<script type="module">
+
+import "./_observablehq/client.097df403.js";
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Alok Singh, App Dev Notes</a></li>
+  </ol>
+  <div id="observablehq-search"><input type="search" placeholder="Search"></div>
+  <div id="observablehq-search-results"></div>
+  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.755d897f.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
+  <ol>
+    <li class="observablehq-link"><a href="./tic-tac-toe-in-swiftui-done-properly">Tic Tac Toe in SwiftUI, Done Properly</a></li>
+    <li class="observablehq-link"><a href="./the-sending-side-of-apns">The Sending Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./the-device-side-of-apns">The Device Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./text-plus-audio-fully-offline">Text Plus Audio, Fully Offline</a></li>
+    <li class="observablehq-link"><a href="./stop-hand-rolling-unit-conversions">Stop Hand-Rolling Unit Conversions</a></li>
+    <li class="observablehq-link"><a href="./shipping-a-4k-wallpaper-app-without-running-out-of-memory">Shipping a 4K Wallpaper App Without Running Out of Memory</a></li>
+    <li class="observablehq-link"><a href="./medication-reminders-that-actually-fire">Medication Reminders That Actually Fire</a></li>
+    <li class="observablehq-link"><a href="./from-barcode-to-pdf">From Barcode to PDF</a></li>
+    <li class="observablehq-link"><a href="./drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game">Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game,</a></li>
+    <li class="observablehq-link"><a href="./convert-as-you-type-currency-conversion-in-swift">Convert-As-You-Type Currency Conversion in Swift</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-first-bible-reader-on-ios">Building an Offline-First Bible Reader on iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-ebook-reader-for-ios">Building an Offline eBook Reader for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-quotes-app-in-swiftui">Building an Offline Quotes App in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-an-admob-earnings-dashboard-for-ios">Building an AdMob Earnings Dashboard for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-tap-to-match-marble-game-with-spritekit-and-swiftui">Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine">Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine</a></li>
+    <li class="observablehq-link"><a href="./building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe">Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioE</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-ios-component-catalogue">Building a Live iOS Component Catalogue</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-temple-darshan-app-for-ios">Building a Live Temple Darshan App for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-hashtag-copier-for-ios">Building a Hashtag Copier for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-chromatic-guitar-tuner-on-ios">Building a Chromatic Guitar Tuner on iOS</a></li>
+    <li class="observablehq-link"><a href="./animating-algorithms-in-swiftui">Animating Algorithms in SwiftUI</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./a-practical-guide-to-ios-haptics">A Practical Guide to iOS Haptics</a></li>
+    <li class="observablehq-link"><a href="./a-document-scanner-in-an-afternoon">A Document Scanner in an Afternoon</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#1-three-layers-three-jobs">1. Three layers, three jobs</a></li>
+<li class="observablehq-secondary-link"><a href="#2-ui-kit-feedback-generators-and-what-changed">2. UIKit feedback generators, and what changed</a></li>
+<li class="observablehq-secondary-link"><a href="#3-swift-ui-sensory-feedback">3. SwiftUI: sensoryFeedback</a></li>
+<li class="observablehq-secondary-link"><a href="#4-core-haptics-the-engine-and-its-lifecycle">4. Core Haptics: the engine and its lifecycle</a></li>
+<li class="observablehq-secondary-link"><a href="#5-building-patterns-intensity-sharpness-and-time">5. Building patterns: intensity, sharpness and time</a></li>
+<li class="observablehq-secondary-link"><a href="#6-ahap-patterns-as-files">6. AHAP: patterns as files</a></li>
+<li class="observablehq-secondary-link"><a href="#7-looping-speed-and-record-a-rhythm">7. Looping, speed and &quot;record a rhythm&quot;</a></li>
+<li class="observablehq-secondary-link"><a href="#8-real-world-example-haptics-explorer">8. Real-world example: Haptics Explorer</a></li>
+<li class="observablehq-secondary-link"><a href="#9-before-you-ship-haptics-a-checklist">9. Before you ship haptics: a checklist</a></li>
+<li class="observablehq-secondary-link"><a href="#wrapping-up">Wrapping up</a></li>
+</ol>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="a-practical-guide-to-i-os-haptics-ui-feedback-generator-swift-ui-sensory-feedback-and-core-haptics-with-ahap" tabindex="-1"><a class="observablehq-header-anchor" href="#a-practical-guide-to-i-os-haptics-ui-feedback-generator-swift-ui-sensory-feedback-and-core-haptics-with-ahap">A Practical Guide to iOS Haptics: UIFeedbackGenerator, SwiftUI sensoryFeedback and Core Haptics with AHAP</a></h1>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/a-practical-guide-to-ios-haptics/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/a-practical-guide-to-ios-haptics/</a></em></p>
+<p><em>The three layers of haptic APIs, when to use each, building custom patterns with intensity and sharpness, AHAP files, looping and speed control, and two deprecations to know about in iOS 27</em></p>
+<p><img src="https://bestlatestapps.com/assets/blog/a-practical-guide-to-ios-haptics/haptics-explorer-icon-512.jpg" alt="Haptics Explorer app icon"></p>
+<p>Haptics are the most under-designed part of most iOS apps. Developers add <code>.impactOccurred()</code> to a button, feel it once on their own phone and move on. But haptics are a vocabulary: a light tick for a selection, a crisp double-tap for success, a heavier, duller buzz for an error. Used well, they make an app feel physical. Used badly, they make it feel noisy.</p>
+<p>The trouble is that you can't <em>see</em> a haptic. You can read that <code>.rigid</code> is "sharper" than <code>.soft</code>, but you have to feel the difference. That's why I built <strong>Haptics Explorer</strong>: a developer tool for browsing, testing and generating code for haptic feedback. Its library spans impacts, notifications, selection, rhythms like heartbeat and tick-tock, gesture and game patterns, plus a custom pattern creator, a sequence editor and AHAP import and export.</p>
+<p>This article is the guide that sits behind that app: the three layers of haptic APIs on iOS, how to choose between them, how Core Haptics patterns are built from intensity and sharpness, how AHAP files work, and how to loop and speed up patterns. API names and availability are checked against Apple's documentation, and there are two iOS 27 deprecations worth knowing about.</p>
+<hr>
+<h2 id="1-three-layers-three-jobs" tabindex="-1"><a class="observablehq-header-anchor" href="#1-three-layers-three-jobs">1. Three layers, three jobs</a></h2>
+<p>iOS gives you haptics at three levels of control:</p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>API</th>
+<th>Use it for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>System feedback (UIKit)</td>
+<td><code>UIImpactFeedbackGenerator</code>, <code>UISelectionFeedbackGenerator</code>, <code>UINotificationFeedbackGenerator</code> (iOS 10+)</td>
+<td>Standard UI moments: taps, toggles, picker ticks, success/error</td>
+</tr>
+<tr>
+<td>System feedback (SwiftUI)</td>
+<td><code>.sensoryFeedback(_:trigger:)</code> (iOS 17+)</td>
+<td>The same, declaratively, tied to state changes</td>
+</tr>
+<tr>
+<td>Custom patterns</td>
+<td>Core Haptics: <code>CHHapticEngine</code>, <code>CHHapticPattern</code> (iOS 13+)</td>
+<td>Rhythms, textures, game effects, anything timed or shaped</td>
+</tr>
+</tbody>
+</table>
+<p>My rule: <strong>start at the top and go down only when you must.</strong> System feedback matches what users feel everywhere else on iOS, respects their settings and needs no engine management. Core Haptics is powerful, but every custom pattern is a design decision you now own.</p>
+<hr>
+<h2 id="2-ui-kit-feedback-generators-and-what-changed" tabindex="-1"><a class="observablehq-header-anchor" href="#2-ui-kit-feedback-generators-and-what-changed">2. UIKit feedback generators, and what changed</a></h2>
+<p>The three generators map to three meanings:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> UIKit
+
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">HapticsDemoViewController</span>: <span class="hljs-title class_ inherited__">UIViewController</span> {
+
+    <span class="hljs-comment">// iOS 17.5+: generators can be tied to a view, which lets the system</span>
+    <span class="hljs-comment">// place feedback appropriately (and is required by the newer API).</span>
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">lazy</span> <span class="hljs-keyword">var</span> impact <span class="hljs-operator">=</span> <span class="hljs-type">UIImpactFeedbackGenerator</span>(style: .medium, view: view)
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">lazy</span> <span class="hljs-keyword">var</span> selection <span class="hljs-operator">=</span> <span class="hljs-type">UISelectionFeedbackGenerator</span>(view: view)
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">lazy</span> <span class="hljs-keyword">var</span> notification <span class="hljs-operator">=</span> <span class="hljs-type">UINotificationFeedbackGenerator</span>(view: view)
+
+    <span class="hljs-keyword">@objc</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">buttonTouchDown</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">sender</span>: <span class="hljs-type">UIButton</span>) {
+        impact.prepare()                          <span class="hljs-comment">// wake the Taptic Engine; reduces latency</span>
+    }
+
+    <span class="hljs-keyword">@objc</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">buttonTapped</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">sender</span>: <span class="hljs-type">UIButton</span>) {
+        impact.impactOccurred(intensity: <span class="hljs-number">0.8</span>)     <span class="hljs-comment">// iOS 13+: 0.0...1.0</span>
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">pickerValueChanged</span>() {
+        selection.selectionChanged()              <span class="hljs-comment">// the light "tick" of a picker wheel</span>
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">saveFinished</span>(<span class="hljs-params">success</span>: <span class="hljs-type">Bool</span>) {
+        notification.notificationOccurred(success <span class="hljs-operator">?</span> .success : .error)
+    }
+}
+</code></pre>
+<p>Things worth knowing:</p>
+<ul>
+<li><strong>Impact styles</strong>: <code>.light</code>, <code>.medium</code> and <code>.heavy</code>, plus <code>.soft</code> and <code>.rigid</code> (iOS 13+). Rigid is short and crisp, soft is rounder. Feel them side by side; the names don't do them justice.</li>
+<li><strong><code>prepare()</code> before you need it.</strong> It puts the Taptic Engine into a ready state for a short time, so the feedback lands with the gesture rather than a beat late. Calling it on touch-down for a touch-up action is the classic pattern.</li>
+<li><strong>Use notifications for outcomes only.</strong> Success, warning and error are distinct, recognisable patterns. Don't use <code>.success</code> as a generic "tap" feel.</li>
+</ul>
+<p><strong>What's new.</strong> iOS 17.5 added view-based initialisers, such as <code>init(style:view:)</code>, and location-aware calls like <code>impactOccurred(intensity:at:)</code>. Apple's current documentation now marks the original <code>UIImpactFeedbackGenerator.init(style:)</code> as <strong>deprecated in iOS 27</strong>, with <code>init(style:view:)</code> as the replacement. If you support iOS 17.4 or earlier, branch with <code>if #available(iOS 17.5, *)</code>. There's also a new <code>UICanvasFeedbackGenerator</code> (iOS 17.5) for drawing apps: alignment and path-completion moments.</p>
+<hr>
+<h2 id="3-swift-ui-sensory-feedback" tabindex="-1"><a class="observablehq-header-anchor" href="#3-swift-ui-sensory-feedback">3. SwiftUI: sensoryFeedback</a></h2>
+<p>In SwiftUI (iOS 17+), feedback is declared against a value. Whenever the trigger changes, the feedback plays:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> SwiftUI
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">FavoriteButton</span>: <span class="hljs-title class_ inherited__">View</span> {
+    <span class="hljs-meta">@State</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> isFavorite <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>
+    <span class="hljs-meta">@State</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> saveResult: <span class="hljs-type">Bool</span>?
+
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">View</span> {
+        <span class="hljs-type">VStack</span>(spacing: <span class="hljs-number">24</span>) {
+            <span class="hljs-type">Button</span> { isFavorite.toggle() } label: {
+                <span class="hljs-type">Image</span>(systemName: isFavorite <span class="hljs-operator">?</span> <span class="hljs-string">"heart.fill"</span> : <span class="hljs-string">"heart"</span>).font(.largeTitle)
+            }
+            .sensoryFeedback(.impact(weight: .medium, intensity: <span class="hljs-number">0.8</span>), trigger: isFavorite)
+
+            <span class="hljs-type">Button</span>(<span class="hljs-string">"Save"</span>) { saveResult <span class="hljs-operator">=</span> <span class="hljs-type">Bool</span>.random() }
+                <span class="hljs-comment">// Choose the feedback from the new value: success or error.</span>
+                .sensoryFeedback(trigger: saveResult) { <span class="hljs-keyword">_</span>, newValue <span class="hljs-keyword">in</span>
+                    <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> newValue <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span> }
+                    <span class="hljs-keyword">return</span> newValue <span class="hljs-operator">?</span> .success : .error
+                }
+        }
+    }
+}
+</code></pre>
+<p><code>SensoryFeedback</code> includes <code>.selection</code>, <code>.success</code>, <code>.warning</code>, <code>.error</code>, <code>.increase</code>, <code>.decrease</code>, <code>.start</code>, <code>.stop</code>, <code>.alignment</code>, <code>.levelChange</code> and <code>.impact(weight:intensity:)</code> / <code>.impact(flexibility:intensity:)</code>. Several of these, such as <code>.increase</code> and <code>.decrease</code>, describe <em>meaning</em> rather than feel, and the system picks an appropriate sensation per platform. That's exactly the abstraction you want in SwiftUI.</p>
+<hr>
+<h2 id="4-core-haptics-the-engine-and-its-lifecycle" tabindex="-1"><a class="observablehq-header-anchor" href="#4-core-haptics-the-engine-and-its-lifecycle">4. Core Haptics: the engine and its lifecycle</a></h2>
+<p>For anything beyond system feedback, such as a heartbeat, an explosion, a texture or a rhythm, you need Core Haptics. Everything starts with an engine, and the engine's lifecycle is where most bugs live:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> CoreHaptics
+
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">HapticEngineManager</span> {
+    <span class="hljs-keyword">private(set)</span> <span class="hljs-keyword">var</span> engine: <span class="hljs-type">CHHapticEngine</span>?
+    <span class="hljs-keyword">let</span> supportsHaptics <span class="hljs-operator">=</span> <span class="hljs-type">CHHapticEngine</span>.capabilitiesForHardware().supportsHaptics
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">start</span>() {
+        <span class="hljs-keyword">guard</span> supportsHaptics <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }            <span class="hljs-comment">// e.g. most iPads, the Simulator</span>
+        <span class="hljs-keyword">do</span> {
+            <span class="hljs-keyword">let</span> engine <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> <span class="hljs-type">CHHapticEngine</span>()
+            engine.playsHapticsOnly <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>               <span class="hljs-comment">// no audio events in this engine</span>
+            engine.isAutoShutdownEnabled <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>          <span class="hljs-comment">// let the system power it down when idle</span>
+
+            <span class="hljs-comment">// The engine can stop on its own: app backgrounded, audio session interrupted…</span>
+            engine.stoppedHandler <span class="hljs-operator">=</span> { reason <span class="hljs-keyword">in</span>
+                <span class="hljs-built_in">print</span>(<span class="hljs-string">"Haptic engine stopped: <span class="hljs-subst">\(reason.rawValue)</span>"</span>)
+            }
+            <span class="hljs-comment">// …or the haptic server can reset. Restart and rebuild players.</span>
+            engine.resetHandler <span class="hljs-operator">=</span> { [<span class="hljs-keyword">weak</span> <span class="hljs-keyword">self</span>] <span class="hljs-keyword">in</span>
+                <span class="hljs-keyword">try?</span> <span class="hljs-keyword">self</span><span class="hljs-operator">?</span>.engine<span class="hljs-operator">?</span>.start()
+            }
+            <span class="hljs-keyword">try</span> engine.start()
+            <span class="hljs-keyword">self</span>.engine <span class="hljs-operator">=</span> engine
+        } <span class="hljs-keyword">catch</span> {
+            <span class="hljs-built_in">print</span>(<span class="hljs-string">"Haptic engine failed: <span class="hljs-subst">\(error)</span>"</span>)
+        }
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">play</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">pattern</span>: <span class="hljs-type">CHHapticPattern</span>) {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> engine <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+        <span class="hljs-keyword">do</span> {
+            <span class="hljs-keyword">let</span> player <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> engine.makePlayer(with: pattern)
+            <span class="hljs-keyword">try</span> engine.start()               <span class="hljs-comment">// cheap if already running; needed after auto-shutdown</span>
+            <span class="hljs-keyword">try</span> player.start(atTime: <span class="hljs-type">CHHapticTimeImmediate</span>)
+        } <span class="hljs-keyword">catch</span> {
+            <span class="hljs-built_in">print</span>(<span class="hljs-string">"Play failed: <span class="hljs-subst">\(error)</span>"</span>)
+        }
+    }
+}
+</code></pre>
+<p>The three lines that save you from support emails:</p>
+<ul>
+<li><strong>Check <code>capabilitiesForHardware().supportsHaptics</code>.</strong> Most iPads and the Simulator don't have a Taptic Engine. Hide or disable haptic-only features there, rather than showing buttons that do nothing.</li>
+<li><strong>Handle <code>stoppedHandler</code> and <code>resetHandler</code>.</strong> The engine <em>will</em> stop when your app backgrounds, and the server can reset. Without a reset handler, haptics silently die after the first interruption.</li>
+<li><strong><code>isAutoShutdownEnabled</code></strong> saves power between plays. Pair it with calling <code>start()</code> before each play.</li>
+</ul>
+<hr>
+<h2 id="5-building-patterns-intensity-sharpness-and-time" tabindex="-1"><a class="observablehq-header-anchor" href="#5-building-patterns-intensity-sharpness-and-time">5. Building patterns: intensity, sharpness and time</a></h2>
+<p>A Core Haptics pattern is a list of events on a timeline. There are two kinds:</p>
+<ul>
+<li><strong>Transient</strong>: a single tap, like a click or knock.</li>
+<li><strong>Continuous</strong>: a sustained vibration with a duration, like a buzz or rumble.</li>
+</ul>
+<p>Each event has two key parameters, both from 0 to 1:</p>
+<ul>
+<li><strong>Intensity</strong>: how <em>strong</em> it is.</li>
+<li><strong>Sharpness</strong>: how <em>crisp</em> it is. Low is round and dull; high is precise and clicky.</li>
+</ul>
+<p>Here's a heartbeat, one of the rhythm patterns in the app's library, built from four transients:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> CoreHaptics
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">Patterns</span> {
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">tap</span>(<span class="hljs-params">at</span> <span class="hljs-params">time</span>: <span class="hljs-type">TimeInterval</span>, <span class="hljs-params">intensity</span>: <span class="hljs-type">Float</span>, <span class="hljs-params">sharpness</span>: <span class="hljs-type">Float</span>) -&gt; <span class="hljs-type">CHHapticEvent</span> {
+        <span class="hljs-type">CHHapticEvent</span>(eventType: .hapticTransient, parameters: [
+            <span class="hljs-type">CHHapticEventParameter</span>(parameterID: .hapticIntensity, value: intensity),
+            <span class="hljs-type">CHHapticEventParameter</span>(parameterID: .hapticSharpness, value: sharpness)
+        ], relativeTime: time)
+    }
+
+    <span class="hljs-comment">/// "lub-dub … lub-dub": strong-soft pairs, about 0.8 s apart.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">heartbeat</span>() <span class="hljs-keyword">throws</span> -&gt; <span class="hljs-type">CHHapticPattern</span> {
+        <span class="hljs-keyword">let</span> beats: [<span class="hljs-type">CHHapticEvent</span>] <span class="hljs-operator">=</span> [
+            tap(at: <span class="hljs-number">0.00</span>, intensity: <span class="hljs-number">1.0</span>, sharpness: <span class="hljs-number">0.3</span>),
+            tap(at: <span class="hljs-number">0.15</span>, intensity: <span class="hljs-number">0.6</span>, sharpness: <span class="hljs-number">0.2</span>),
+            tap(at: <span class="hljs-number">0.80</span>, intensity: <span class="hljs-number">1.0</span>, sharpness: <span class="hljs-number">0.3</span>),
+            tap(at: <span class="hljs-number">0.95</span>, intensity: <span class="hljs-number">0.6</span>, sharpness: <span class="hljs-number">0.2</span>)
+        ]
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">try</span> <span class="hljs-type">CHHapticPattern</span>(events: beats, parameters: [])
+    }
+
+    <span class="hljs-comment">/// A rumble that swells and fades, e.g. for a game explosion.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">explosion</span>() <span class="hljs-keyword">throws</span> -&gt; <span class="hljs-type">CHHapticPattern</span> {
+        <span class="hljs-keyword">let</span> rumble <span class="hljs-operator">=</span> <span class="hljs-type">CHHapticEvent</span>(eventType: .hapticContinuous, parameters: [
+            <span class="hljs-type">CHHapticEventParameter</span>(parameterID: .hapticIntensity, value: <span class="hljs-number">1.0</span>),
+            <span class="hljs-type">CHHapticEventParameter</span>(parameterID: .hapticSharpness, value: <span class="hljs-number">0.1</span>)
+        ], relativeTime: <span class="hljs-number">0.05</span>, duration: <span class="hljs-number">0.8</span>)
+
+        <span class="hljs-keyword">let</span> swell <span class="hljs-operator">=</span> <span class="hljs-type">CHHapticParameterCurve</span>(parameterID: .hapticIntensityControl, controlPoints: [
+            .<span class="hljs-keyword">init</span>(relativeTime: <span class="hljs-number">0.0</span>, value: <span class="hljs-number">0.2</span>),
+            .<span class="hljs-keyword">init</span>(relativeTime: <span class="hljs-number">0.15</span>, value: <span class="hljs-number">1.0</span>),
+            .<span class="hljs-keyword">init</span>(relativeTime: <span class="hljs-number">0.85</span>, value: <span class="hljs-number">0.0</span>)
+        ], relativeTime: <span class="hljs-number">0.05</span>)
+
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">try</span> <span class="hljs-type">CHHapticPattern</span>(events: [tap(at: <span class="hljs-number">0</span>, intensity: <span class="hljs-number">1</span>, sharpness: <span class="hljs-number">1</span>), rumble],
+                                   parameterCurves: [swell])
+    }
+}
+</code></pre>
+<p><code>CHHapticParameterCurve</code> (iOS 13+) shapes a parameter over time. Here it makes the rumble swell and decay instead of starting and stopping flat. A sharp transient on top gives the "crack" of the explosion before the rumble.</p>
+<p><strong>Design tip:</strong> use sharpness to carry meaning. Sharp taps read as precise and positive (selection, success); dull, low-sharpness buzzes read as heavy or negative (errors, collisions). The same intensity can feel completely different depending on sharpness.</p>
+<hr>
+<h2 id="6-ahap-patterns-as-files" tabindex="-1"><a class="observablehq-header-anchor" href="#6-ahap-patterns-as-files">6. AHAP: patterns as files</a></h2>
+<p>Writing patterns in code is fine for a few. For a library, or for handing patterns between designers and developers, Apple defines <strong>AHAP</strong> (Apple Haptic and Audio Pattern), a JSON format describing the same events and curves:</p>
+<pre data-language="swift"><code class="language-swift">{
+  <span class="hljs-string">"Version"</span>: <span class="hljs-number">1.0</span>,
+  <span class="hljs-string">"Pattern"</span>: [
+    { <span class="hljs-string">"Event"</span>: { <span class="hljs-string">"Time"</span>: <span class="hljs-number">0.0</span>, <span class="hljs-string">"EventType"</span>: <span class="hljs-string">"HapticTransient"</span>,
+      <span class="hljs-string">"EventParameters"</span>: [ { <span class="hljs-string">"ParameterID"</span>: <span class="hljs-string">"HapticIntensity"</span>, <span class="hljs-string">"ParameterValue"</span>: <span class="hljs-number">1.0</span> },
+                           { <span class="hljs-string">"ParameterID"</span>: <span class="hljs-string">"HapticSharpness"</span>, <span class="hljs-string">"ParameterValue"</span>: <span class="hljs-number">0.3</span> } ] } },
+    { <span class="hljs-string">"Event"</span>: { <span class="hljs-string">"Time"</span>: <span class="hljs-number">0.15</span>, <span class="hljs-string">"EventType"</span>: <span class="hljs-string">"HapticTransient"</span>,
+      <span class="hljs-string">"EventParameters"</span>: [ { <span class="hljs-string">"ParameterID"</span>: <span class="hljs-string">"HapticIntensity"</span>, <span class="hljs-string">"ParameterValue"</span>: <span class="hljs-number">0.6</span> },
+                           { <span class="hljs-string">"ParameterID"</span>: <span class="hljs-string">"HapticSharpness"</span>, <span class="hljs-string">"ParameterValue"</span>: <span class="hljs-number">0.2</span> } ] } }
+  ]
+}
+</code></pre>
+<p>Loading and saving:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> CoreHaptics
+
+<span class="hljs-keyword">extension</span> <span class="hljs-title class_">HapticEngineManager</span> {
+    <span class="hljs-comment">/// Play an .ahap file straight from the bundle or a user-imported URL.</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">playAHAP</span>(<span class="hljs-params">at</span> <span class="hljs-params">url</span>: <span class="hljs-type">URL</span>) <span class="hljs-keyword">throws</span> {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> engine <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+        <span class="hljs-keyword">try</span> engine.start()
+        <span class="hljs-keyword">try</span> engine.playPattern(from: url)            <span class="hljs-comment">// iOS 13+</span>
+    }
+
+    <span class="hljs-comment">/// iOS 16+: build a pattern object from a file (e.g. to edit or loop it).</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">loadAHAP</span>(<span class="hljs-params">at</span> <span class="hljs-params">url</span>: <span class="hljs-type">URL</span>) <span class="hljs-keyword">throws</span> -&gt; <span class="hljs-type">CHHapticPattern</span> {
+        <span class="hljs-keyword">try</span> <span class="hljs-type">CHHapticPattern</span>(contentsOf: url)
+    }
+}
+
+<span class="hljs-comment">/// Export any pattern you built in code as AHAP JSON.</span>
+<span class="hljs-keyword">func</span> <span class="hljs-title function_">ahapData</span>(<span class="hljs-params">for</span> <span class="hljs-params">pattern</span>: <span class="hljs-type">CHHapticPattern</span>) <span class="hljs-keyword">throws</span> -&gt; <span class="hljs-type">Data</span> {
+    <span class="hljs-keyword">let</span> dictionary <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> pattern.exportDictionary()  <span class="hljs-comment">// iOS 13+</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">try</span> <span class="hljs-type">JSONSerialization</span>.data(withJSONObject: dictionary, options: [.prettyPrinted, .sortedKeys])
+}
+</code></pre>
+<p><code>exportDictionary()</code> is what makes a "design in the app, export the file" workflow possible. AHAP is also the honest format to give developers. When generating Swift code from a pattern, a system impact should stay a UIKit or SwiftUI call, and only genuinely custom patterns need Core Haptics.</p>
+<hr>
+<h2 id="7-looping-speed-and-record-a-rhythm" tabindex="-1"><a class="observablehq-header-anchor" href="#7-looping-speed-and-record-a-rhythm">7. Looping, speed and "record a rhythm"</a></h2>
+<p>Testing a haptic once isn't enough; you need to feel it repeatedly, faster and slower. <code>CHHapticAdvancedPatternPlayer</code> (iOS 13+) adds looping and playback rate:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> CoreHaptics
+
+<span class="hljs-keyword">extension</span> <span class="hljs-title class_">HapticEngineManager</span> {
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">makeLoopingPlayer</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">pattern</span>: <span class="hljs-type">CHHapticPattern</span>, <span class="hljs-params">rate</span>: <span class="hljs-type">Float</span> <span class="hljs-operator">=</span> <span class="hljs-number">1.0</span>) <span class="hljs-keyword">throws</span> -&gt; <span class="hljs-type">CHHapticAdvancedPatternPlayer</span>? {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> engine <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span> }
+        <span class="hljs-keyword">let</span> player <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> engine.makeAdvancedPlayer(with: pattern)
+        player.loopEnabled <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>
+        player.loopEnd <span class="hljs-operator">=</span> pattern.duration <span class="hljs-operator">+</span> <span class="hljs-number">0.2</span>      <span class="hljs-comment">// a short gap between repetitions</span>
+        player.playbackRate <span class="hljs-operator">=</span> rate                   <span class="hljs-comment">// 0.5× … 2×</span>
+        <span class="hljs-keyword">return</span> player
+    }
+}
+
+<span class="hljs-comment">// Usage: "long test" for 15 seconds, then stop.</span>
+<span class="hljs-keyword">func</span> <span class="hljs-title function_">longTest</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">pattern</span>: <span class="hljs-type">CHHapticPattern</span>, <span class="hljs-params">manager</span>: <span class="hljs-type">HapticEngineManager</span>) <span class="hljs-keyword">async</span> <span class="hljs-keyword">throws</span> {
+    <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> player <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> manager.makeLoopingPlayer(pattern) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+    <span class="hljs-keyword">try</span> manager.engine<span class="hljs-operator">?</span>.start()
+    <span class="hljs-keyword">try</span> player.start(atTime: <span class="hljs-type">CHHapticTimeImmediate</span>)
+    <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> <span class="hljs-type">Task</span>.sleep(for: .seconds(<span class="hljs-number">15</span>))
+    <span class="hljs-keyword">try</span> player.stop(atTime: <span class="hljs-type">CHHapticTimeImmediate</span>)
+}
+</code></pre>
+<p><strong>Recording a rhythm</strong> is pleasingly simple. Record tap timestamps, normalise them so the first tap is at zero, and turn each into a transient:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">func</span> <span class="hljs-title function_">pattern</span>(<span class="hljs-params">fromTapTimes</span> <span class="hljs-params">times</span>: [<span class="hljs-type">TimeInterval</span>], <span class="hljs-params">maxDuration</span>: <span class="hljs-type">TimeInterval</span> <span class="hljs-operator">=</span> <span class="hljs-number">4</span>) <span class="hljs-keyword">throws</span> -&gt; <span class="hljs-type">CHHapticPattern</span> {
+    <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> first <span class="hljs-operator">=</span> times.first <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-keyword">try</span> <span class="hljs-type">CHHapticPattern</span>(events: [], parameters: []) }
+    <span class="hljs-keyword">let</span> events <span class="hljs-operator">=</span> times
+        .map { <span class="hljs-variable">$0</span> <span class="hljs-operator">-</span> first }
+        .filter { <span class="hljs-variable">$0</span> <span class="hljs-operator">&lt;=</span> maxDuration }
+        .map { <span class="hljs-type">Patterns</span>.tap(at: <span class="hljs-variable">$0</span>, intensity: <span class="hljs-number">0.9</span>, sharpness: <span class="hljs-number">0.5</span>) }
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">try</span> <span class="hljs-type">CHHapticPattern</span>(events: events, parameters: [])
+}
+</code></pre>
+<p>Capture the timestamps with <code>CACurrentMediaTime()</code> in the tap handler, not <code>Date()</code>. It's monotonic and won't jump if the clock changes.</p>
+<hr>
+<h2 id="8-real-world-example-haptics-explorer" tabindex="-1"><a class="observablehq-header-anchor" href="#8-real-world-example-haptics-explorer">8. Real-world example: Haptics Explorer</a></h2>
+<p>Everything above comes from building <strong><a href="https://apps.apple.com/us/app/haptics-explorer/id1660403082" target="_blank" rel="noopener noreferrer">Haptics Explorer</a></strong>. The code is the approach I'd recommend, written for this article, not the app's source.</p>
+<p><img src="https://bestlatestapps.com/assets/blog/a-practical-guide-to-ios-haptics/haptics-explorer-screenshot-1.jpg" alt="Haptics Explorer App Store screenshot 1"></p>
+<p>At the time of writing, its App Store listing shows:</p>
+<ul>
+<li><strong>Free</strong> with an optional Premium tier, in <strong>Developer Tools</strong> and <strong>Utilities</strong></li>
+<li>First released in <strong>December 2022</strong></li>
+<li><strong>4 ratings</strong> in the US store, all <strong>5 stars</strong></li>
+<li>Supports <strong>iOS 17.0 and later</strong></li>
+</ul>
+<p>How the listing maps to this article:</p>
+<table>
+<thead>
+<tr>
+<th>What the listing says</th>
+<th>Where it's covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Impact (Light, Medium, Heavy, Rigid, Soft)", "Notifications (Success, Error, Warning)", "Selection feedback"</td>
+<td>UIKit generators and SwiftUI <code>sensoryFeedback</code> (sections 2–3)</td>
+</tr>
+<tr>
+<td>"Rhythm patterns (Heartbeat, Double/Triple Tap, Tick Tock)", "Game patterns (Explosion…)"</td>
+<td>Core Haptics events, sharpness and parameter curves (section 5)</td>
+</tr>
+<tr>
+<td>"Adjust intensity and sharpness" / "Custom Pattern Creator"</td>
+<td><code>CHHapticEventParameter</code> values (section 5)</td>
+</tr>
+<tr>
+<td>"Code Generation… UIKit, SwiftUI, Combine, Async/Await"</td>
+<td>System feedback stays UIKit or SwiftUI; custom patterns use Core Haptics (sections 2–6)</td>
+</tr>
+<tr>
+<td>"AHAP - Import a haptic file. Exporting an AHAP file is Premium."</td>
+<td><code>playPattern(from:)</code>, <code>CHHapticPattern(contentsOf:)</code>, <code>exportDictionary()</code> (section 6)</td>
+</tr>
+<tr>
+<td>"Test haptic feedbacks instantly with play, loop, a long test, and speed controls" / "Speed control (0.5x, 1x, 2x)"</td>
+<td><code>CHHapticAdvancedPatternPlayer</code> with <code>loopEnabled</code> and <code>playbackRate</code> (section 7)</td>
+</tr>
+<tr>
+<td>"Record and audio - Tap a rhythm"; release notes: "Tap the timeline for up to 4 seconds"</td>
+<td>Tap timestamps → transient events (section 7)</td>
+</tr>
+</tbody>
+</table>
+<p><img src="https://bestlatestapps.com/assets/blog/a-practical-guide-to-ios-haptics/haptics-explorer-screenshot-2.jpg" alt="Haptics Explorer App Store screenshot 2"></p>
+<p>The listing also mentions widgets, Control Center and Siri support for replaying the last pattern, and a "Tell them apart" mode that plays success, warning and error back to back. That last one is my favourite design exercise. If your app's success and error haptics can't be told apart with your eyes closed, they aren't doing their job.</p>
+<hr>
+<h2 id="9-before-you-ship-haptics-a-checklist" tabindex="-1"><a class="observablehq-header-anchor" href="#9-before-you-ship-haptics-a-checklist">9. Before you ship haptics: a checklist</a></h2>
+<ol>
+<li><strong>Use system feedback first.</strong> Core Haptics only for genuinely custom patterns.</li>
+<li><strong>Every haptic has a meaning.</strong> Selection, impact, success and error are used consistently across the app.</li>
+<li><strong><code>prepare()</code> is called</strong> ahead of latency-sensitive feedback.</li>
+<li><strong>There's a hardware check.</strong> <code>supportsHaptics</code> gates custom features; the app is fine on iPad and the Simulator.</li>
+<li><strong>The engine survives interruptions.</strong> <code>stoppedHandler</code> and <code>resetHandler</code> are implemented and tested by backgrounding mid-pattern.</li>
+<li><strong>Haptics are paired with something visible or audible.</strong> Never use a haptic as the <em>only</em> signal: some users turn System Haptics off, and some devices don't have them.</li>
+<li><strong>Patterns are short and sparse.</strong> Constant buzzing is fatiguing and drains battery.</li>
+<li><strong>iOS 27 readiness.</strong> Move to <code>UIImpactFeedbackGenerator(style:view:)</code> where you can (iOS 17.5+).</li>
+<li><strong>Test on several iPhone models.</strong> The Taptic Engine differs, and so does the feel.</li>
+</ol>
+<hr>
+<h2 id="wrapping-up" tabindex="-1"><a class="observablehq-header-anchor" href="#wrapping-up">Wrapping up</a></h2>
+<p>Good haptics are a vocabulary, not decoration. Lean on the system generators and SwiftUI's <code>sensoryFeedback</code> for everyday UI. Reach for Core Haptics when you need rhythm, shape or texture, and manage its engine carefully. Use AHAP when patterns need to travel between people and tools. And always test with your fingers, not just your eyes.</p>
+<p>Try the app, or explore my other work:</p>
+<ul>
+<li><strong>Haptics Explorer (iOS):</strong> <a href="https://apps.apple.com/us/app/haptics-explorer/id1660403082" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/haptics-explorer/id1660403082</a></li>
+<li><strong>All of my free iOS apps:</strong> <a href="https://apps.apple.com/us/developer/alok-singh/id1508795536" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/developer/alok-singh/id1508795536</a></li>
+<li><strong>My portfolio:</strong> <a href="https://bestlatestapps.com/alok/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/alok/</a></li>
+</ul>
+<p>What's the best haptic you've felt in someone else's app? Tell me in the comments. I collect good examples.</p>
+<p><em>— Alok Kumar Singh</em></p>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/a-practical-guide-to-ios-haptics/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/a-practical-guide-to-ios-haptics/</a></em></p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./animating-algorithms-in-swiftui"><span>Animating Algorithms in SwiftUI</span></a><a rel="next" href="./a-document-scanner-in-an-afternoon"><span>A Document Scanner in an Afternoon</span></a></nav>
+<div>Articles by Alok Kumar Singh. Originals at <a href="https://bestlatestapps.com/blog/" target="_blank" rel="noopener noreferrer">bestlatestapps.com/blog</a>.</div>
+</footer>
+</div>
+</body>
+</html>

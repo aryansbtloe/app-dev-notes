@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>Building a Chromatic Guitar Tuner on iOS: Real-Time Pitch Detection with AVAudioEngine and Accelerate | Alok Singh, App Dev Notes</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="modulepreload" href="./_observablehq/client.097df403.js">
+<link rel="modulepreload" href="./_observablehq/runtime.fa9f71c0.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.60afab10.js">
+<link rel="canonical" href="https://bestlatestapps.com/blog/building-a-chromatic-guitar-tuner-on-ios/"><meta name="description" content="From microphone samples to 'A2, +3 cents': session setup, an input tap, autocorrelation with vDSP, note maths, smoothing and tuning presets">
+<script type="module">
+
+import "./_observablehq/client.097df403.js";
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Alok Singh, App Dev Notes</a></li>
+  </ol>
+  <div id="observablehq-search"><input type="search" placeholder="Search"></div>
+  <div id="observablehq-search-results"></div>
+  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.755d897f.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
+  <ol>
+    <li class="observablehq-link"><a href="./tic-tac-toe-in-swiftui-done-properly">Tic Tac Toe in SwiftUI, Done Properly</a></li>
+    <li class="observablehq-link"><a href="./the-sending-side-of-apns">The Sending Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./the-device-side-of-apns">The Device Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./text-plus-audio-fully-offline">Text Plus Audio, Fully Offline</a></li>
+    <li class="observablehq-link"><a href="./stop-hand-rolling-unit-conversions">Stop Hand-Rolling Unit Conversions</a></li>
+    <li class="observablehq-link"><a href="./shipping-a-4k-wallpaper-app-without-running-out-of-memory">Shipping a 4K Wallpaper App Without Running Out of Memory</a></li>
+    <li class="observablehq-link"><a href="./medication-reminders-that-actually-fire">Medication Reminders That Actually Fire</a></li>
+    <li class="observablehq-link"><a href="./from-barcode-to-pdf">From Barcode to PDF</a></li>
+    <li class="observablehq-link"><a href="./drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game">Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game,</a></li>
+    <li class="observablehq-link"><a href="./convert-as-you-type-currency-conversion-in-swift">Convert-As-You-Type Currency Conversion in Swift</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-first-bible-reader-on-ios">Building an Offline-First Bible Reader on iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-ebook-reader-for-ios">Building an Offline eBook Reader for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-quotes-app-in-swiftui">Building an Offline Quotes App in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-an-admob-earnings-dashboard-for-ios">Building an AdMob Earnings Dashboard for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-tap-to-match-marble-game-with-spritekit-and-swiftui">Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine">Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine</a></li>
+    <li class="observablehq-link"><a href="./building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe">Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioE</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-ios-component-catalogue">Building a Live iOS Component Catalogue</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-temple-darshan-app-for-ios">Building a Live Temple Darshan App for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-hashtag-copier-for-ios">Building a Hashtag Copier for iOS</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./building-a-chromatic-guitar-tuner-on-ios">Building a Chromatic Guitar Tuner on iOS</a></li>
+    <li class="observablehq-link"><a href="./animating-algorithms-in-swiftui">Animating Algorithms in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./a-practical-guide-to-ios-haptics">A Practical Guide to iOS Haptics</a></li>
+    <li class="observablehq-link"><a href="./a-document-scanner-in-an-afternoon">A Document Scanner in an Afternoon</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#1-what-a-tuner-actually-has-to-do">1. What a tuner actually has to do</a></li>
+<li class="observablehq-secondary-link"><a href="#2-permission-and-a-session-set-up-for-measurement">2. Permission and a session set up for measurement</a></li>
+<li class="observablehq-secondary-link"><a href="#3-getting-samples-an-input-tap-and-a-rolling-window">3. Getting samples: an input tap and a rolling window</a></li>
+<li class="observablehq-secondary-link"><a href="#4-pitch-detection-with-autocorrelation-and-v-dsp">4. Pitch detection with autocorrelation and vDSP</a></li>
+<li class="observablehq-secondary-link"><a href="#5-from-hz-to-note-name-and-cents">5. From Hz to note name and cents</a></li>
+<li class="observablehq-secondary-link"><a href="#6-smoothing-a-calm-needle-thats-still-responsive">6. Smoothing: a calm needle that&#x27;s still responsive</a></li>
+<li class="observablehq-secondary-link"><a href="#7-tuning-presets-auto-mode-and-colour-feedback">7. Tuning presets, Auto Mode and colour feedback</a></li>
+<li class="observablehq-secondary-link"><a href="#8-real-world-example-guitar-tuner-chromatic">8. Real-world example: Guitar Tuner: Chromatic</a></li>
+<li class="observablehq-secondary-link"><a href="#9-before-you-ship-a-tuner-a-checklist">9. Before you ship a tuner: a checklist</a></li>
+<li class="observablehq-secondary-link"><a href="#wrapping-up">Wrapping up</a></li>
+</ol>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="building-a-chromatic-guitar-tuner-on-i-os-real-time-pitch-detection-with-av-audio-engine-and-accelerate" tabindex="-1"><a class="observablehq-header-anchor" href="#building-a-chromatic-guitar-tuner-on-i-os-real-time-pitch-detection-with-av-audio-engine-and-accelerate">Building a Chromatic Guitar Tuner on iOS: Real-Time Pitch Detection with AVAudioEngine and Accelerate</a></h1>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/building-a-chromatic-guitar-tuner-on-ios/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/building-a-chromatic-guitar-tuner-on-ios/</a></em></p>
+<p><em>From microphone samples to "A2, +3 cents": session setup, an input tap, autocorrelation with vDSP, note maths, smoothing and tuning presets</em></p>
+<p><img src="https://bestlatestapps.com/assets/blog/building-a-chromatic-guitar-tuner-on-ios/guitar-tuner-icon-512.jpg" alt="Guitar Tuner: Chromatic app icon"></p>
+<p>A tuner is the most honest app you can build. There's no design trick that hides a wrong answer: the guitarist plucks the low E, looks at the needle and then checks it with their ear. If the needle jitters, lands on the wrong octave or reads 4 cents sharp when the string is in tune, they delete the app.</p>
+<p>My app <strong>Guitar Tuner: Chromatic</strong> has been on the App Store since June 2020. It's a chromatic tuner for guitar and bass with a live Hz readout, colour-coded feedback, an Auto Mode that detects which string you're playing and 15 tuning presets, from Standard and Drop-D to Open-G and Drop-B.</p>
+<p>This article builds the core of a tuner like that, end to end: configuring the audio session for <em>measurement</em>, pulling samples from the mic with an <code>AVAudioEngine</code> tap, detecting pitch with autocorrelation using Accelerate's <code>vDSP</code>, turning Hz into a note name and cents, smoothing the reading so the needle doesn't dance, and matching against presets. I describe the approach I'd use and recommend; I'm not claiming the app's exact algorithm. API names and availability are checked against Apple's docs, including an iOS 27 change to audio taps that's worth knowing about.</p>
+<hr>
+<h2 id="1-what-a-tuner-actually-has-to-do" tabindex="-1"><a class="observablehq-header-anchor" href="#1-what-a-tuner-actually-has-to-do">1. What a tuner actually has to do</a></h2>
+<p>Every frame, a tuner answers three questions:</p>
+<ol>
+<li><strong>Is anyone playing?</strong> Silence and room noise shouldn't move the needle.</li>
+<li><strong>What is the fundamental frequency?</strong> That means the <em>fundamental</em>, not the loudest harmonic. A plucked guitar string often has a stronger second or third harmonic than its fundamental, which is why naive FFT-peak tuners jump octaves.</li>
+<li><strong>How far is that from the nearest target note?</strong> The answer is in <strong>cents</strong>: hundredths of a semitone.</li>
+</ol>
+<p>The guitar range sets the constraints. A 4-string bass in standard tuning goes down to E1 (≈ 41.2 Hz), drop tunings go lower, and a guitar's high E string sits around 330 Hz, with harmonics far above. To see a full period of 41 Hz you need ~24 ms of audio, and in practice you want several periods: I work with windows of about 4,096 samples (~85 ms at 48 kHz).</p>
+<hr>
+<h2 id="2-permission-and-a-session-set-up-for-measurement" tabindex="-1"><a class="observablehq-header-anchor" href="#2-permission-and-a-session-set-up-for-measurement">2. Permission and a session set up for measurement</a></h2>
+<p>Microphone permission works exactly as in any audio app: an <code>NSMicrophoneUsageDescription</code> purpose string ("Guitar Tuner listens to your instrument to detect its pitch"), then <code>AVAudioApplication.requestRecordPermission()</code> on iOS 17+, with the <code>AVAudioSession</code> fallback for older systems. I covered that pattern in detail in my mic-to-speaker article, so here I'll focus on what's different for a tuner: <strong>the session mode</strong>.</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> AVFoundation
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">TunerSession</span> {
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">activate</span>() <span class="hljs-keyword">throws</span> {
+        <span class="hljs-keyword">let</span> session <span class="hljs-operator">=</span> <span class="hljs-type">AVAudioSession</span>.sharedInstance()
+        <span class="hljs-comment">// .record: we only listen. .measurement: minimise system signal processing</span>
+        <span class="hljs-comment">// (no automatic gain or voice EQ colouring the signal we're analysing).</span>
+        <span class="hljs-keyword">try</span> session.setCategory(.record, mode: .measurement, options: [])
+        <span class="hljs-keyword">try</span> session.setPreferredSampleRate(<span class="hljs-number">48_000</span>)
+        <span class="hljs-keyword">try</span> session.setActive(<span class="hljs-literal">true</span>)
+    }
+
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">deactivate</span>() {
+        <span class="hljs-keyword">try?</span> <span class="hljs-type">AVAudioSession</span>.sharedInstance()
+            .setActive(<span class="hljs-literal">false</span>, options: .notifyOthersOnDeactivation)
+    }
+}
+</code></pre>
+<p>Apple describes <code>.measurement</code> (iOS 5+) as the mode for apps that measure audio input or output. For a tuner, that's exactly the point: voice processing and automatic gain control are designed to make speech pleasant, and they distort the very signal you want to measure.</p>
+<p>If your tuner also plays reference tones, use <code>.playAndRecord</code> instead, but keep the <code>.measurement</code> mode.</p>
+<hr>
+<h2 id="3-getting-samples-an-input-tap-and-a-rolling-window" tabindex="-1"><a class="observablehq-header-anchor" href="#3-getting-samples-an-input-tap-and-a-rolling-window">3. Getting samples: an input tap and a rolling window</a></h2>
+<p><code>AVAudioEngine</code>'s input node delivers microphone audio. A <strong>tap</strong> on it hands you buffers of samples without routing anything to the speaker:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> AVFoundation
+
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MicSampler</span> {
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> engine <span class="hljs-operator">=</span> <span class="hljs-type">AVAudioEngine</span>()
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> window: [<span class="hljs-type">Float</span>] <span class="hljs-operator">=</span> []
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> windowSize <span class="hljs-operator">=</span> <span class="hljs-number">4_096</span>
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> analysisQueue <span class="hljs-operator">=</span> <span class="hljs-type">DispatchQueue</span>(label: <span class="hljs-string">"tuner.analysis"</span>)
+
+    <span class="hljs-comment">/// Called on the analysis queue with a full window and the sample rate.</span>
+    <span class="hljs-keyword">var</span> onWindow: (([<span class="hljs-type">Float</span>], <span class="hljs-type">Double</span>) -&gt; <span class="hljs-type">Void</span>)<span class="hljs-operator">?</span>
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">start</span>() <span class="hljs-keyword">throws</span> {
+        <span class="hljs-keyword">let</span> input <span class="hljs-operator">=</span> engine.inputNode
+        <span class="hljs-keyword">let</span> format <span class="hljs-operator">=</span> input.outputFormat(forBus: <span class="hljs-number">0</span>)
+        <span class="hljs-keyword">guard</span> format.sampleRate <span class="hljs-operator">&gt;</span> <span class="hljs-number">0</span>, format.channelCount <span class="hljs-operator">&gt;</span> <span class="hljs-number">0</span> <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">throw</span> <span class="hljs-type">NSError</span>(domain: <span class="hljs-string">"Tuner"</span>, code: <span class="hljs-number">1</span>,
+                          userInfo: [NSLocalizedDescriptionKey: <span class="hljs-string">"No microphone input available"</span>])
+        }
+        <span class="hljs-keyword">let</span> sampleRate <span class="hljs-operator">=</span> format.sampleRate
+
+        input.installTap(onBus: <span class="hljs-number">0</span>, bufferSize: <span class="hljs-number">4_096</span>, format: format) { [<span class="hljs-keyword">weak</span> <span class="hljs-keyword">self</span>] buffer, <span class="hljs-keyword">_</span> <span class="hljs-keyword">in</span>
+            <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> <span class="hljs-keyword">self</span>, <span class="hljs-keyword">let</span> channel <span class="hljs-operator">=</span> buffer.floatChannelData<span class="hljs-operator">?</span>[<span class="hljs-number">0</span>] <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+            <span class="hljs-comment">// Copy out of the buffer immediately; it's reused after this block returns.</span>
+            <span class="hljs-keyword">let</span> samples <span class="hljs-operator">=</span> <span class="hljs-type">Array</span>(<span class="hljs-type">UnsafeBufferPointer</span>(start: channel, count: <span class="hljs-type">Int</span>(buffer.frameLength)))
+            <span class="hljs-keyword">self</span>.analysisQueue.async {
+                <span class="hljs-keyword">self</span>.window.append(contentsOf: samples)
+                <span class="hljs-keyword">if</span> <span class="hljs-keyword">self</span>.window.count <span class="hljs-operator">&gt;=</span> <span class="hljs-keyword">self</span>.windowSize {
+                    <span class="hljs-keyword">let</span> frame <span class="hljs-operator">=</span> <span class="hljs-type">Array</span>(<span class="hljs-keyword">self</span>.window.suffix(<span class="hljs-keyword">self</span>.windowSize))
+                    <span class="hljs-comment">// Keep 50% overlap so readings update twice as often.</span>
+                    <span class="hljs-keyword">self</span>.window <span class="hljs-operator">=</span> <span class="hljs-type">Array</span>(frame.suffix(<span class="hljs-keyword">self</span>.windowSize <span class="hljs-operator">/</span> <span class="hljs-number">2</span>))
+                    <span class="hljs-keyword">self</span>.onWindow<span class="hljs-operator">?</span>(frame, sampleRate)
+                }
+            }
+        }
+        engine.prepare()
+        <span class="hljs-keyword">try</span> engine.start()
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">stop</span>() {
+        engine.inputNode.removeTap(onBus: <span class="hljs-number">0</span>)
+        engine.stop()
+    }
+}
+</code></pre>
+<p>A few details that matter:</p>
+<ul>
+<li><strong>The requested buffer size is a request.</strong> Apple's documentation gives a supported range of roughly 100–400 ms for tap buffers, so don't assume you'll get exactly 4,096 frames. The rolling window above copes with any size.</li>
+<li><strong>Copy, then hand off.</strong> The buffer is only valid during the block, so copy the samples and do the analysis on your own queue.</li>
+<li><strong>Use only channel 0.</strong> A tuner needs mono.</li>
+</ul>
+<p><strong>What's new in iOS 27:</strong> Apple's documentation now marks <code>installTap(onBus:bufferSize:format:block:)</code> as deprecated in iOS 27 and adds <code>installAudioTap(onBus:bufferSize:format:tapProvider:)</code>. The new method takes a <code>@Sendable</code> closure that receives an <code>AVReadOnlyAudioPCMBuffer</code> (iOS 27+), "safe for concurrent use". If you build with the iOS 27 SDK, it's the Swift-concurrency-friendly choice. Because it <code>throws</code>, call it with <code>try</code>. On earlier systems, the classic tap above is still the way.</p>
+<hr>
+<h2 id="4-pitch-detection-with-autocorrelation-and-v-dsp" tabindex="-1"><a class="observablehq-header-anchor" href="#4-pitch-detection-with-autocorrelation-and-v-dsp">4. Pitch detection with autocorrelation and vDSP</a></h2>
+<p>Autocorrelation asks: <em>"if I shift this signal by <code>lag</code> samples, how similar is it to itself?"</em> A periodic signal lines up with itself at its period, so the first strong peak (after lag zero) gives you the period, and <code>frequency = sampleRate / lag</code>. Unlike picking the biggest FFT bin, this naturally favours the fundamental, because every harmonic also repeats at the fundamental's period.</p>
+<p>Accelerate's <code>vDSP_conv</code> (iOS 4+) computes a sliding dot product. Apple's docs note that <strong>a positive filter stride gives correlation</strong>, which is exactly what we want, and it's fast.</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> Accelerate
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">PitchDetector</span> {
+    <span class="hljs-keyword">var</span> minFrequency: <span class="hljs-type">Double</span> <span class="hljs-operator">=</span> <span class="hljs-number">30</span>      <span class="hljs-comment">// below low B on a 5-string bass</span>
+    <span class="hljs-keyword">var</span> maxFrequency: <span class="hljs-type">Double</span> <span class="hljs-operator">=</span> <span class="hljs-number">1_200</span>   <span class="hljs-comment">// well above high E's fundamental</span>
+    <span class="hljs-keyword">var</span> silenceRMS: <span class="hljs-type">Float</span> <span class="hljs-operator">=</span> <span class="hljs-number">0.01</span>       <span class="hljs-comment">// noise gate; tune on real devices</span>
+
+    <span class="hljs-comment">/// Returns the fundamental frequency in Hz, or nil for silence or no clear pitch.</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">detect</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">x</span>: [<span class="hljs-type">Float</span>], <span class="hljs-params">sampleRate</span>: <span class="hljs-type">Double</span>) -&gt; <span class="hljs-type">Double</span>? {
+        <span class="hljs-comment">// 1. Noise gate.</span>
+        <span class="hljs-keyword">var</span> rms: <span class="hljs-type">Float</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>
+        vDSP_rmsqv(x, <span class="hljs-number">1</span>, <span class="hljs-operator">&amp;</span>rms, vDSP_Length(x.count))
+        <span class="hljs-keyword">guard</span> rms <span class="hljs-operator">&gt;</span> silenceRMS <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span> }
+
+        <span class="hljs-comment">// 2. Autocorrelation for lags 0...maxLag.</span>
+        <span class="hljs-keyword">let</span> minLag <span class="hljs-operator">=</span> <span class="hljs-type">Int</span>(sampleRate <span class="hljs-operator">/</span> maxFrequency)
+        <span class="hljs-keyword">let</span> maxLag <span class="hljs-operator">=</span> <span class="hljs-built_in">min</span>(<span class="hljs-type">Int</span>(sampleRate <span class="hljs-operator">/</span> minFrequency), x.count <span class="hljs-operator">/</span> <span class="hljs-number">2</span>)
+        <span class="hljs-keyword">let</span> lagCount <span class="hljs-operator">=</span> maxLag <span class="hljs-operator">+</span> <span class="hljs-number">1</span>
+        <span class="hljs-keyword">let</span> filterLength <span class="hljs-operator">=</span> x.count <span class="hljs-operator">-</span> maxLag
+        <span class="hljs-keyword">var</span> r <span class="hljs-operator">=</span> [<span class="hljs-type">Float</span>](repeating: <span class="hljs-number">0</span>, count: lagCount)
+        x.withUnsafeBufferPointer { xp <span class="hljs-keyword">in</span>
+            <span class="hljs-comment">// r[lag] = Σ x[lag + p] * x[p], for p in 0..&lt;filterLength</span>
+            vDSP_conv(xp.baseAddress<span class="hljs-operator">!</span>, <span class="hljs-number">1</span>, xp.baseAddress<span class="hljs-operator">!</span>, <span class="hljs-number">1</span>,
+                      <span class="hljs-operator">&amp;</span>r, <span class="hljs-number">1</span>, vDSP_Length(lagCount), vDSP_Length(filterLength))
+        }
+        <span class="hljs-keyword">guard</span> r[<span class="hljs-number">0</span>] <span class="hljs-operator">&gt;</span> <span class="hljs-number">0</span> <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span> }
+
+        <span class="hljs-comment">// 3. Normalise so r[0] == 1, then find the first strong peak.</span>
+        r <span class="hljs-operator">=</span> vDSP.multiply(<span class="hljs-number">1</span> <span class="hljs-operator">/</span> r[<span class="hljs-number">0</span>], r)
+
+        <span class="hljs-comment">// Skip the initial lobe around lag 0 by waiting for the curve to dip below zero.</span>
+        <span class="hljs-keyword">var</span> lag <span class="hljs-operator">=</span> minLag
+        <span class="hljs-keyword">while</span> lag <span class="hljs-operator">&lt;</span> maxLag, r[lag] <span class="hljs-operator">&gt;</span> <span class="hljs-number">0</span> { lag <span class="hljs-operator">+=</span> <span class="hljs-number">1</span> }
+
+        <span class="hljs-keyword">var</span> bestLag <span class="hljs-operator">=</span> <span class="hljs-number">0</span>
+        <span class="hljs-keyword">var</span> bestValue: <span class="hljs-type">Float</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>
+        <span class="hljs-keyword">let</span> threshold: <span class="hljs-type">Float</span> <span class="hljs-operator">=</span> <span class="hljs-number">0.5</span>          <span class="hljs-comment">// how periodic it must be to count</span>
+        <span class="hljs-keyword">while</span> lag <span class="hljs-operator">&lt;</span> maxLag {
+            <span class="hljs-keyword">if</span> r[lag] <span class="hljs-operator">&gt;</span> r[lag <span class="hljs-operator">-</span> <span class="hljs-number">1</span>], r[lag] <span class="hljs-operator">&gt;=</span> r[lag <span class="hljs-operator">+</span> <span class="hljs-number">1</span>], r[lag] <span class="hljs-operator">&gt;</span> threshold {
+                bestLag <span class="hljs-operator">=</span> lag; bestValue <span class="hljs-operator">=</span> r[lag]
+                <span class="hljs-keyword">break</span>                          <span class="hljs-comment">// first good peak = fundamental</span>
+            }
+            lag <span class="hljs-operator">+=</span> <span class="hljs-number">1</span>
+        }
+        <span class="hljs-keyword">guard</span> bestLag <span class="hljs-operator">&gt;</span> <span class="hljs-number">0</span>, bestValue <span class="hljs-operator">&gt;</span> threshold <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span> }
+
+        <span class="hljs-comment">// 4. Parabolic interpolation for sub-sample accuracy (cents need it).</span>
+        <span class="hljs-keyword">let</span> a <span class="hljs-operator">=</span> r[bestLag <span class="hljs-operator">-</span> <span class="hljs-number">1</span>], b <span class="hljs-operator">=</span> r[bestLag], c <span class="hljs-operator">=</span> r[bestLag <span class="hljs-operator">+</span> <span class="hljs-number">1</span>]
+        <span class="hljs-keyword">let</span> denom <span class="hljs-operator">=</span> a <span class="hljs-operator">-</span> <span class="hljs-number">2</span> <span class="hljs-operator">*</span> b <span class="hljs-operator">+</span> c
+        <span class="hljs-keyword">let</span> shift <span class="hljs-operator">=</span> denom <span class="hljs-operator">==</span> <span class="hljs-number">0</span> <span class="hljs-operator">?</span> <span class="hljs-number">0</span> : <span class="hljs-number">0.5</span> <span class="hljs-operator">*</span> (a <span class="hljs-operator">-</span> c) <span class="hljs-operator">/</span> denom
+        <span class="hljs-keyword">return</span> sampleRate <span class="hljs-operator">/</span> (<span class="hljs-type">Double</span>(bestLag) <span class="hljs-operator">+</span> <span class="hljs-type">Double</span>(shift))
+    }
+}
+</code></pre>
+<p>Why each step matters:</p>
+<ul>
+<li><strong>The noise gate</strong> stops room noise from producing random notes. Expose the threshold in a hidden debug setting while you test; phones differ.</li>
+<li><strong>Taking the <em>first</em> good peak, not the highest</strong>, avoids "sub-octave" errors where the peak at twice the period is marginally taller.</li>
+<li><strong>Parabolic interpolation</strong> matters more than anything else for accuracy. At 48 kHz, a lag of 109 vs 110 samples is the difference between 440.4 Hz and 436.4 Hz, roughly 16 cents. Without interpolation, your needle can only move in big jumps at high notes.</li>
+</ul>
+<p>Autocorrelation over a 4,096-sample window at ~23 readings per second (with 50% overlap) is light work for any modern iPhone. If you ever need more, the same maths can be done through <code>vDSP.FFT</code> (iOS 13+) via the Wiener–Khinchin theorem, but measure first; you probably don't need it.</p>
+<hr>
+<h2 id="5-from-hz-to-note-name-and-cents" tabindex="-1"><a class="observablehq-header-anchor" href="#5-from-hz-to-note-name-and-cents">5. From Hz to note name and cents</a></h2>
+<p>Equal temperament makes the maths pleasant. With A4 = 440 Hz, MIDI note 69:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> Foundation
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">NoteReading</span>: <span class="hljs-title class_ inherited__">Equatable</span> {
+    <span class="hljs-keyword">let</span> name: <span class="hljs-type">String</span>       <span class="hljs-comment">// "A"</span>
+    <span class="hljs-keyword">let</span> octave: <span class="hljs-type">Int</span>        <span class="hljs-comment">// 2</span>
+    <span class="hljs-keyword">let</span> midi: <span class="hljs-type">Int</span>          <span class="hljs-comment">// 45</span>
+    <span class="hljs-keyword">let</span> cents: <span class="hljs-type">Double</span>      <span class="hljs-comment">// -50 ... +50</span>
+    <span class="hljs-keyword">let</span> frequency: <span class="hljs-type">Double</span>
+}
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">NoteMath</span> {
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> names <span class="hljs-operator">=</span> [<span class="hljs-string">"C"</span>, <span class="hljs-string">"C♯"</span>, <span class="hljs-string">"D"</span>, <span class="hljs-string">"D♯"</span>, <span class="hljs-string">"E"</span>, <span class="hljs-string">"F"</span>, <span class="hljs-string">"F♯"</span>, <span class="hljs-string">"G"</span>, <span class="hljs-string">"G♯"</span>, <span class="hljs-string">"A"</span>, <span class="hljs-string">"A♯"</span>, <span class="hljs-string">"B"</span>]
+
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">midi</span>(<span class="hljs-params">for</span> <span class="hljs-params">frequency</span>: <span class="hljs-type">Double</span>, <span class="hljs-params">a4</span>: <span class="hljs-type">Double</span> <span class="hljs-operator">=</span> <span class="hljs-number">440</span>) -&gt; <span class="hljs-type">Double</span> {
+        <span class="hljs-number">69</span> <span class="hljs-operator">+</span> <span class="hljs-number">12</span> <span class="hljs-operator">*</span> log2(frequency <span class="hljs-operator">/</span> a4)
+    }
+
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">frequency</span>(<span class="hljs-params">forMidi</span> <span class="hljs-params">midi</span>: <span class="hljs-type">Int</span>, <span class="hljs-params">a4</span>: <span class="hljs-type">Double</span> <span class="hljs-operator">=</span> <span class="hljs-number">440</span>) -&gt; <span class="hljs-type">Double</span> {
+        a4 <span class="hljs-operator">*</span> pow(<span class="hljs-number">2</span>, <span class="hljs-type">Double</span>(midi <span class="hljs-operator">-</span> <span class="hljs-number">69</span>) <span class="hljs-operator">/</span> <span class="hljs-number">12</span>)
+    }
+
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">reading</span>(<span class="hljs-params">for</span> <span class="hljs-params">frequency</span>: <span class="hljs-type">Double</span>, <span class="hljs-params">a4</span>: <span class="hljs-type">Double</span> <span class="hljs-operator">=</span> <span class="hljs-number">440</span>) -&gt; <span class="hljs-type">NoteReading</span> {
+        <span class="hljs-keyword">let</span> exact <span class="hljs-operator">=</span> midi(for: frequency, a4: a4)
+        <span class="hljs-keyword">let</span> nearest <span class="hljs-operator">=</span> <span class="hljs-type">Int</span>(exact.rounded())
+        <span class="hljs-keyword">let</span> cents <span class="hljs-operator">=</span> (exact <span class="hljs-operator">-</span> <span class="hljs-type">Double</span>(nearest)) <span class="hljs-operator">*</span> <span class="hljs-number">100</span>
+        <span class="hljs-keyword">let</span> name <span class="hljs-operator">=</span> names[((nearest <span class="hljs-operator">%</span> <span class="hljs-number">12</span>) <span class="hljs-operator">+</span> <span class="hljs-number">12</span>) <span class="hljs-operator">%</span> <span class="hljs-number">12</span>]
+        <span class="hljs-keyword">let</span> octave <span class="hljs-operator">=</span> nearest <span class="hljs-operator">/</span> <span class="hljs-number">12</span> <span class="hljs-operator">-</span> <span class="hljs-number">1</span>            <span class="hljs-comment">// MIDI 60 = C4</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-type">NoteReading</span>(name: name, octave: octave, midi: nearest,
+                           cents: cents, frequency: frequency)
+    }
+
+    <span class="hljs-comment">/// Signed distance in cents from `frequency` to a specific target.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">cents</span>(<span class="hljs-params">from</span> <span class="hljs-params">frequency</span>: <span class="hljs-type">Double</span>, <span class="hljs-params">to</span> <span class="hljs-params">target</span>: <span class="hljs-type">Double</span>) -&gt; <span class="hljs-type">Double</span> {
+        <span class="hljs-number">1200</span> <span class="hljs-operator">*</span> log2(frequency <span class="hljs-operator">/</span> target)
+    }
+}
+
+<span class="hljs-comment">// 110 Hz → A2, 0 cents. 82.41 Hz → E2, ≈ 0 cents.</span>
+</code></pre>
+<p>Let users change the reference pitch (<code>a4</code>). Some orchestras and recordings use 442 Hz or 432 Hz, and it's one parameter.</p>
+<hr>
+<h2 id="6-smoothing-a-calm-needle-thats-still-responsive" tabindex="-1"><a class="observablehq-header-anchor" href="#6-smoothing-a-calm-needle-thats-still-responsive">6. Smoothing: a calm needle that's still responsive</a></h2>
+<p>Raw readings jitter by a few cents from frame to frame, and the pluck's attack is noisy. Two layers of smoothing fix most of it:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">ReadingSmoother</span> {
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> recent: [<span class="hljs-type">Double</span>] <span class="hljs-operator">=</span> []
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> displayed: <span class="hljs-type">Double</span>?
+    <span class="hljs-keyword">var</span> historySize <span class="hljs-operator">=</span> <span class="hljs-number">5</span>
+    <span class="hljs-keyword">var</span> alpha <span class="hljs-operator">=</span> <span class="hljs-number">0.35</span>                     <span class="hljs-comment">// 0 = frozen, 1 = no smoothing</span>
+
+    <span class="hljs-keyword">mutating</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">push</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">frequency</span>: <span class="hljs-type">Double</span>?) -&gt; <span class="hljs-type">Double</span>? {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> f <span class="hljs-operator">=</span> frequency <span class="hljs-keyword">else</span> {
+            recent.removeAll()           <span class="hljs-comment">// silence: reset so the next note starts clean</span>
+            displayed <span class="hljs-operator">=</span> <span class="hljs-literal">nil</span>
+            <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span>
+        }
+        <span class="hljs-comment">// Jumped more than ~a semitone? Treat it as a new note, not noise.</span>
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> d <span class="hljs-operator">=</span> displayed, <span class="hljs-built_in">abs</span>(<span class="hljs-type">NoteMath</span>.cents(from: f, to: d)) <span class="hljs-operator">&gt;</span> <span class="hljs-number">80</span> {
+            recent.removeAll(); displayed <span class="hljs-operator">=</span> <span class="hljs-literal">nil</span>
+        }
+        recent.append(f)
+        <span class="hljs-keyword">if</span> recent.count <span class="hljs-operator">&gt;</span> historySize { recent.removeFirst() }
+
+        <span class="hljs-comment">// 1. Median rejects single-frame outliers (octave slips, transients).</span>
+        <span class="hljs-keyword">let</span> median <span class="hljs-operator">=</span> recent.sorted()[recent.count <span class="hljs-operator">/</span> <span class="hljs-number">2</span>]
+        <span class="hljs-comment">// 2. Exponential smoothing for a calm needle.</span>
+        <span class="hljs-keyword">let</span> next <span class="hljs-operator">=</span> displayed.map { <span class="hljs-variable">$0</span> <span class="hljs-operator">+</span> alpha <span class="hljs-operator">*</span> (median <span class="hljs-operator">-</span> <span class="hljs-variable">$0</span>) } <span class="hljs-operator">??</span> median
+        displayed <span class="hljs-operator">=</span> next
+        <span class="hljs-keyword">return</span> next
+    }
+}
+</code></pre>
+<p>The median handles <em>outliers</em>; the exponential average handles <em>jitter</em>. Resetting on a big jump keeps the tuner responsive when you move to the next string.</p>
+<p>Then drive the UI with an animation that's slightly slower than your reading rate, for example <code>.animation(.easeOut(duration: 0.12), value: cents)</code>, and the needle glides instead of stepping.</p>
+<hr>
+<h2 id="7-tuning-presets-auto-mode-and-colour-feedback" tabindex="-1"><a class="observablehq-header-anchor" href="#7-tuning-presets-auto-mode-and-colour-feedback">7. Tuning presets, Auto Mode and colour feedback</a></h2>
+<p>A preset is just a list of target frequencies. Using MIDI numbers keeps them exact:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">TuningPreset</span>: <span class="hljs-title class_ inherited__">Identifiable</span> {
+    <span class="hljs-keyword">let</span> id: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">let</span> name: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">let</span> strings: [<span class="hljs-type">Int</span>]          <span class="hljs-comment">// MIDI notes, low to high</span>
+    <span class="hljs-keyword">var</span> frequencies: [<span class="hljs-type">Double</span>] { strings.map { <span class="hljs-type">NoteMath</span>.frequency(forMidi: <span class="hljs-variable">$0</span>) } }
+}
+
+<span class="hljs-keyword">extension</span> <span class="hljs-title class_">TuningPreset</span> {
+    <span class="hljs-comment">// E2 A2 D3 G3 B3 E4</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> guitarStandard <span class="hljs-operator">=</span> <span class="hljs-type">TuningPreset</span>(id: <span class="hljs-string">"g-std"</span>, name: <span class="hljs-string">"E Standard"</span>,
+                                             strings: [<span class="hljs-number">40</span>, <span class="hljs-number">45</span>, <span class="hljs-number">50</span>, <span class="hljs-number">55</span>, <span class="hljs-number">59</span>, <span class="hljs-number">64</span>])
+    <span class="hljs-comment">// D2 A2 D3 G3 B3 E4</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> guitarDropD <span class="hljs-operator">=</span> <span class="hljs-type">TuningPreset</span>(id: <span class="hljs-string">"g-dropd"</span>, name: <span class="hljs-string">"Drop D"</span>,
+                                          strings: [<span class="hljs-number">38</span>, <span class="hljs-number">45</span>, <span class="hljs-number">50</span>, <span class="hljs-number">55</span>, <span class="hljs-number">59</span>, <span class="hljs-number">64</span>])
+    <span class="hljs-comment">// E1 A1 D2 G2</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> bassStandard <span class="hljs-operator">=</span> <span class="hljs-type">TuningPreset</span>(id: <span class="hljs-string">"b-std"</span>, name: <span class="hljs-string">"Bass E Standard"</span>,
+                                           strings: [<span class="hljs-number">28</span>, <span class="hljs-number">33</span>, <span class="hljs-number">38</span>, <span class="hljs-number">43</span>])
+}
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">TuneState</span> { <span class="hljs-keyword">case</span> inTune, close, adjust }
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">StringMatch</span> {
+    <span class="hljs-keyword">let</span> index: <span class="hljs-type">Int</span>
+    <span class="hljs-keyword">let</span> target: <span class="hljs-type">Double</span>
+    <span class="hljs-keyword">let</span> cents: <span class="hljs-type">Double</span>
+    <span class="hljs-keyword">var</span> state: <span class="hljs-type">TuneState</span> {
+        <span class="hljs-keyword">switch</span> <span class="hljs-built_in">abs</span>(cents) {
+        <span class="hljs-keyword">case</span> <span class="hljs-operator">..&lt;</span><span class="hljs-number">5</span>:  <span class="hljs-keyword">return</span> .inTune
+        <span class="hljs-keyword">case</span> <span class="hljs-operator">..&lt;</span><span class="hljs-number">15</span>: <span class="hljs-keyword">return</span> .close
+        <span class="hljs-keyword">default</span>:    <span class="hljs-keyword">return</span> .adjust
+        }
+    }
+}
+
+<span class="hljs-comment">/// Auto Mode: pick the string whose target is nearest, in cents.</span>
+<span class="hljs-keyword">func</span> <span class="hljs-title function_">autoMatch</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">frequency</span>: <span class="hljs-type">Double</span>, <span class="hljs-params">in</span> <span class="hljs-params">preset</span>: <span class="hljs-type">TuningPreset</span>) -&gt; <span class="hljs-type">StringMatch</span>? {
+    preset.frequencies.enumerated()
+        .map { <span class="hljs-type">StringMatch</span>(index: <span class="hljs-variable">$0</span>.offset, target: <span class="hljs-variable">$0</span>.element,
+                           cents: <span class="hljs-type">NoteMath</span>.cents(from: frequency, to: <span class="hljs-variable">$0</span>.element)) }
+        .min { <span class="hljs-built_in">abs</span>(<span class="hljs-variable">$0</span>.cents) <span class="hljs-operator">&lt;</span> <span class="hljs-built_in">abs</span>(<span class="hljs-variable">$1</span>.cents) }
+}
+</code></pre>
+<p>Measuring "nearest" in <strong>cents</strong>, not Hz, is what makes Auto Mode work: 5 Hz is a huge interval on the low E and a tiny one on the high E.</p>
+<p>The ±5 / ±15 cent bands are my choice, not a standard. Around five cents is often cited as the point where most listeners stop noticing a difference in a single sustained note. Map <code>.inTune</code>, <code>.close</code> and <code>.adjust</code> to your colour scheme, and add an <code>accessibilityValue</code> like "A2, 3 cents sharp" so the tuner also works with VoiceOver.</p>
+<hr>
+<h2 id="8-real-world-example-guitar-tuner-chromatic" tabindex="-1"><a class="observablehq-header-anchor" href="#8-real-world-example-guitar-tuner-chromatic">8. Real-world example: Guitar Tuner: Chromatic</a></h2>
+<p>This is the approach I'd use, and recommend, for a tuner like <strong><a href="https://apps.apple.com/us/app/guitar-tuner-chromatic/id1518293355" target="_blank" rel="noopener noreferrer">Guitar Tuner: Chromatic</a></strong>.</p>
+<p><img src="https://bestlatestapps.com/assets/blog/building-a-chromatic-guitar-tuner-on-ios/guitar-tuner-screenshot-1.jpg" alt="Guitar Tuner App Store screenshot 1"></p>
+<p>At the time of writing, its App Store listing shows:</p>
+<ul>
+<li><strong>Free</strong>, in <strong>Music</strong> and <strong>Utilities</strong>, with an optional Premium tier</li>
+<li>First released in <strong>June 2020</strong></li>
+<li><strong>28 ratings</strong> in the US store, averaging about <strong>4.1 stars</strong></li>
+<li>Supports <strong>iOS 16.0 and later</strong></li>
+</ul>
+<p>How the listing maps to the sections above:</p>
+<table>
+<thead>
+<tr>
+<th>What the listing says</th>
+<th>Where it's covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Real-time pitch detection… accurate to the cent, with no cables or extra hardware"</td>
+<td>Measurement-mode session, input tap, autocorrelation with interpolation (sections 2–4)</td>
+</tr>
+<tr>
+<td>"Chromatic tuner with live Hz display"</td>
+<td>Hz → note and cents (section 5)</td>
+</tr>
+<tr>
+<td>"Color-coded feedback (blue = in tune, yellow = close, red = adjust)"</td>
+<td>Three-state cents bands (section 7)</td>
+</tr>
+<tr>
+<td>"Auto Mode detects the string you're playing automatically"</td>
+<td>Nearest target in cents (section 7)</td>
+</tr>
+<tr>
+<td>"15 tuning presets: Standard, Drop-D, Drop-C, Drop-B, Open-G, Open-D, Open-C, and more" / "Guitar (6-string) and Bass (4-string) modes"</td>
+<td>Presets as MIDI note lists (section 7)</td>
+</tr>
+<tr>
+<td>"Pluck a string near your iPhone microphone"</td>
+<td>The noise gate and windowing realities (sections 3–4)</td>
+</tr>
+</tbody>
+</table>
+<p><img src="https://bestlatestapps.com/assets/blog/building-a-chromatic-guitar-tuner-on-ios/guitar-tuner-screenshot-2.jpg" alt="Guitar Tuner App Store screenshot 2"></p>
+<p>The listing is also clear about the business model: E-Standard, D-Standard and D♯-Standard tunings are free for guitar and bass, while Premium unlocks all 15 presets, Auto Mode and an ad-free experience. Because a preset is just data, the free/premium split costs almost no code: filter the preset list by entitlement.</p>
+<hr>
+<h2 id="9-before-you-ship-a-tuner-a-checklist" tabindex="-1"><a class="observablehq-header-anchor" href="#9-before-you-ship-a-tuner-a-checklist">9. Before you ship a tuner: a checklist</a></h2>
+<ol>
+<li><strong>Test with real instruments, not just a tone generator.</strong> Sine waves are easy; a plucked low E with a strong second harmonic is the real test.</li>
+<li><strong>Check the extremes.</strong> The bass low E (≈ 41 Hz), any drop tunings you offer, and the guitar high E's upper frets.</li>
+<li><strong>Use the measurement mode.</strong> <code>.measurement</code> avoids system processing colouring the signal.</li>
+<li><strong>Tune the noise gate on several devices</strong>, in a quiet room and a noisy one.</li>
+<li><strong>Interpolate the peak.</strong> Without sub-sample accuracy, readings jump in multi-cent steps on higher notes.</li>
+<li><strong>Smooth, but reset.</strong> Use a median plus an exponential average, and reset on silence and on a big jump.</li>
+<li><strong>Measure "nearest string" in cents</strong>, never in Hz.</li>
+<li><strong>Release the mic when you're not tuning.</strong> Stop the engine, remove the tap and deactivate the session when the screen goes away or the app backgrounds.</li>
+<li><strong>Plan for iOS 27's tap API.</strong> Wrap the tap in one place, so moving to <code>installAudioTap</code> is a one-file change.</li>
+</ol>
+<hr>
+<h2 id="wrapping-up" tabindex="-1"><a class="observablehq-header-anchor" href="#wrapping-up">Wrapping up</a></h2>
+<p>A good tuner is a small pipeline done carefully: a measurement-mode session, a tap feeding a rolling window, autocorrelation with interpolation, clean note maths, and smoothing that knows when to let go. Accelerate does the heavy lifting in a handful of <code>vDSP</code> calls, and SwiftUI does the rest.</p>
+<p>Try the app, or see the rest of my work:</p>
+<ul>
+<li><strong>Guitar Tuner: Chromatic (iOS):</strong> <a href="https://apps.apple.com/us/app/guitar-tuner-chromatic/id1518293355" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/guitar-tuner-chromatic/id1518293355</a></li>
+<li><strong>All of my free iOS apps:</strong> <a href="https://apps.apple.com/us/developer/alok-singh/id1508795536" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/developer/alok-singh/id1508795536</a></li>
+<li><strong>My portfolio:</strong> <a href="https://bestlatestapps.com/alok/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/alok/</a></li>
+</ul>
+<p>If you've built pitch detection and preferred YIN, the McLeod method or a neural approach, I'd love to hear how it compared in the comments.</p>
+<p><em>— Alok Kumar Singh</em></p>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/building-a-chromatic-guitar-tuner-on-ios/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/building-a-chromatic-guitar-tuner-on-ios/</a></em></p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./building-a-hashtag-copier-for-ios"><span>Building a Hashtag Copier for iOS</span></a><a rel="next" href="./animating-algorithms-in-swiftui"><span>Animating Algorithms in SwiftUI</span></a></nav>
+<div>Articles by Alok Kumar Singh. Originals at <a href="https://bestlatestapps.com/blog/" target="_blank" rel="noopener noreferrer">bestlatestapps.com/blog</a>.</div>
+</footer>
+</div>
+</body>
+</html>

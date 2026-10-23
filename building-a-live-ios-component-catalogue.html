@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>Building a Live iOS Component Catalogue: UIKit and SwiftUI Side by Side, Real Demos, and Code Snippets That Don&#x27;t Rot | Alok Singh, App Dev Notes</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="modulepreload" href="./_observablehq/client.097df403.js">
+<link rel="modulepreload" href="./_observablehq/runtime.fa9f71c0.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.60afab10.js">
+<link rel="canonical" href="https://bestlatestapps.com/blog/building-a-live-ios-component-catalogue/"><meta name="description" content="One registry for every component, hosting UIKit inside SwiftUI with UIViewRepresentable, wrapping the system pickers, comparing UIKit and SwiftUI versions…">
+<script type="module">
+
+import "./_observablehq/client.097df403.js";
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Alok Singh, App Dev Notes</a></li>
+  </ol>
+  <div id="observablehq-search"><input type="search" placeholder="Search"></div>
+  <div id="observablehq-search-results"></div>
+  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.755d897f.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
+  <ol>
+    <li class="observablehq-link"><a href="./tic-tac-toe-in-swiftui-done-properly">Tic Tac Toe in SwiftUI, Done Properly</a></li>
+    <li class="observablehq-link"><a href="./the-sending-side-of-apns">The Sending Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./the-device-side-of-apns">The Device Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./text-plus-audio-fully-offline">Text Plus Audio, Fully Offline</a></li>
+    <li class="observablehq-link"><a href="./stop-hand-rolling-unit-conversions">Stop Hand-Rolling Unit Conversions</a></li>
+    <li class="observablehq-link"><a href="./shipping-a-4k-wallpaper-app-without-running-out-of-memory">Shipping a 4K Wallpaper App Without Running Out of Memory</a></li>
+    <li class="observablehq-link"><a href="./medication-reminders-that-actually-fire">Medication Reminders That Actually Fire</a></li>
+    <li class="observablehq-link"><a href="./from-barcode-to-pdf">From Barcode to PDF</a></li>
+    <li class="observablehq-link"><a href="./drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game">Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game,</a></li>
+    <li class="observablehq-link"><a href="./convert-as-you-type-currency-conversion-in-swift">Convert-As-You-Type Currency Conversion in Swift</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-first-bible-reader-on-ios">Building an Offline-First Bible Reader on iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-ebook-reader-for-ios">Building an Offline eBook Reader for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-quotes-app-in-swiftui">Building an Offline Quotes App in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-an-admob-earnings-dashboard-for-ios">Building an AdMob Earnings Dashboard for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-tap-to-match-marble-game-with-spritekit-and-swiftui">Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine">Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine</a></li>
+    <li class="observablehq-link"><a href="./building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe">Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioE</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./building-a-live-ios-component-catalogue">Building a Live iOS Component Catalogue</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-temple-darshan-app-for-ios">Building a Live Temple Darshan App for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-hashtag-copier-for-ios">Building a Hashtag Copier for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-chromatic-guitar-tuner-on-ios">Building a Chromatic Guitar Tuner on iOS</a></li>
+    <li class="observablehq-link"><a href="./animating-algorithms-in-swiftui">Animating Algorithms in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./a-practical-guide-to-ios-haptics">A Practical Guide to iOS Haptics</a></li>
+    <li class="observablehq-link"><a href="./a-document-scanner-in-an-afternoon">A Document Scanner in an Afternoon</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#1-one-registry-to-rule-them-all">1. One registry to rule them all</a></li>
+<li class="observablehq-secondary-link"><a href="#2-hosting-ui-kit-demos-in-a-swift-ui-shell">2. Hosting UIKit demos in a SwiftUI shell</a></li>
+<li class="observablehq-secondary-link"><a href="#3-ui-kit-and-swift-ui-side-by-side">3. UIKit and SwiftUI, side by side</a></li>
+<li class="observablehq-secondary-link"><a href="#4-the-pickers-are-view-controllers-so-wrap-them-properly">4. The pickers are view controllers, so wrap them properly</a></li>
+<li class="observablehq-secondary-link"><a href="#5-code-snippets-that-dont-rot">5. Code snippets that don&#x27;t rot</a></li>
+<li class="observablehq-secondary-link"><a href="#6-tags-search-favourites-and-recently-viewed">6. Tags, search, favourites and recently viewed</a></li>
+<li class="observablehq-secondary-link"><a href="#7-the-interesting-new-entry-web-view">7. The interesting new entry: WebView</a></li>
+<li class="observablehq-secondary-link"><a href="#8-real-world-example-catalog-ui">8. Real-world example: Catalog - UI</a></li>
+<li class="observablehq-secondary-link"><a href="#9-before-you-ship-a-reference-or-catalogue-app-a-checklist">9. Before you ship a reference or catalogue app: a checklist</a></li>
+<li class="observablehq-secondary-link"><a href="#wrapping-up">Wrapping up</a></li>
+</ol>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="building-a-live-i-os-component-catalogue-ui-kit-and-swift-ui-side-by-side-real-demos-and-code-snippets-that-dont-rot" tabindex="-1"><a class="observablehq-header-anchor" href="#building-a-live-i-os-component-catalogue-ui-kit-and-swift-ui-side-by-side-real-demos-and-code-snippets-that-dont-rot">Building a Live iOS Component Catalogue: UIKit and SwiftUI Side by Side, Real Demos, and Code Snippets That Don't Rot</a></h1>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/building-a-live-ios-component-catalogue/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/building-a-live-ios-component-catalogue/</a></em></p>
+<p><em>One registry for every component, hosting UIKit inside SwiftUI with UIViewRepresentable, wrapping the system pickers, comparing UIKit and SwiftUI versions on one screen, tag filters, search, favourites and recently viewed, and keeping copyable snippets honest</em></p>
+<p><img src="https://bestlatestapps.com/assets/blog/building-a-live-ios-component-catalogue/catalog-ui-icon-512.jpg" alt="Catalog"></p>
+<p>Every iOS developer has done this: you need a segmented control, or a date picker in compact style, or a blurred toolbar, and you can't remember exactly how it looks or what the defaults are. So you open a scratch project, type the code, run the simulator and squint. Then you do it again a month later for a different control.</p>
+<p><strong>Catalog - UI</strong> is my answer to that loop: a reference app where you can browse and try iOS UI components in one place. It includes controls, pickers and views in UIKit, parallel demos for key SwiftUI components, live demos, copyable code snippets, tag filters, search, favourites and recently viewed, and no account.</p>
+<p>A catalogue app is also a surprisingly good architecture exercise. You need a data model that scales to dozens of components, a way to host UIKit views inside SwiftUI (or the other way round), wrappers for the system pickers that are really view controllers, and a way to make sure the code you let people copy actually matches what the demo does. This article covers how I'd build each of those, with APIs checked against Apple's documentation.</p>
+<hr>
+<h2 id="1-one-registry-to-rule-them-all" tabindex="-1"><a class="observablehq-header-anchor" href="#1-one-registry-to-rule-them-all">1. One registry to rule them all</a></h2>
+<p>The catalogue is driven by data, not by a giant switch statement. Each component is one value that knows its name, its tags, how to build its demos and what code to show:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> SwiftUI
+<span class="hljs-keyword">import</span> UIKit
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">CatalogTag</span>: <span class="hljs-title class_ inherited__">String</span>, <span class="hljs-title class_ inherited__">CaseIterable</span>, <span class="hljs-title class_ inherited__">Codable</span> {
+    <span class="hljs-keyword">case</span> uiKit <span class="hljs-operator">=</span> <span class="hljs-string">"UIKit"</span>, controls <span class="hljs-operator">=</span> <span class="hljs-string">"Controls"</span>, views <span class="hljs-operator">=</span> <span class="hljs-string">"Views"</span>, pickers <span class="hljs-operator">=</span> <span class="hljs-string">"Pickers"</span>, swiftUI <span class="hljs-operator">=</span> <span class="hljs-string">"SwiftUI"</span>
+}
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">CatalogItem</span>: <span class="hljs-title class_ inherited__">Identifiable</span> {
+    <span class="hljs-keyword">let</span> id: <span class="hljs-type">String</span>                              <span class="hljs-comment">// stable: "slider", "date-picker"</span>
+    <span class="hljs-keyword">let</span> title: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">let</span> summary: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">let</span> tags: <span class="hljs-type">Set</span>&lt;<span class="hljs-type">CatalogTag</span>&gt;
+    <span class="hljs-keyword">let</span> uiKitDemo: (() -&gt; <span class="hljs-type">UIView</span>)<span class="hljs-operator">?</span>              <span class="hljs-comment">// nil if SwiftUI-only</span>
+    <span class="hljs-keyword">let</span> swiftUIDemo: (() -&gt; <span class="hljs-type">AnyView</span>)<span class="hljs-operator">?</span>           <span class="hljs-comment">// nil if UIKit-only</span>
+    <span class="hljs-keyword">let</span> snippetFiles: [<span class="hljs-type">String</span>]                  <span class="hljs-comment">// resource names, e.g. ["Slider.UIKit", "Slider.SwiftUI"]</span>
+}
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">Catalog</span> {
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> all: [<span class="hljs-type">CatalogItem</span>] <span class="hljs-operator">=</span> [
+        <span class="hljs-type">CatalogItem</span>(
+            id: <span class="hljs-string">"slider"</span>, title: <span class="hljs-string">"Slider"</span>,
+            summary: <span class="hljs-string">"Choose a value from a continuous range."</span>,
+            tags: [.uiKit, .controls, .swiftUI],
+            uiKitDemo: {
+                <span class="hljs-keyword">let</span> slider <span class="hljs-operator">=</span> <span class="hljs-type">UISlider</span>()
+                slider.minimumValue <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; slider.maximumValue <span class="hljs-operator">=</span> <span class="hljs-number">100</span>; slider.value <span class="hljs-operator">=</span> <span class="hljs-number">40</span>
+                slider.minimumTrackTintColor <span class="hljs-operator">=</span> .systemIndigo
+                <span class="hljs-keyword">return</span> slider
+            },
+            swiftUIDemo: { <span class="hljs-type">AnyView</span>(<span class="hljs-type">SliderDemo</span>()) },
+            snippetFiles: [<span class="hljs-string">"Slider.UIKit"</span>, <span class="hljs-string">"Slider.SwiftUI"</span>]
+        ),
+        <span class="hljs-comment">// … buttons, menus, segmented controls, switches, steppers, text fields, search bars …</span>
+    ]
+}
+
+<span class="hljs-keyword">private</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">SliderDemo</span>: <span class="hljs-title class_ inherited__">View</span> {
+    <span class="hljs-meta">@State</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> value <span class="hljs-operator">=</span> <span class="hljs-number">40.0</span>
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">View</span> {
+        <span class="hljs-type">Slider</span>(value: <span class="hljs-variable">$value</span>, in: <span class="hljs-number">0</span><span class="hljs-operator">...</span><span class="hljs-number">100</span>) { <span class="hljs-type">Text</span>(<span class="hljs-string">"Value"</span>) }.tint(.indigo)
+    }
+}
+</code></pre>
+<p>Adding a component is now one entry, and every screen (list, search, favourites, detail) works from this one array. The <code>uiKitDemo</code> and <code>swiftUIDemo</code> closures keep construction lazy, so nothing is built until you open it.</p>
+<hr>
+<h2 id="2-hosting-ui-kit-demos-in-a-swift-ui-shell" tabindex="-1"><a class="observablehq-header-anchor" href="#2-hosting-ui-kit-demos-in-a-swift-ui-shell">2. Hosting UIKit demos in a SwiftUI shell</a></h2>
+<p>I'd write the shell (navigation, lists, search) in SwiftUI and host UIKit demos inside it. <code>UIViewRepresentable</code> (iOS 13+) does the bridging, and iOS 16's <code>sizeThatFits(_:uiView:context:)</code> finally lets a UIKit view tell SwiftUI how big it wants to be:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> SwiftUI
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">UIKitDemoHost</span>: <span class="hljs-title class_ inherited__">UIViewRepresentable</span> {
+    <span class="hljs-keyword">let</span> make: () -&gt; <span class="hljs-type">UIView</span>
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">makeUIView</span>(<span class="hljs-params">context</span>: <span class="hljs-type">Context</span>) -&gt; <span class="hljs-type">UIView</span> { make() }
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">updateUIView</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">uiView</span>: <span class="hljs-type">UIView</span>, <span class="hljs-params">context</span>: <span class="hljs-type">Context</span>) {}
+
+    <span class="hljs-comment">// iOS 16+: respect the width SwiftUI offers, and use the view's own fitting height.</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">sizeThatFits</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">proposal</span>: <span class="hljs-type">ProposedViewSize</span>, <span class="hljs-params">uiView</span>: <span class="hljs-type">UIView</span>, <span class="hljs-params">context</span>: <span class="hljs-type">Context</span>) -&gt; <span class="hljs-type">CGSize</span>? {
+        <span class="hljs-keyword">let</span> width <span class="hljs-operator">=</span> proposal.width <span class="hljs-operator">??</span> <span class="hljs-type">UIView</span>.layoutFittingExpandedSize.width
+        <span class="hljs-keyword">let</span> fitted <span class="hljs-operator">=</span> uiView.systemLayoutSizeFitting(
+            <span class="hljs-type">CGSize</span>(width: width, height: <span class="hljs-type">UIView</span>.layoutFittingCompressedSize.height),
+            withHorizontalFittingPriority: .required,
+            verticalFittingPriority: .fittingSizeLevel)
+        <span class="hljs-keyword">return</span> <span class="hljs-type">CGSize</span>(width: width, height: <span class="hljs-built_in">max</span>(fitted.height, uiView.intrinsicContentSize.height))
+    }
+}
+</code></pre>
+<p>Without <code>sizeThatFits</code>, many UIKit controls inside SwiftUI either collapse to zero height or stretch to fill everything. It's the most common "why does my bridged view look wrong" bug, and a catalogue shows it on every screen.</p>
+<p>If your shell is UIKit instead, the mirror image is <code>UIHostingController</code> (iOS 13+) for embedding the SwiftUI demos. Both directions are first-class.</p>
+<hr>
+<h2 id="3-ui-kit-and-swift-ui-side-by-side" tabindex="-1"><a class="observablehq-header-anchor" href="#3-ui-kit-and-swift-ui-side-by-side">3. UIKit and SwiftUI, side by side</a></h2>
+<p>"Compare UIKit and SwiftUI side by side" is the feature I use most myself. With the registry and host in place, the detail screen is a simple two-up layout with labelled panes:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">ComponentDetail</span>: <span class="hljs-title class_ inherited__">View</span> {
+    <span class="hljs-keyword">let</span> item: <span class="hljs-type">CatalogItem</span>
+    <span class="hljs-meta">@State</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> showCode <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>
+
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">View</span> {
+        <span class="hljs-type">ScrollView</span> {
+            <span class="hljs-type">VStack</span>(alignment: .leading, spacing: <span class="hljs-number">24</span>) {
+                <span class="hljs-type">Text</span>(item.summary).foregroundStyle(.secondary)
+
+                <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> uiKit <span class="hljs-operator">=</span> item.uiKitDemo {
+                    <span class="hljs-type">DemoPane</span>(title: <span class="hljs-string">"UIKit"</span>) { <span class="hljs-type">UIKitDemoHost</span>(make: uiKit) }
+                }
+                <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> swiftUI <span class="hljs-operator">=</span> item.swiftUIDemo {
+                    <span class="hljs-type">DemoPane</span>(title: <span class="hljs-string">"SwiftUI"</span>) { swiftUI() }
+                }
+                <span class="hljs-type">Button</span>(<span class="hljs-string">"View code"</span>) { showCode <span class="hljs-operator">=</span> <span class="hljs-literal">true</span> }.buttonStyle(.bordered)
+            }
+            .padding()
+        }
+        .navigationTitle(item.title)
+        .sheet(isPresented: <span class="hljs-variable">$showCode</span>) { <span class="hljs-type">SnippetSheet</span>(files: item.snippetFiles) }
+        .onAppear { <span class="hljs-type">RecentlyViewed</span>.shared.record(item.id) }
+    }
+}
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">DemoPane</span>&lt;<span class="hljs-type">Content</span>: <span class="hljs-type">View</span>&gt;: <span class="hljs-title class_ inherited__">View</span> {
+    <span class="hljs-keyword">let</span> title: <span class="hljs-type">String</span>
+    <span class="hljs-meta">@ViewBuilder</span> <span class="hljs-keyword">var</span> content: <span class="hljs-type">Content</span>
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">View</span> {
+        <span class="hljs-type">VStack</span>(alignment: .leading, spacing: <span class="hljs-number">8</span>) {
+            <span class="hljs-type">Text</span>(title).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+            content
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(.background.secondary, in: .rect(cornerRadius: <span class="hljs-number">12</span>))
+        }
+    }
+}
+</code></pre>
+<p>Seeing them together teaches things documentation doesn't. A SwiftUI <code>Slider</code> picks up the accent colour, while <code>UISlider</code> has its own tint properties. And SwiftUI's <code>Toggle</code> and UIKit's <code>UISwitch</code> look the same, but they differ in how labels and accessibility are attached.</p>
+<hr>
+<h2 id="4-the-pickers-are-view-controllers-so-wrap-them-properly" tabindex="-1"><a class="observablehq-header-anchor" href="#4-the-pickers-are-view-controllers-so-wrap-them-properly">4. The pickers are view controllers, so wrap them properly</a></h2>
+<p>Colour, font and image pickers in UIKit aren't views; they're view controllers with delegates. <code>UIColorPickerViewController</code> (iOS 14), <code>UIFontPickerViewController</code> (iOS 13) and <code>PHPickerViewController</code> (iOS 14) all follow the same wrapping pattern, <code>UIViewControllerRepresentable</code> plus a coordinator:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> SwiftUI
+<span class="hljs-keyword">import</span> UIKit
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">UIKitColorPicker</span>: <span class="hljs-title class_ inherited__">UIViewControllerRepresentable</span> {
+    <span class="hljs-meta">@Binding</span> <span class="hljs-keyword">var</span> color: <span class="hljs-type">Color</span>
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">makeUIViewController</span>(<span class="hljs-params">context</span>: <span class="hljs-type">Context</span>) -&gt; <span class="hljs-type">UIColorPickerViewController</span> {
+        <span class="hljs-keyword">let</span> picker <span class="hljs-operator">=</span> <span class="hljs-type">UIColorPickerViewController</span>()
+        picker.supportsAlpha <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>
+        picker.delegate <span class="hljs-operator">=</span> context.coordinator
+        <span class="hljs-keyword">return</span> picker
+    }
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">updateUIViewController</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">vc</span>: <span class="hljs-type">UIColorPickerViewController</span>, <span class="hljs-params">context</span>: <span class="hljs-type">Context</span>) {
+        vc.selectedColor <span class="hljs-operator">=</span> <span class="hljs-type">UIColor</span>(color)
+    }
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">makeCoordinator</span>() -&gt; <span class="hljs-type">Coordinator</span> { <span class="hljs-type">Coordinator</span>(<span class="hljs-keyword">self</span>) }
+
+    <span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Coordinator</span>: <span class="hljs-title class_ inherited__">NSObject</span>, <span class="hljs-title class_ inherited__">UIColorPickerViewControllerDelegate</span> {
+        <span class="hljs-keyword">let</span> parent: <span class="hljs-type">UIKitColorPicker</span>
+        <span class="hljs-keyword">init</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">parent</span>: <span class="hljs-type">UIKitColorPicker</span>) { <span class="hljs-keyword">self</span>.parent <span class="hljs-operator">=</span> parent }
+
+        <span class="hljs-comment">// Called repeatedly while dragging (continuously == true) and once at the end.</span>
+        <span class="hljs-keyword">func</span> <span class="hljs-title function_">colorPickerViewController</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">vc</span>: <span class="hljs-type">UIColorPickerViewController</span>,
+                                       <span class="hljs-params">didSelect</span> <span class="hljs-params">color</span>: <span class="hljs-type">UIColor</span>, <span class="hljs-params">continuously</span>: <span class="hljs-type">Bool</span>) {
+            parent.color <span class="hljs-operator">=</span> <span class="hljs-type">Color</span>(color)
+        }
+    }
+}
+</code></pre>
+<p>The SwiftUI parallel is one line, <code>ColorPicker("Tint", selection: $color)</code> (iOS 14), which makes the comparison instructive. The same goes for images: <code>PhotosPicker</code> (iOS 16, PhotosUI) on the SwiftUI side versus <code>PHPickerViewController</code> on the UIKit side. Both run out of process and need <strong>no photo-library permission prompt</strong>, which is a detail worth surfacing in a reference app, because developers still add <code>NSPhotoLibraryUsageDescription</code> "just in case".</p>
+<p>For the date picker demo, <code>preferredDatePickerStyle</code> (iOS 13.4) is the property to show off. <code>.compact</code>, <code>.inline</code> and <code>.wheels</code> are almost three different controls.</p>
+<hr>
+<h2 id="5-code-snippets-that-dont-rot" tabindex="-1"><a class="observablehq-header-anchor" href="#5-code-snippets-that-dont-rot">5. Code snippets that don't rot</a></h2>
+<p>A catalogue's worst failure is a snippet that doesn't match the demo, or doesn't compile. The approach I'd use is to <strong>make snippets real Swift files in the project</strong>, compiled as part of a build target, and load their text from the bundle at runtime:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-type">Snippets</span><span class="hljs-operator">/</span>
+  <span class="hljs-type">Slider</span>.<span class="hljs-type">UIKit</span>.swift        <span class="hljs-comment">// compiled in a "Snippets" target; also copied as a resource</span>
+  <span class="hljs-type">Slider</span>.<span class="hljs-type">SwiftUI</span>.swift
+</code></pre>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">SnippetSheet</span>: <span class="hljs-title class_ inherited__">View</span> {
+    <span class="hljs-keyword">let</span> files: [<span class="hljs-type">String</span>]
+    <span class="hljs-meta">@Environment</span>(\.dismiss) <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> dismiss
+
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">View</span> {
+        <span class="hljs-type">NavigationStack</span> {
+            <span class="hljs-type">List</span>(files, id: \.<span class="hljs-keyword">self</span>) { name <span class="hljs-keyword">in</span>
+                <span class="hljs-type">Section</span>(name.components(separatedBy: <span class="hljs-string">"."</span>).last <span class="hljs-operator">??</span> name) {
+                    <span class="hljs-keyword">let</span> code <span class="hljs-operator">=</span> <span class="hljs-keyword">Self</span>.load(name)
+                    <span class="hljs-type">Text</span>(code)
+                        .font(.system(.footnote, design: .monospaced))
+                        .textSelection(.enabled)
+                    <span class="hljs-type">Button</span>(<span class="hljs-string">"Copy"</span>) { <span class="hljs-type">UIPasteboard</span>.general.string <span class="hljs-operator">=</span> code }
+                }
+            }
+            .navigationTitle(<span class="hljs-string">"Code"</span>)
+            .toolbar { <span class="hljs-type">Button</span>(<span class="hljs-string">"Done"</span>) { dismiss() } }
+        }
+    }
+
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">load</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">name</span>: <span class="hljs-type">String</span>) -&gt; <span class="hljs-type">String</span> {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> url <span class="hljs-operator">=</span> <span class="hljs-type">Bundle</span>.main.url(forResource: name, withExtension: <span class="hljs-string">"swift.txt"</span>),
+              <span class="hljs-keyword">let</span> text <span class="hljs-operator">=</span> <span class="hljs-keyword">try?</span> <span class="hljs-type">String</span>(contentsOf: url, encoding: .utf8) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-string">"// Snippet missing"</span> }
+        <span class="hljs-keyword">return</span> text
+    }
+}
+</code></pre>
+<p>The build setup: the <code>.swift</code> files compile in a small framework target, so a broken snippet breaks the build. A Run Script phase copies them into the app bundle as <code>.swift.txt</code> resources. Then:</p>
+<ul>
+<li><strong>Every snippet compiles</strong>, because the build proves it on every change.</li>
+<li><strong>The demo can call the same code.</strong> The <code>uiKitDemo</code> closure can call a function defined in the snippet file, so what you see is literally what you copy.</li>
+<li><strong>A unit test can assert</strong> that every <code>CatalogItem</code> has its snippet files in the bundle.</li>
+</ul>
+<p>It's a little build plumbing for a lot of trust.</p>
+<hr>
+<h2 id="6-tags-search-favourites-and-recently-viewed" tabindex="-1"><a class="observablehq-header-anchor" href="#6-tags-search-favourites-and-recently-viewed">6. Tags, search, favourites and recently viewed</a></h2>
+<p>With everything in one registry, discovery features are a few lines each. Tags are a filter on a <code>Set</code>, search is a case-insensitive match, and favourites and recents are small ID lists in <code>@AppStorage</code>:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">CatalogList</span>: <span class="hljs-title class_ inherited__">View</span> {
+    <span class="hljs-meta">@State</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> query <span class="hljs-operator">=</span> <span class="hljs-string">""</span>
+    <span class="hljs-meta">@State</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> selectedTag: <span class="hljs-type">CatalogTag</span>?
+    <span class="hljs-meta">@AppStorage</span>(<span class="hljs-string">"favorites"</span>) <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> favoritesRaw <span class="hljs-operator">=</span> <span class="hljs-string">""</span>
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> favorites: <span class="hljs-type">Set</span>&lt;<span class="hljs-type">String</span>&gt; { <span class="hljs-type">Set</span>(favoritesRaw.split(separator: <span class="hljs-string">","</span>).map(<span class="hljs-type">String</span>.<span class="hljs-keyword">init</span>)) }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> results: [<span class="hljs-type">CatalogItem</span>] {
+        <span class="hljs-type">Catalog</span>.all.filter { item <span class="hljs-keyword">in</span>
+            (selectedTag.map { item.tags.contains(<span class="hljs-variable">$0</span>) } <span class="hljs-operator">??</span> <span class="hljs-literal">true</span>) <span class="hljs-operator">&amp;&amp;</span>
+            (query.isEmpty <span class="hljs-operator">||</span> item.title.localizedStandardContains(query))
+        }
+    }
+
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">View</span> {
+        <span class="hljs-type">NavigationStack</span> {
+            <span class="hljs-type">List</span>(results) { item <span class="hljs-keyword">in</span>
+                <span class="hljs-type">NavigationLink</span>(item.title) { <span class="hljs-type">ComponentDetail</span>(item: item) }
+                    .swipeActions { <span class="hljs-type">Button</span>(favorites.contains(item.id) <span class="hljs-operator">?</span> <span class="hljs-string">"Unfavorite"</span> : <span class="hljs-string">"Favorite"</span>) { toggle(item.id) } }
+            }
+            .searchable(text: <span class="hljs-variable">$query</span>, prompt: <span class="hljs-string">"Search components"</span>)
+            .toolbar {
+                <span class="hljs-type">Menu</span>(<span class="hljs-string">"Filter"</span>) {
+                    <span class="hljs-type">Button</span>(<span class="hljs-string">"All"</span>) { selectedTag <span class="hljs-operator">=</span> <span class="hljs-literal">nil</span> }
+                    <span class="hljs-type">ForEach</span>(<span class="hljs-type">CatalogTag</span>.allCases, id: \.<span class="hljs-keyword">self</span>) { tag <span class="hljs-keyword">in</span> <span class="hljs-type">Button</span>(tag.rawValue) { selectedTag <span class="hljs-operator">=</span> tag } }
+                }
+            }
+            .navigationTitle(<span class="hljs-string">"Catalog"</span>)
+        }
+    }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">toggle</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">id</span>: <span class="hljs-type">String</span>) {
+        <span class="hljs-keyword">var</span> <span class="hljs-keyword">set</span> <span class="hljs-operator">=</span> favorites
+        <span class="hljs-keyword">if</span> <span class="hljs-operator">!</span><span class="hljs-keyword">set</span>.insert(id).inserted { <span class="hljs-keyword">set</span>.remove(id) }
+        favoritesRaw <span class="hljs-operator">=</span> <span class="hljs-keyword">set</span>.sorted().joined(separator: <span class="hljs-string">","</span>)
+    }
+}
+
+<span class="hljs-meta">@MainActor</span>
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">RecentlyViewed</span> {
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> shared <span class="hljs-operator">=</span> <span class="hljs-type">RecentlyViewed</span>()
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> key <span class="hljs-operator">=</span> <span class="hljs-string">"recentlyViewed"</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">record</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">id</span>: <span class="hljs-type">String</span>) {
+        <span class="hljs-keyword">var</span> ids <span class="hljs-operator">=</span> <span class="hljs-type">UserDefaults</span>.standard.stringArray(forKey: key) <span class="hljs-operator">??</span> []
+        ids.removeAll { <span class="hljs-variable">$0</span> <span class="hljs-operator">==</span> id }
+        ids.insert(id, at: <span class="hljs-number">0</span>)
+        <span class="hljs-type">UserDefaults</span>.standard.set(<span class="hljs-type">Array</span>(ids.prefix(<span class="hljs-number">15</span>)), forKey: key)
+    }
+}
+</code></pre>
+<p>Storing <strong>IDs</strong>, not titles or indices, means renaming a component or reordering the catalogue never breaks anyone's favourites. And "no account required" is a natural result: everything here is local.</p>
+<hr>
+<h2 id="7-the-interesting-new-entry-web-view" tabindex="-1"><a class="observablehq-header-anchor" href="#7-the-interesting-new-entry-web-view">7. The interesting new entry: WebView</a></h2>
+<p>The listing includes WebView among its views, and that entry now has a genuinely new SwiftUI side. For years, web content in SwiftUI meant wrapping <code>WKWebView</code> (iOS 8) in a <code>UIViewRepresentable</code>. Apple's current documentation lists a native SwiftUI <strong><code>WebView</code></strong> and a <strong><code>WebPage</code></strong> model in WebKit, both <strong>iOS 26</strong>:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> SwiftUI
+<span class="hljs-keyword">import</span> WebKit
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">WebDemo</span>: <span class="hljs-title class_ inherited__">View</span> {
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">View</span> {
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">#available</span>(<span class="hljs-keyword">iOS</span> <span class="hljs-number">26</span>, <span class="hljs-operator">*</span>) {
+            <span class="hljs-type">WebView</span>(url: <span class="hljs-type">URL</span>(string: <span class="hljs-string">"https://developer.apple.com"</span>)<span class="hljs-operator">!</span>)   <span class="hljs-comment">// native SwiftUI (WebKit, iOS 26)</span>
+        } <span class="hljs-keyword">else</span> {
+            <span class="hljs-type">LegacyWebView</span>(url: <span class="hljs-type">URL</span>(string: <span class="hljs-string">"https://developer.apple.com"</span>)<span class="hljs-operator">!</span>)
+        }
+    }
+}
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">LegacyWebView</span>: <span class="hljs-title class_ inherited__">UIViewRepresentable</span> {
+    <span class="hljs-keyword">let</span> url: <span class="hljs-type">URL</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">makeUIView</span>(<span class="hljs-params">context</span>: <span class="hljs-type">Context</span>) -&gt; <span class="hljs-type">WKWebView</span> {
+        <span class="hljs-keyword">let</span> web <span class="hljs-operator">=</span> <span class="hljs-type">WKWebView</span>()
+        web.load(<span class="hljs-type">URLRequest</span>(url: url))
+        <span class="hljs-keyword">return</span> web
+    }
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">updateUIView</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">uiView</span>: <span class="hljs-type">WKWebView</span>, <span class="hljs-params">context</span>: <span class="hljs-type">Context</span>) {}
+}
+</code></pre>
+<p>This is exactly what a catalogue is for. The same component now has three entries worth comparing: UIKit <code>WKWebView</code>, the wrapped version, and the native SwiftUI view, each behind the right availability check.</p>
+<hr>
+<h2 id="8-real-world-example-catalog-ui" tabindex="-1"><a class="observablehq-header-anchor" href="#8-real-world-example-catalog-ui">8. Real-world example: Catalog - UI</a></h2>
+<p>This architecture comes from building <strong><a href="https://apps.apple.com/us/app/catalog-ui/id6446035510" target="_blank" rel="noopener noreferrer">Catalog - UI</a></strong>. The code above is the approach I'd use, written for this article, not a copy of the shipped source.</p>
+<p><img src="https://bestlatestapps.com/assets/blog/building-a-live-ios-component-catalogue/catalog-ui-screenshot-1.jpg" alt="Catalog"></p>
+<p>At the time of writing, its App Store listing shows:</p>
+<ul>
+<li><strong>Free</strong>, in <strong>Reference</strong> and <strong>Education</strong></li>
+<li>First released in <strong>March 2023</strong></li>
+<li><strong>2 ratings</strong> in the US store, averaging <strong>3 stars</strong></li>
+<li>Supports <strong>iOS 17.6 and later</strong></li>
+</ul>
+<p>How the listing maps to this article:</p>
+<table>
+<thead>
+<tr>
+<th>What the listing says</th>
+<th>Where it's covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Controls — Buttons, menus, segmented controls, sliders, switches…"</td>
+<td>The registry (section 1)</td>
+</tr>
+<tr>
+<td>"Tap any component to see a live demo"</td>
+<td>UIKit hosting with <code>sizeThatFits</code> (section 2)</td>
+</tr>
+<tr>
+<td>"Compare UIKit and SwiftUI side by side" / "Parallel demos for key SwiftUI components"</td>
+<td>Two-pane detail (section 3)</td>
+</tr>
+<tr>
+<td>"Pickers — Date picker, color picker, font picker, image picker, custom picker view"</td>
+<td>View-controller pickers wrapped with coordinators (section 4)</td>
+</tr>
+<tr>
+<td>"View code snippets and copy them into your project"</td>
+<td>Compiled snippet files (section 5)</td>
+</tr>
+<tr>
+<td>"Filter by tag…", "Search the full catalogue by name", "Favorites and… Recently Viewed"</td>
+<td>Discovery features (section 6)</td>
+</tr>
+<tr>
+<td>"Views — … visual effects, WebView"</td>
+<td><code>WKWebView</code> vs SwiftUI <code>WebView</code> (section 7)</td>
+</tr>
+</tbody>
+</table>
+<p><img src="https://bestlatestapps.com/assets/blog/building-a-live-ios-component-catalogue/catalog-ui-screenshot-2.jpg" alt="Catalog"></p>
+<p>The rating average comes from only two ratings, so it doesn't say much. For a reference app, the feedback that matters most is "this snippet didn't work", and that's exactly what section 5 is designed to prevent.</p>
+<hr>
+<h2 id="9-before-you-ship-a-reference-or-catalogue-app-a-checklist" tabindex="-1"><a class="observablehq-header-anchor" href="#9-before-you-ship-a-reference-or-catalogue-app-a-checklist">9. Before you ship a reference or catalogue app: a checklist</a></h2>
+<ol>
+<li><strong>One registry drives every screen.</strong> There's no per-component switch statements.</li>
+<li><strong>Bridged UIKit views size correctly.</strong> <code>sizeThatFits</code> is implemented and checked in Dynamic Type sizes.</li>
+<li><strong>Pickers use coordinators</strong> and report continuous changes where the API offers them.</li>
+<li><strong>Snippets compile in CI</strong>, and a test checks every item has its snippet.</li>
+<li><strong>Availability is explicit.</strong> iOS 26-only demos (like SwiftUI <code>WebView</code>) are gated and labelled.</li>
+<li><strong>Favourites and recents store IDs</strong>, capped in size.</li>
+<li><strong>Every demo works in Dark Mode, at large text sizes and with VoiceOver.</strong> A reference app should model good behaviour.</li>
+<li><strong>No account and no tracking</strong> are needed for a reference tool.</li>
+</ol>
+<hr>
+<h2 id="wrapping-up" tabindex="-1"><a class="observablehq-header-anchor" href="#wrapping-up">Wrapping up</a></h2>
+<p>A component catalogue is a mirror held up to the platform. Building one forces you to understand how UIKit and SwiftUI really fit together: sizing across the bridge, view-controller pickers, availability and the small default differences that trip up real apps. Make the registry the single source of truth, make snippets compile and make every demo honest.</p>
+<p>Try the app, or explore my other work:</p>
+<ul>
+<li><strong>Catalog - UI (iOS):</strong> <a href="https://apps.apple.com/us/app/catalog-ui/id6446035510" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/catalog-ui/id6446035510</a></li>
+<li><strong>All of my free iOS apps:</strong> <a href="https://apps.apple.com/us/developer/alok-singh/id1508795536" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/developer/alok-singh/id1508795536</a></li>
+<li><strong>My portfolio:</strong> <a href="https://bestlatestapps.com/alok/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/alok/</a></li>
+</ul>
+<p>Which component should every iOS catalogue include that most leave out? Tell me in the comments.</p>
+<p><em>— Alok Kumar Singh</em></p>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/building-a-live-ios-component-catalogue/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/building-a-live-ios-component-catalogue/</a></em></p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe"><span>Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioE</span></a><a rel="next" href="./building-a-live-temple-darshan-app-for-ios"><span>Building a Live Temple Darshan App for iOS</span></a></nav>
+<div>Articles by Alok Kumar Singh. Originals at <a href="https://bestlatestapps.com/blog/" target="_blank" rel="noopener noreferrer">bestlatestapps.com/blog</a>.</div>
+</footer>
+</div>
+</body>
+</html>

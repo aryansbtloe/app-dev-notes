@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>Stop Hand-Rolling Unit Conversions: Foundation&#x27;s Measurement, Dimension and MeasurementFormatter in Practice | Alok Singh, App Dev Notes</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="modulepreload" href="./_observablehq/client.097df403.js">
+<link rel="modulepreload" href="./_observablehq/runtime.fa9f71c0.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.60afab10.js">
+<link rel="canonical" href="https://bestlatestapps.com/blog/stop-hand-rolling-unit-conversions/"><meta name="description" content="Built-in units, custom dimensions, non-linear converters, locale-aware input and output, and the temperature trap that catches everyone">
+<script type="module">
+
+import "./_observablehq/client.097df403.js";
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Alok Singh, App Dev Notes</a></li>
+  </ol>
+  <div id="observablehq-search"><input type="search" placeholder="Search"></div>
+  <div id="observablehq-search-results"></div>
+  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.755d897f.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
+  <ol>
+    <li class="observablehq-link"><a href="./tic-tac-toe-in-swiftui-done-properly">Tic Tac Toe in SwiftUI, Done Properly</a></li>
+    <li class="observablehq-link"><a href="./the-sending-side-of-apns">The Sending Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./the-device-side-of-apns">The Device Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./text-plus-audio-fully-offline">Text Plus Audio, Fully Offline</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./stop-hand-rolling-unit-conversions">Stop Hand-Rolling Unit Conversions</a></li>
+    <li class="observablehq-link"><a href="./shipping-a-4k-wallpaper-app-without-running-out-of-memory">Shipping a 4K Wallpaper App Without Running Out of Memory</a></li>
+    <li class="observablehq-link"><a href="./medication-reminders-that-actually-fire">Medication Reminders That Actually Fire</a></li>
+    <li class="observablehq-link"><a href="./from-barcode-to-pdf">From Barcode to PDF</a></li>
+    <li class="observablehq-link"><a href="./drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game">Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game,</a></li>
+    <li class="observablehq-link"><a href="./convert-as-you-type-currency-conversion-in-swift">Convert-As-You-Type Currency Conversion in Swift</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-first-bible-reader-on-ios">Building an Offline-First Bible Reader on iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-ebook-reader-for-ios">Building an Offline eBook Reader for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-quotes-app-in-swiftui">Building an Offline Quotes App in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-an-admob-earnings-dashboard-for-ios">Building an AdMob Earnings Dashboard for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-tap-to-match-marble-game-with-spritekit-and-swiftui">Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine">Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine</a></li>
+    <li class="observablehq-link"><a href="./building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe">Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioE</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-ios-component-catalogue">Building a Live iOS Component Catalogue</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-temple-darshan-app-for-ios">Building a Live Temple Darshan App for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-hashtag-copier-for-ios">Building a Hashtag Copier for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-chromatic-guitar-tuner-on-ios">Building a Chromatic Guitar Tuner on iOS</a></li>
+    <li class="observablehq-link"><a href="./animating-algorithms-in-swiftui">Animating Algorithms in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./a-practical-guide-to-ios-haptics">A Practical Guide to iOS Haptics</a></li>
+    <li class="observablehq-link"><a href="./a-document-scanner-in-an-afternoon">A Document Scanner in an Afternoon</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#1-why-conversion-tables-rot">1. Why conversion tables rot</a></li>
+<li class="observablehq-secondary-link"><a href="#2-the-basics-measurement-and-built-in-dimensions">2. The basics: Measurement and built-in dimensions</a></li>
+<li class="observablehq-secondary-link"><a href="#3-custom-dimensions-for-what-foundation-doesnt-cover">3. Custom dimensions for what Foundation doesn&#x27;t cover</a></li>
+<li class="observablehq-secondary-link"><a href="#4-non-linear-conversions-write-your-own-unit-converter">4. Non-linear conversions: write your own UnitConverter</a></li>
+<li class="observablehq-secondary-link"><a href="#5-input-and-output-that-respect-the-users-locale">5. Input and output that respect the user&#x27;s locale</a></li>
+<li class="observablehq-secondary-link"><a href="#6-the-temperature-trap-points-vs-differences">6. The temperature trap: points vs differences</a></li>
+<li class="observablehq-secondary-link"><a href="#7-history-constants-and-challenges">7. History, constants and challenges</a></li>
+<li class="observablehq-secondary-link"><a href="#8-real-world-example-units-converter-and-calculator">8. Real-world example: Units Converter &amp; Calculator</a></li>
+<li class="observablehq-secondary-link"><a href="#9-before-you-ship-a-unit-converter-a-checklist">9. Before you ship a unit converter: a checklist</a></li>
+<li class="observablehq-secondary-link"><a href="#wrapping-up">Wrapping up</a></li>
+</ol>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="stop-hand-rolling-unit-conversions-foundations-measurement-dimension-and-measurement-formatter-in-practice" tabindex="-1"><a class="observablehq-header-anchor" href="#stop-hand-rolling-unit-conversions-foundations-measurement-dimension-and-measurement-formatter-in-practice">Stop Hand-Rolling Unit Conversions: Foundation's Measurement, Dimension and MeasurementFormatter in Practice</a></h1>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/stop-hand-rolling-unit-conversions/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/stop-hand-rolling-unit-conversions/</a></em></p>
+<p><em>Built-in units, custom dimensions, non-linear converters, locale-aware input and output, and the temperature trap that catches everyone</em></p>
+<p><img src="https://bestlatestapps.com/assets/blog/stop-hand-rolling-unit-conversions/units-converter-icon-512.jpg" alt="Units Converter &amp; Calculator app icon"></p>
+<p>Every unit converter I've seen in a code review starts the same way: a dictionary of conversion factors, a <code>switch</code> on the category and a special case for temperature that someone added after the bug report. It works, until the third person adds a unit and gets one factor upside down.</p>
+<p>My app <strong>Units Converter &amp; Calculator</strong> converts across 30+ categories and 200+ units, completely offline. Alongside it sit a library of 180+ physical constants, learning modes and a conversion history. On a project like that, the conversion table becomes the code you trust least, unless you hand the job to Foundation.</p>
+<p>Apple has shipped a proper units system since iOS 10: <code>Measurement</code>, <code>Unit</code>, <code>Dimension</code> and <code>UnitConverter</code>, plus <code>MeasurementFormatter</code> and the newer <code>Measurement.FormatStyle</code> for output. Most developers I talk to have never used more than <code>UnitLength.meters</code>. This article goes further: built-in units, custom dimensions for the categories Foundation doesn't cover, a non-linear converter, locale-correct input and output, the temperature-difference trap, and a sensible way to persist history. API names and availability are checked against Apple's documentation, and I describe the approach I'd use rather than claiming the app's exact internals.</p>
+<hr>
+<h2 id="1-why-conversion-tables-rot" tabindex="-1"><a class="observablehq-header-anchor" href="#1-why-conversion-tables-rot">1. Why conversion tables rot</a></h2>
+<p>A hand-written table has three problems:</p>
+<ol>
+<li><strong>N² relationships.</strong> If you store "A to B" factors, you need a factor for every pair. Add one unit and you owe the table N new entries.</li>
+<li><strong>Hidden non-linearity.</strong> Temperature has an offset; fuel economy is reciprocal (L/100 km vs mpg). These get special-cased, and special cases breed bugs.</li>
+<li><strong>Formatting is an afterthought.</strong> "1.0000000000002 km" shows up in the UI, and users in Germany type "1,5" and get an error.</li>
+</ol>
+<p>Foundation's model fixes the first two by design: every unit in a <strong>dimension</strong> knows how to convert <em>to and from that dimension's base unit</em>. That's N relationships, not N². Converting A to B is always A → base → B. For the third problem, Foundation ships formatters that understand locales.</p>
+<hr>
+<h2 id="2-the-basics-measurement-and-built-in-dimensions" tabindex="-1"><a class="observablehq-header-anchor" href="#2-the-basics-measurement-and-built-in-dimensions">2. The basics: Measurement and built-in dimensions</a></h2>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> Foundation
+
+<span class="hljs-keyword">let</span> marathon <span class="hljs-operator">=</span> <span class="hljs-type">Measurement</span>(value: <span class="hljs-number">42.195</span>, unit: <span class="hljs-type">UnitLength</span>.kilometers)
+<span class="hljs-keyword">let</span> miles <span class="hljs-operator">=</span> marathon.converted(to: .miles)
+<span class="hljs-built_in">print</span>(miles.value)  <span class="hljs-comment">// ≈ 26.219</span>
+
+<span class="hljs-comment">// Arithmetic across units just works: both sides convert to the base unit first.</span>
+<span class="hljs-keyword">let</span> total <span class="hljs-operator">=</span> <span class="hljs-type">Measurement</span>(value: <span class="hljs-number">1</span>, unit: <span class="hljs-type">UnitLength</span>.miles)
+          <span class="hljs-operator">+</span> <span class="hljs-type">Measurement</span>(value: <span class="hljs-number">500</span>, unit: <span class="hljs-type">UnitLength</span>.meters)
+<span class="hljs-built_in">print</span>(total.converted(to: .kilometers))  <span class="hljs-comment">// ≈ 2.109 km</span>
+
+<span class="hljs-comment">// Comparison works across units too.</span>
+<span class="hljs-built_in">print</span>(<span class="hljs-type">Measurement</span>(value: <span class="hljs-number">1</span>, unit: <span class="hljs-type">UnitMass</span>.kilograms)
+      <span class="hljs-operator">&gt;</span> <span class="hljs-type">Measurement</span>(value: <span class="hljs-number">2</span>, unit: <span class="hljs-type">UnitMass</span>.pounds))  <span class="hljs-comment">// true</span>
+</code></pre>
+<p>Foundation ships a little over twenty <code>Dimension</code> subclasses: length, mass, volume, area, speed, temperature, pressure, energy, power, duration, frequency, angle, acceleration, fuel efficiency, electric current, charge, potential difference and resistance, illuminance, concentration, dispersion and information storage (<code>UnitInformationStorage</code>, iOS 13+). Each has many units: <code>UnitEnergy.kilowattHours</code>, <code>UnitSpeed.knots</code>, <code>UnitPressure.inchesOfMercury</code> and so on.</p>
+<p>For a converter UI, wrap the dimension in a small description type so a category screen can list its units generically:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">UnitCategory</span>: <span class="hljs-title class_ inherited__">Identifiable</span> {
+    <span class="hljs-keyword">let</span> id: <span class="hljs-type">String</span>                 <span class="hljs-comment">// stable key, e.g. "length"</span>
+    <span class="hljs-keyword">let</span> name: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">let</span> units: [<span class="hljs-type">Dimension</span>]
+}
+
+<span class="hljs-keyword">let</span> length <span class="hljs-operator">=</span> <span class="hljs-type">UnitCategory</span>(id: <span class="hljs-string">"length"</span>, name: <span class="hljs-string">"Length"</span>, units: [
+    <span class="hljs-type">UnitLength</span>.millimeters, <span class="hljs-type">UnitLength</span>.centimeters, <span class="hljs-type">UnitLength</span>.meters,
+    <span class="hljs-type">UnitLength</span>.kilometers, <span class="hljs-type">UnitLength</span>.inches, <span class="hljs-type">UnitLength</span>.feet,
+    <span class="hljs-type">UnitLength</span>.yards, <span class="hljs-type">UnitLength</span>.miles, <span class="hljs-type">UnitLength</span>.nauticalMiles
+])
+
+<span class="hljs-keyword">func</span> <span class="hljs-title function_">convert</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">value</span>: <span class="hljs-type">Double</span>, <span class="hljs-params">from</span>: <span class="hljs-type">Dimension</span>, <span class="hljs-params">to</span>: <span class="hljs-type">Dimension</span>) -&gt; <span class="hljs-type">Double</span> {
+    <span class="hljs-type">Measurement</span>(value: value, unit: from).converted(to: to).value
+}
+</code></pre>
+<p><code>Measurement&lt;Dimension&gt;</code> works here because <code>converted(to:)</code> is available whenever <code>UnitType</code> is a <code>Dimension</code>. Just make sure <code>from</code> and <code>to</code> belong to the same dimension, because converting metres to kilograms is a programmer error that Foundation won't catch for you at compile time with this erased type.</p>
+<hr>
+<h2 id="3-custom-dimensions-for-what-foundation-doesnt-cover" tabindex="-1"><a class="observablehq-header-anchor" href="#3-custom-dimensions-for-what-foundation-doesnt-cover">3. Custom dimensions for what Foundation doesn't cover</a></h2>
+<p>Getting to 30+ categories means going beyond the built-ins: density, torque, data transfer rate, radiation dose, flow rate. A custom dimension is a <code>Dimension</code> subclass with a base unit and static units defined by <code>UnitConverterLinear</code>:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UnitDensity</span>: <span class="hljs-title class_ inherited__">Dimension</span> {
+    <span class="hljs-comment">// Base unit: kilograms per cubic metre.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> kilogramsPerCubicMeter <span class="hljs-operator">=</span> <span class="hljs-type">UnitDensity</span>(
+        symbol: <span class="hljs-string">"kg/m³"</span>, converter: <span class="hljs-type">UnitConverterLinear</span>(coefficient: <span class="hljs-number">1</span>))
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> gramsPerCubicCentimeter <span class="hljs-operator">=</span> <span class="hljs-type">UnitDensity</span>(
+        symbol: <span class="hljs-string">"g/cm³"</span>, converter: <span class="hljs-type">UnitConverterLinear</span>(coefficient: <span class="hljs-number">1_000</span>))
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> gramsPerLiter <span class="hljs-operator">=</span> <span class="hljs-type">UnitDensity</span>(
+        symbol: <span class="hljs-string">"g/L"</span>, converter: <span class="hljs-type">UnitConverterLinear</span>(coefficient: <span class="hljs-number">1</span>))
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> poundsPerCubicFoot <span class="hljs-operator">=</span> <span class="hljs-type">UnitDensity</span>(
+        symbol: <span class="hljs-string">"lb/ft³"</span>, converter: <span class="hljs-type">UnitConverterLinear</span>(coefficient: <span class="hljs-number">16.018_463</span>))
+
+    <span class="hljs-keyword">override</span> <span class="hljs-keyword">class</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">baseUnit</span>() -&gt; <span class="hljs-type">UnitDensity</span> { kilogramsPerCubicMeter }
+}
+
+<span class="hljs-keyword">let</span> water <span class="hljs-operator">=</span> <span class="hljs-type">Measurement</span>(value: <span class="hljs-number">1</span>, unit: <span class="hljs-type">UnitDensity</span>.gramsPerCubicCentimeter)
+<span class="hljs-built_in">print</span>(water.converted(to: .poundsPerCubicFoot).value)   <span class="hljs-comment">// ≈ 62.43</span>
+</code></pre>
+<p>The <strong>coefficient is "how many base units in one of this unit"</strong>. One g/cm³ is 1,000 kg/m³, so its coefficient is 1,000. Get that sentence right and you'll never flip a factor again.</p>
+<p><code>UnitConverterLinear(coefficient:constant:)</code> also takes a <code>constant</code>, applied as <code>base = value × coefficient + constant</code>. That's how Foundation models Celsius and Fahrenheit against kelvin. You'll rarely need it for custom units, but it's there.</p>
+<p><strong>Write a round-trip test for every unit.</strong> It catches typos instantly:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> XCTest
+
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DensityTests</span>: <span class="hljs-title class_ inherited__">XCTestCase</span> {
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">testRoundTrip</span>() {
+        <span class="hljs-keyword">let</span> units: [<span class="hljs-type">UnitDensity</span>] <span class="hljs-operator">=</span> [.kilogramsPerCubicMeter, .gramsPerCubicCentimeter,
+                                    .gramsPerLiter, .poundsPerCubicFoot]
+        <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> units {
+            <span class="hljs-keyword">for</span> b <span class="hljs-keyword">in</span> units {
+                <span class="hljs-keyword">let</span> x <span class="hljs-operator">=</span> <span class="hljs-type">Measurement</span>(value: <span class="hljs-number">123.456</span>, unit: a)
+                <span class="hljs-type">XCTAssertEqual</span>(x.converted(to: b).converted(to: a).value, <span class="hljs-number">123.456</span>,
+                               accuracy: <span class="hljs-number">1e-9</span>, <span class="hljs-string">"<span class="hljs-subst">\(a.symbol)</span> ↔ <span class="hljs-subst">\(b.symbol)</span>"</span>)
+            }
+        }
+    }
+}
+</code></pre>
+<p>Round-trips catch arithmetic mistakes, not wrong factors, so add one "known value" assertion per unit from a trusted reference too.</p>
+<hr>
+<h2 id="4-non-linear-conversions-write-your-own-unit-converter" tabindex="-1"><a class="observablehq-header-anchor" href="#4-non-linear-conversions-write-your-own-unit-converter">4. Non-linear conversions: write your own UnitConverter</a></h2>
+<p>Some relationships aren't <code>a × x + b</code>. The classic one is fuel economy: litres per 100 km and miles per gallon are <em>reciprocals</em>. Foundation's <code>UnitFuelEfficiency</code> already handles that internally, but you'll hit the same shape in your own categories. Runners, for example, want <strong>pace</strong> (minutes per kilometre) and <strong>speed</strong> (km/h) to convert into each other.</p>
+<p><code>UnitConverter</code> is an open class with two methods to override:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-comment">/// base = k / value, value = k / base</span>
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UnitConverterReciprocal</span>: <span class="hljs-title class_ inherited__">UnitConverter</span> {
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> k: <span class="hljs-type">Double</span>
+    <span class="hljs-keyword">init</span>(<span class="hljs-params">reciprocal</span> <span class="hljs-params">k</span>: <span class="hljs-type">Double</span>) { <span class="hljs-keyword">self</span>.k <span class="hljs-operator">=</span> k }
+
+    <span class="hljs-keyword">override</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">baseUnitValue</span>(<span class="hljs-params">fromValue</span> <span class="hljs-params">value</span>: <span class="hljs-type">Double</span>) -&gt; <span class="hljs-type">Double</span> {
+        value <span class="hljs-operator">==</span> <span class="hljs-number">0</span> <span class="hljs-operator">?</span> .infinity : k <span class="hljs-operator">/</span> value
+    }
+    <span class="hljs-keyword">override</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">value</span>(<span class="hljs-params">fromBaseUnitValue</span> <span class="hljs-params">baseUnitValue</span>: <span class="hljs-type">Double</span>) -&gt; <span class="hljs-type">Double</span> {
+        baseUnitValue <span class="hljs-operator">==</span> <span class="hljs-number">0</span> <span class="hljs-operator">?</span> .infinity : k <span class="hljs-operator">/</span> baseUnitValue
+    }
+}
+
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UnitPace</span>: <span class="hljs-title class_ inherited__">Dimension</span> {
+    <span class="hljs-comment">// Base unit: seconds per metre.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> secondsPerMeter <span class="hljs-operator">=</span> <span class="hljs-type">UnitPace</span>(symbol: <span class="hljs-string">"s/m"</span>,
+        converter: <span class="hljs-type">UnitConverterLinear</span>(coefficient: <span class="hljs-number">1</span>))
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> minutesPerKilometer <span class="hljs-operator">=</span> <span class="hljs-type">UnitPace</span>(symbol: <span class="hljs-string">"min/km"</span>,
+        converter: <span class="hljs-type">UnitConverterLinear</span>(coefficient: <span class="hljs-number">60.0</span> <span class="hljs-operator">/</span> <span class="hljs-number">1_000</span>))
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> minutesPerMile <span class="hljs-operator">=</span> <span class="hljs-type">UnitPace</span>(symbol: <span class="hljs-string">"min/mi"</span>,
+        converter: <span class="hljs-type">UnitConverterLinear</span>(coefficient: <span class="hljs-number">60.0</span> <span class="hljs-operator">/</span> <span class="hljs-number">1_609.344</span>))
+    <span class="hljs-comment">// Speed expressed inside the pace dimension: s/m = 3.6 / (km/h)</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> kilometersPerHour <span class="hljs-operator">=</span> <span class="hljs-type">UnitPace</span>(symbol: <span class="hljs-string">"km/h"</span>,
+        converter: <span class="hljs-type">UnitConverterReciprocal</span>(reciprocal: <span class="hljs-number">3.6</span>))
+
+    <span class="hljs-keyword">override</span> <span class="hljs-keyword">class</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">baseUnit</span>() -&gt; <span class="hljs-type">UnitPace</span> { secondsPerMeter }
+}
+
+<span class="hljs-keyword">let</span> pace <span class="hljs-operator">=</span> <span class="hljs-type">Measurement</span>(value: <span class="hljs-number">5</span>, unit: <span class="hljs-type">UnitPace</span>.minutesPerKilometer)
+<span class="hljs-built_in">print</span>(pace.converted(to: .kilometersPerHour).value)  <span class="hljs-comment">// 12.0</span>
+<span class="hljs-built_in">print</span>(pace.converted(to: .minutesPerMile).value)     <span class="hljs-comment">// ≈ 8.05</span>
+</code></pre>
+<p>Guard against zero. A pace of 0 is a meaningless input, and <code>.infinity</code> displays far better than a crash.</p>
+<hr>
+<h2 id="5-input-and-output-that-respect-the-users-locale" tabindex="-1"><a class="observablehq-header-anchor" href="#5-input-and-output-that-respect-the-users-locale">5. Input and output that respect the user's locale</a></h2>
+<h3 id="parsing-what-the-user-typed" tabindex="-1"><a class="observablehq-header-anchor" href="#parsing-what-the-user-typed">Parsing what the user typed</a></h3>
+<p><code>Double("1,5")</code> is <code>nil</code>. In much of Europe, that's how you write one and a half. Parse with the user's locale:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">LocalizedNumberParser</span> {
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> formatter: <span class="hljs-type">NumberFormatter</span>
+
+    <span class="hljs-keyword">init</span>(<span class="hljs-params">locale</span>: <span class="hljs-type">Locale</span> <span class="hljs-operator">=</span> .current) {
+        formatter <span class="hljs-operator">=</span> <span class="hljs-type">NumberFormatter</span>()
+        formatter.locale <span class="hljs-operator">=</span> locale
+        formatter.numberStyle <span class="hljs-operator">=</span> .decimal
+        formatter.isLenient <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">parse</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">text</span>: <span class="hljs-type">String</span>) -&gt; <span class="hljs-type">Double</span>? {
+        <span class="hljs-keyword">let</span> trimmed <span class="hljs-operator">=</span> text.trimmingCharacters(in: .whitespaces)
+        <span class="hljs-keyword">guard</span> <span class="hljs-operator">!</span>trimmed.isEmpty <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span> }
+        <span class="hljs-keyword">return</span> formatter.number(from: trimmed)<span class="hljs-operator">?</span>.doubleValue
+    }
+}
+</code></pre>
+<p>Pair it with <code>.keyboardType(.decimalPad)</code>, which shows the locale's decimal separator automatically.</p>
+<h3 id="formatting-the-result" tabindex="-1"><a class="observablehq-header-anchor" href="#formatting-the-result">Formatting the result</a></h3>
+<p>Raw doubles leak floating-point noise. <code>Measurement.FormatStyle</code> (iOS 15+) formats value and unit together, localised, with the precision you choose:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">let</span> result <span class="hljs-operator">=</span> <span class="hljs-type">Measurement</span>(value: <span class="hljs-number">26.218_757_5</span>, unit: <span class="hljs-type">UnitLength</span>.miles)
+
+<span class="hljs-keyword">let</span> text <span class="hljs-operator">=</span> result.formatted(.measurement(
+    width: .abbreviated,
+    usage: .asProvided,                       <span class="hljs-comment">// keep the unit the user chose</span>
+    numberFormatStyle: .number.precision(.significantDigits(<span class="hljs-number">1</span><span class="hljs-operator">...</span><span class="hljs-number">6</span>))
+))
+<span class="hljs-comment">// "26.2188 mi" in en_US; "26,2188 mi" in de_DE</span>
+</code></pre>
+<p>Two options matter for a converter:</p>
+<ul>
+<li><strong><code>usage: .asProvided</code></strong>. Without it, formatters may "helpfully" switch to the locale's preferred unit. That's great in a weather app and wrong in a converter.</li>
+<li><strong>Significant digits, not fixed decimals.</strong> 0.000 012 3 and 12,300,000 both deserve a readable result.</li>
+</ul>
+<p>On iOS 10–14, <code>MeasurementFormatter</code> with <code>unitOptions = .providedUnit</code> gives the same "don't switch my unit" behaviour.</p>
+<p>Custom units format fine too. Their <code>symbol</code> is used, so choose symbols you're happy to show on screen.</p>
+<hr>
+<h2 id="6-the-temperature-trap-points-vs-differences" tabindex="-1"><a class="observablehq-header-anchor" href="#6-the-temperature-trap-points-vs-differences">6. The temperature trap: points vs differences</a></h2>
+<p>Here's a bug that ships in real apps:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">let</span> delta <span class="hljs-operator">=</span> <span class="hljs-type">Measurement</span>(value: <span class="hljs-number">10</span>, unit: <span class="hljs-type">UnitTemperature</span>.celsius)
+<span class="hljs-built_in">print</span>(delta.converted(to: .fahrenheit).value)   <span class="hljs-comment">// 50.0</span>
+</code></pre>
+<p>If the user meant "it's 10 °C outside", 50 °F is right. If they meant "the temperature <em>rose by</em> 10 °C", the answer is <strong>18 °F</strong>: a difference doesn't carry the 32° offset.</p>
+<p>Foundation's <code>UnitTemperature</code> models <em>points</em> on a scale. For differences, convert with the coefficient only:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">enum</span> <span class="hljs-title class_">TemperatureDelta</span> {
+    <span class="hljs-comment">/// Kelvin-sized steps per unit: 1 °C step = 1 K, 1 °F step = 5/9 K.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">convert</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">value</span>: <span class="hljs-type">Double</span>, <span class="hljs-params">from</span>: <span class="hljs-type">UnitTemperature</span>, <span class="hljs-params">to</span>: <span class="hljs-type">UnitTemperature</span>) -&gt; <span class="hljs-type">Double</span> {
+        <span class="hljs-keyword">func</span> <span class="hljs-title function_">coefficient</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">u</span>: <span class="hljs-type">UnitTemperature</span>) -&gt; <span class="hljs-type">Double</span> {
+            (u.converter <span class="hljs-keyword">as?</span> <span class="hljs-type">UnitConverterLinear</span>)<span class="hljs-operator">?</span>.coefficient <span class="hljs-operator">??</span> <span class="hljs-number">1</span>
+        }
+        <span class="hljs-keyword">return</span> value <span class="hljs-operator">*</span> coefficient(from) <span class="hljs-operator">/</span> coefficient(to)
+    }
+}
+
+<span class="hljs-built_in">print</span>(<span class="hljs-type">TemperatureDelta</span>.convert(<span class="hljs-number">10</span>, from: .celsius, to: .fahrenheit))  <span class="hljs-comment">// 18.0</span>
+</code></pre>
+<p>In the UI, a "temperature difference" toggle, or a separate category, makes the intent explicit. It's a good teaching moment for a learning-focused app too.</p>
+<hr>
+<h2 id="7-history-constants-and-challenges" tabindex="-1"><a class="observablehq-header-anchor" href="#7-history-constants-and-challenges">7. History, constants and challenges</a></h2>
+<h3 id="persisting-history-with-stable-keys" tabindex="-1"><a class="observablehq-header-anchor" href="#persisting-history-with-stable-keys">Persisting history with stable keys</a></h3>
+<p><code>Measurement</code> is <code>Codable</code>, but I don't persist units by trusting the encoded symbol: symbols can change, and custom units need to come back as <em>your</em> static instances. Store your own stable IDs instead:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">ConversionRecord</span>: <span class="hljs-title class_ inherited__">Codable</span>, <span class="hljs-title class_ inherited__">Identifiable</span> {
+    <span class="hljs-keyword">var</span> id <span class="hljs-operator">=</span> <span class="hljs-type">UUID</span>()
+    <span class="hljs-keyword">let</span> categoryID: <span class="hljs-type">String</span>     <span class="hljs-comment">// "length"</span>
+    <span class="hljs-keyword">let</span> fromUnitID: <span class="hljs-type">String</span>     <span class="hljs-comment">// "km"</span>
+    <span class="hljs-keyword">let</span> toUnitID: <span class="hljs-type">String</span>       <span class="hljs-comment">// "mi"</span>
+    <span class="hljs-keyword">let</span> input: <span class="hljs-type">Double</span>
+    <span class="hljs-keyword">let</span> date: <span class="hljs-type">Date</span>
+}
+
+<span class="hljs-comment">// A registry maps IDs back to Dimension instances.</span>
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">UnitRegistry</span> {
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> length: [<span class="hljs-type">String</span>: <span class="hljs-type">UnitLength</span>] <span class="hljs-operator">=</span> [
+        <span class="hljs-string">"m"</span>: .meters, <span class="hljs-string">"km"</span>: .kilometers, <span class="hljs-string">"mi"</span>: .miles, <span class="hljs-string">"ft"</span>: .feet, <span class="hljs-string">"in"</span>: .inches
+    ]
+}
+</code></pre>
+<p>Recompute the output on display, rather than storing it. If you ever fix a factor, old history entries silently become correct.</p>
+<h3 id="constants-are-data-not-code" tabindex="-1"><a class="observablehq-header-anchor" href="#constants-are-data-not-code">Constants are data, not code</a></h3>
+<p>A library of physical constants is a bundled JSON file: name, symbol, value, unit, uncertainty, plus the explanatory text. Use exact CODATA values. Since the 2019 SI redefinition, constants such as the speed of light, Planck's constant and the elementary charge are <em>exact by definition</em>, which is a nice fact to surface in a "why it's important" field.</p>
+<h3 id="challenge-mode-scoring-an-estimate" tabindex="-1"><a class="observablehq-header-anchor" href="#challenge-mode-scoring-an-estimate">Challenge mode: scoring an estimate</a></h3>
+<p>For estimation games ("how many feet in a kilometre?"), score by <strong>ratio</strong>, not absolute difference, so being off by 10% feels the same at every scale:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-comment">/// 100 for a perfect answer, falling to 0 at a factor-of-two error.</span>
+<span class="hljs-keyword">func</span> <span class="hljs-title function_">estimationScore</span>(<span class="hljs-params">guess</span>: <span class="hljs-type">Double</span>, <span class="hljs-params">truth</span>: <span class="hljs-type">Double</span>) -&gt; <span class="hljs-type">Int</span> {
+    <span class="hljs-keyword">guard</span> guess <span class="hljs-operator">&gt;</span> <span class="hljs-number">0</span>, truth <span class="hljs-operator">&gt;</span> <span class="hljs-number">0</span> <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-number">0</span> }
+    <span class="hljs-keyword">let</span> error <span class="hljs-operator">=</span> <span class="hljs-built_in">abs</span>(log2(guess <span class="hljs-operator">/</span> truth))    <span class="hljs-comment">// 0 = exact, 1 = off by 2×</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-type">Int</span>((<span class="hljs-built_in">max</span>(<span class="hljs-number">0</span>, <span class="hljs-number">1</span> <span class="hljs-operator">-</span> error) <span class="hljs-operator">*</span> <span class="hljs-number">100</span>).rounded())
+}
+</code></pre>
+<hr>
+<h2 id="8-real-world-example-units-converter-and-calculator" tabindex="-1"><a class="observablehq-header-anchor" href="#8-real-world-example-units-converter-and-calculator">8. Real-world example: Units Converter &amp; Calculator</a></h2>
+<p>These are the techniques I'd use, and recommend, for a converter like <strong><a href="https://apps.apple.com/us/app/units-converter-calculator/id1515811220" target="_blank" rel="noopener noreferrer">Units Converter &amp; Calculator</a></strong>.</p>
+<p><img src="https://bestlatestapps.com/assets/blog/stop-hand-rolling-unit-conversions/units-converter-screenshot-1.jpg" alt="Units Converter App Store screenshot 1"></p>
+<p>At the time of writing, its App Store listing shows:</p>
+<ul>
+<li><strong>Free</strong>, in <strong>Productivity</strong> and <strong>Education</strong></li>
+<li>First released in <strong>May 2020</strong></li>
+<li><strong>32 ratings</strong> in the US store, averaging about <strong>4.7 stars</strong></li>
+<li>Supports <strong>iOS 16.0 and later</strong></li>
+</ul>
+<p>How the listing lines up with this article:</p>
+<table>
+<thead>
+<tr>
+<th>What the listing says</th>
+<th>Where it's covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Convert 200+ units across 30+ categories… completely offline"</td>
+<td>Built-in dimensions plus custom <code>Dimension</code> subclasses, all on-device (sections 2–4)</td>
+</tr>
+<tr>
+<td>"Real-time conversions with instant results"</td>
+<td>Locale-aware parsing on every keystroke, formatted output (section 5)</td>
+</tr>
+<tr>
+<td>"180+ physical constants with detailed explanations"</td>
+<td>Constants as bundled data (section 7)</td>
+</tr>
+<tr>
+<td>"Challenge Mode: Test your estimation skills"</td>
+<td>Ratio-based scoring (section 7)</td>
+</tr>
+<tr>
+<td>"Automatic saving of all conversions… Organized by category"</td>
+<td>History with stable unit IDs, output recomputed on display (section 7)</td>
+</tr>
+</tbody>
+</table>
+<p><img src="https://bestlatestapps.com/assets/blog/stop-hand-rolling-unit-conversions/units-converter-screenshot-2.jpg" alt="Units Converter App Store screenshot 2"></p>
+<p>The listing's audience is "students learning physics and chemistry, engineers and scientists". That's exactly the audience that will notice a wrong factor or a temperature-delta mistake, and the reason I lean on Foundation rather than hand-written tables.</p>
+<hr>
+<h2 id="9-before-you-ship-a-unit-converter-a-checklist" tabindex="-1"><a class="observablehq-header-anchor" href="#9-before-you-ship-a-unit-converter-a-checklist">9. Before you ship a unit converter: a checklist</a></h2>
+<ol>
+<li><strong>Every unit has a round-trip test</strong> and at least one known-value test from a trusted reference.</li>
+<li><strong>The coefficient means "base units per one of this unit"</strong>, and it's written that way everywhere.</li>
+<li><strong>Non-linear units use a real <code>UnitConverter</code> subclass</strong>, and zero and negative inputs are handled.</li>
+<li><strong>Input parsing uses the user's locale</strong>, and the decimal-pad keyboard matches it.</li>
+<li><strong>Output uses significant digits</strong> and <code>usage: .asProvided</code> (or <code>.providedUnit</code>), so the unit the user picked is the unit they see.</li>
+<li><strong>Temperature differences are a separate, explicit mode.</strong></li>
+<li><strong>History stores IDs and inputs, not outputs</strong>, so fixes apply retroactively.</li>
+<li><strong>Everything works in Airplane Mode</strong>, including constants and learning content.</li>
+</ol>
+<hr>
+<h2 id="wrapping-up" tabindex="-1"><a class="observablehq-header-anchor" href="#wrapping-up">Wrapping up</a></h2>
+<p>Unit conversion is one of those problems that looks like a lookup table and is really a type system. Foundation's <code>Measurement</code> and <code>Dimension</code> give you that type system: one base unit per dimension, linear and custom converters, unit-aware arithmetic and comparisons, and formatters that respect the user's locale. Add custom dimensions for whatever Foundation doesn't cover, test every unit, and treat temperature differences with suspicion.</p>
+<p>Try the app, or browse the rest of my work:</p>
+<ul>
+<li><strong>Units Converter &amp; Calculator (iOS):</strong> <a href="https://apps.apple.com/us/app/units-converter-calculator/id1515811220" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/units-converter-calculator/id1515811220</a></li>
+<li><strong>All of my free iOS apps:</strong> <a href="https://apps.apple.com/us/developer/alok-singh/id1508795536" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/developer/alok-singh/id1508795536</a></li>
+<li><strong>My portfolio:</strong> <a href="https://bestlatestapps.com/alok/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/alok/</a></li>
+</ul>
+<p>Which unit has bitten you in production? For me, temperature differences top the list. Let me know in the comments.</p>
+<p><em>— Alok Kumar Singh</em></p>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/stop-hand-rolling-unit-conversions/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/stop-hand-rolling-unit-conversions/</a></em></p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./text-plus-audio-fully-offline"><span>Text Plus Audio, Fully Offline</span></a><a rel="next" href="./shipping-a-4k-wallpaper-app-without-running-out-of-memory"><span>Shipping a 4K Wallpaper App Without Running Out of Memory</span></a></nav>
+<div>Articles by Alok Kumar Singh. Originals at <a href="https://bestlatestapps.com/blog/" target="_blank" rel="noopener noreferrer">bestlatestapps.com/blog</a>.</div>
+</footer>
+</div>
+</body>
+</html>

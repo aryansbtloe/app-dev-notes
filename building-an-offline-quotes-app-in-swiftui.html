@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>Building an Offline Quotes App in SwiftUI: a 50,000-Quote Library, a Daily Quote Without a Server, Honest Streaks and Share-as-Image | Alok Singh, App Dev Notes</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="modulepreload" href="./_observablehq/client.097df403.js">
+<link rel="modulepreload" href="./_observablehq/runtime.fa9f71c0.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.60afab10.js">
+<link rel="canonical" href="https://bestlatestapps.com/blog/building-an-offline-quotes-app-in-swiftui/"><meta name="description" content="Bundling and importing a large library into SwiftData, picking a 'quote of the day' deterministically, search with recent queries, collections,…">
+<script type="module">
+
+import "./_observablehq/client.097df403.js";
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Alok Singh, App Dev Notes</a></li>
+  </ol>
+  <div id="observablehq-search"><input type="search" placeholder="Search"></div>
+  <div id="observablehq-search-results"></div>
+  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.755d897f.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
+  <ol>
+    <li class="observablehq-link"><a href="./tic-tac-toe-in-swiftui-done-properly">Tic Tac Toe in SwiftUI, Done Properly</a></li>
+    <li class="observablehq-link"><a href="./the-sending-side-of-apns">The Sending Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./the-device-side-of-apns">The Device Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./text-plus-audio-fully-offline">Text Plus Audio, Fully Offline</a></li>
+    <li class="observablehq-link"><a href="./stop-hand-rolling-unit-conversions">Stop Hand-Rolling Unit Conversions</a></li>
+    <li class="observablehq-link"><a href="./shipping-a-4k-wallpaper-app-without-running-out-of-memory">Shipping a 4K Wallpaper App Without Running Out of Memory</a></li>
+    <li class="observablehq-link"><a href="./medication-reminders-that-actually-fire">Medication Reminders That Actually Fire</a></li>
+    <li class="observablehq-link"><a href="./from-barcode-to-pdf">From Barcode to PDF</a></li>
+    <li class="observablehq-link"><a href="./drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game">Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game,</a></li>
+    <li class="observablehq-link"><a href="./convert-as-you-type-currency-conversion-in-swift">Convert-As-You-Type Currency Conversion in Swift</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-first-bible-reader-on-ios">Building an Offline-First Bible Reader on iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-ebook-reader-for-ios">Building an Offline eBook Reader for iOS</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./building-an-offline-quotes-app-in-swiftui">Building an Offline Quotes App in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-an-admob-earnings-dashboard-for-ios">Building an AdMob Earnings Dashboard for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-tap-to-match-marble-game-with-spritekit-and-swiftui">Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine">Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine</a></li>
+    <li class="observablehq-link"><a href="./building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe">Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioE</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-ios-component-catalogue">Building a Live iOS Component Catalogue</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-temple-darshan-app-for-ios">Building a Live Temple Darshan App for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-hashtag-copier-for-ios">Building a Hashtag Copier for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-chromatic-guitar-tuner-on-ios">Building a Chromatic Guitar Tuner on iOS</a></li>
+    <li class="observablehq-link"><a href="./animating-algorithms-in-swiftui">Animating Algorithms in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./a-practical-guide-to-ios-haptics">A Practical Guide to iOS Haptics</a></li>
+    <li class="observablehq-link"><a href="./a-document-scanner-in-an-afternoon">A Document Scanner in an Afternoon</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#1-ship-the-library-in-the-bundle-import-it-once">1. Ship the library in the bundle, import it once</a></li>
+<li class="observablehq-secondary-link"><a href="#2-a-quote-of-the-day-with-no-server">2. A quote of the day with no server</a></li>
+<li class="observablehq-secondary-link"><a href="#3-search-across-content-author-and-category-with-recent-searches">3. Search across content, author and category, with recent searches</a></li>
+<li class="observablehq-secondary-link"><a href="#4-collections-and-favourites">4. Collections and favourites</a></li>
+<li class="observablehq-secondary-link"><a href="#5-streaks-that-survive-time-zones">5. Streaks that survive time zones</a></li>
+<li class="observablehq-secondary-link"><a href="#6-share-as-a-beautiful-image">6. Share as a beautiful image</a></li>
+<li class="observablehq-secondary-link"><a href="#7-light-dark-and-auto-with-colour-tokens">7. Light, Dark and Auto, with colour tokens</a></li>
+<li class="observablehq-secondary-link"><a href="#8-real-world-example-facts-and-quotes">8. Real-world example: Facts and Quotes</a></li>
+<li class="observablehq-secondary-link"><a href="#9-before-you-ship-a-content-app-a-checklist">9. Before you ship a content app: a checklist</a></li>
+<li class="observablehq-secondary-link"><a href="#wrapping-up">Wrapping up</a></li>
+</ol>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="building-an-offline-quotes-app-in-swift-ui-a-50-000-quote-library-a-daily-quote-without-a-server-honest-streaks-and-share-as-image" tabindex="-1"><a class="observablehq-header-anchor" href="#building-an-offline-quotes-app-in-swift-ui-a-50-000-quote-library-a-daily-quote-without-a-server-honest-streaks-and-share-as-image">Building an Offline Quotes App in SwiftUI: a 50,000-Quote Library, a Daily Quote Without a Server, Honest Streaks and Share-as-Image</a></h1>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/building-an-offline-quotes-app-in-swiftui/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/building-an-offline-quotes-app-in-swiftui/</a></em></p>
+<p><em>Bundling and importing a large library into SwiftData, picking a "quote of the day" deterministically, search with recent queries, collections, time-zone-safe streaks, rendering shareable quote cards with ImageRenderer, and Light/Dark/Auto themes</em></p>
+<p><img src="https://bestlatestapps.com/assets/blog/building-an-offline-quotes-app-in-swiftui/facts-and-quotes-icon-512.jpg" alt="Facts and Quotes app icon"></p>
+<p>A quotes app looks like the simplest thing in the App Store: a list of text and a share button. Then you build one and the real questions show up. Where do 50,000 quotes live, and how do they get onto the phone without a slow first launch? How does every user get the same "quote of the day" without a server deciding it? What counts as a reading streak when someone flies from Delhi to San Francisco? And how do you turn a quote into an image that looks good on Instagram?</p>
+<p>I've worked through those questions building <strong>Facts and Quotes</strong>, my app of curated quotes, motivational facts and wisdom. It has categories, offline access, search with recent searches, collections, reading streaks and achievements, sharing quotes as images or text, and Light, Dark and Auto themes.</p>
+<p>This article walks through how I'd build each of those pieces in SwiftUI and SwiftData. Availability was checked against Apple's documentation. Where I describe an approach rather than the app's exact implementation, I say so.</p>
+<hr>
+<h2 id="1-ship-the-library-in-the-bundle-import-it-once" tabindex="-1"><a class="observablehq-header-anchor" href="#1-ship-the-library-in-the-bundle-import-it-once">1. Ship the library in the bundle, import it once</a></h2>
+<p>"Offline access, read anywhere" means the quotes ship with the app. A plain JSON file in the bundle is easy to produce, diff and validate. Decoding 50,000 small records is quick, but <strong>querying</strong> them is better done from a real store, so I'd import into SwiftData on first launch:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> SwiftData
+<span class="hljs-keyword">import</span> Foundation
+
+<span class="hljs-meta">@Model</span>
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Quote</span> {
+    <span class="hljs-meta">@Attribute</span>(.unique) <span class="hljs-keyword">var</span> id: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">var</span> text: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">var</span> author: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">var</span> category: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">var</span> isFavorite: <span class="hljs-type">Bool</span> <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>
+    <span class="hljs-keyword">var</span> collections: [<span class="hljs-type">QuoteCollection</span>] <span class="hljs-operator">=</span> []
+
+    <span class="hljs-keyword">init</span>(<span class="hljs-params">id</span>: <span class="hljs-type">String</span>, <span class="hljs-params">text</span>: <span class="hljs-type">String</span>, <span class="hljs-params">author</span>: <span class="hljs-type">String</span>, <span class="hljs-params">category</span>: <span class="hljs-type">String</span>) {
+        <span class="hljs-keyword">self</span>.id <span class="hljs-operator">=</span> id; <span class="hljs-keyword">self</span>.text <span class="hljs-operator">=</span> text; <span class="hljs-keyword">self</span>.author <span class="hljs-operator">=</span> author; <span class="hljs-keyword">self</span>.category <span class="hljs-operator">=</span> category
+    }
+}
+
+<span class="hljs-meta">@Model</span>
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">QuoteCollection</span> {
+    <span class="hljs-keyword">var</span> name: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">var</span> createdAt: <span class="hljs-type">Date</span> <span class="hljs-operator">=</span> <span class="hljs-type">Date</span>.now
+    <span class="hljs-meta">@Relationship</span>(inverse: \<span class="hljs-type">Quote</span>.collections) <span class="hljs-keyword">var</span> quotes: [<span class="hljs-type">Quote</span>] <span class="hljs-operator">=</span> []
+    <span class="hljs-keyword">init</span>(<span class="hljs-params">name</span>: <span class="hljs-type">String</span>) { <span class="hljs-keyword">self</span>.name <span class="hljs-operator">=</span> name }
+}
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">QuoteRecord</span>: <span class="hljs-title class_ inherited__">Decodable</span> { <span class="hljs-keyword">let</span> id, text, author, category: <span class="hljs-type">String</span> }
+</code></pre>
+<p>The import runs once, in the background, in batches, so memory stays flat and the UI never blocks:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-meta">@ModelActor</span>
+<span class="hljs-keyword">actor</span> <span class="hljs-title class_">LibraryImporter</span> {
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">importIfNeeded</span>(<span class="hljs-params">bundleVersion</span>: <span class="hljs-type">Int</span>) <span class="hljs-keyword">throws</span> {
+        <span class="hljs-keyword">let</span> key <span class="hljs-operator">=</span> <span class="hljs-string">"library.importedVersion"</span>
+        <span class="hljs-keyword">guard</span> <span class="hljs-type">UserDefaults</span>.standard.integer(forKey: key) <span class="hljs-operator">&lt;</span> bundleVersion,
+              <span class="hljs-keyword">let</span> url <span class="hljs-operator">=</span> <span class="hljs-type">Bundle</span>.main.url(forResource: <span class="hljs-string">"quotes"</span>, withExtension: <span class="hljs-string">"json"</span>) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+
+        <span class="hljs-keyword">let</span> records <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> <span class="hljs-type">JSONDecoder</span>().decode([<span class="hljs-type">QuoteRecord</span>].<span class="hljs-keyword">self</span>, from: <span class="hljs-type">Data</span>(contentsOf: url))
+        <span class="hljs-keyword">let</span> existing <span class="hljs-operator">=</span> <span class="hljs-type">Set</span>(<span class="hljs-keyword">try</span> modelContext.fetch(<span class="hljs-type">FetchDescriptor</span>&lt;<span class="hljs-type">Quote</span>&gt;()).map(\.id))
+
+        <span class="hljs-keyword">for</span> (index, record) <span class="hljs-keyword">in</span> records.enumerated() <span class="hljs-keyword">where</span> <span class="hljs-operator">!</span>existing.contains(record.id) {
+            modelContext.insert(<span class="hljs-type">Quote</span>(id: record.id, text: record.text,
+                                      author: record.author, category: record.category))
+            <span class="hljs-keyword">if</span> index <span class="hljs-operator">%</span> <span class="hljs-number">2_000</span> <span class="hljs-operator">==</span> <span class="hljs-number">0</span> { <span class="hljs-keyword">try</span> modelContext.save() }   <span class="hljs-comment">// batch saves</span>
+        }
+        <span class="hljs-keyword">try</span> modelContext.save()
+        <span class="hljs-type">UserDefaults</span>.standard.set(bundleVersion, forKey: key)
+    }
+}
+</code></pre>
+<p>Two design points:</p>
+<ul>
+<li><strong>A library version number.</strong> When an app update adds quotes, bump the version and the importer adds only the new IDs. Favourites and collections are untouched because existing rows are never rewritten.</li>
+<li><strong>Stable IDs.</strong> Give every quote a permanent ID in the source file. If you ever key on the text, fixing a typo would orphan a user's favourite.</li>
+</ul>
+<p>For a "daily new quotes automatically updated" feature, the same importer can accept a small JSON file downloaded from your own server. The bundled library guarantees it still works offline on day one.</p>
+<hr>
+<h2 id="2-a-quote-of-the-day-with-no-server" tabindex="-1"><a class="observablehq-header-anchor" href="#2-a-quote-of-the-day-with-no-server">2. A quote of the day with no server</a></h2>
+<p>A "daily quote" should be the same all day, change at midnight and need no network. The trick is a <strong>deterministic pick from the local date</strong>:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> Foundation
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">DailyPick</span> {
+    <span class="hljs-comment">/// Same answer for everyone on the same local calendar day.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">index</span>(<span class="hljs-params">for</span> <span class="hljs-params">date</span>: <span class="hljs-type">Date</span> <span class="hljs-operator">=</span> .now, <span class="hljs-params">count</span>: <span class="hljs-type">Int</span>, <span class="hljs-params">calendar</span>: <span class="hljs-type">Calendar</span> <span class="hljs-operator">=</span> .current) -&gt; <span class="hljs-type">Int</span> {
+        <span class="hljs-keyword">guard</span> count <span class="hljs-operator">&gt;</span> <span class="hljs-number">0</span> <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-number">0</span> }
+        <span class="hljs-keyword">let</span> c <span class="hljs-operator">=</span> calendar.dateComponents([.year, .month, .day], from: date)
+        <span class="hljs-keyword">let</span> key <span class="hljs-operator">=</span> <span class="hljs-string">"<span class="hljs-subst">\(c.year<span class="hljs-operator">!</span>)</span>-<span class="hljs-subst">\(c.month<span class="hljs-operator">!</span>)</span>-<span class="hljs-subst">\(c.day<span class="hljs-operator">!</span>)</span>"</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-type">Int</span>(stableHash(key) <span class="hljs-operator">%</span> <span class="hljs-type">UInt64</span>(count))
+    }
+
+    <span class="hljs-comment">/// FNV-1a: stable across launches and devices (unlike Swift's `hashValue`).</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">stableHash</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">string</span>: <span class="hljs-type">String</span>) -&gt; <span class="hljs-type">UInt64</span> {
+        <span class="hljs-keyword">var</span> hash: <span class="hljs-type">UInt64</span> <span class="hljs-operator">=</span> <span class="hljs-number">0xcbf2_9ce4_8422_2325</span>
+        <span class="hljs-keyword">for</span> byte <span class="hljs-keyword">in</span> string.utf8 {
+            hash <span class="hljs-operator">^=</span> <span class="hljs-type">UInt64</span>(byte)
+            hash <span class="hljs-operator">&amp;*=</span> <span class="hljs-number">0x0000_0100_0000_01B3</span>
+        }
+        <span class="hljs-keyword">return</span> hash
+    }
+}
+</code></pre>
+<p>The gotcha worth a paragraph: <strong>don't use <code>String.hashValue</code></strong>. Swift randomises hashing per process launch, so your "quote of the day" would change every time the app opened. Use a fixed algorithm like FNV-1a.</p>
+<p>Then fetch by a sorted offset rather than loading everything:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">func</span> <span class="hljs-title function_">quoteOfTheDay</span>(<span class="hljs-params">in</span> <span class="hljs-params">context</span>: <span class="hljs-type">ModelContext</span>) <span class="hljs-keyword">throws</span> -&gt; <span class="hljs-type">Quote</span>? {
+    <span class="hljs-keyword">let</span> total <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> context.fetchCount(<span class="hljs-type">FetchDescriptor</span>&lt;<span class="hljs-type">Quote</span>&gt;())          <span class="hljs-comment">// iOS 17+</span>
+    <span class="hljs-keyword">var</span> descriptor <span class="hljs-operator">=</span> <span class="hljs-type">FetchDescriptor</span>&lt;<span class="hljs-type">Quote</span>&gt;(sortBy: [<span class="hljs-type">SortDescriptor</span>(\.id)])
+    descriptor.fetchOffset <span class="hljs-operator">=</span> <span class="hljs-type">DailyPick</span>.index(count: total)
+    descriptor.fetchLimit <span class="hljs-operator">=</span> <span class="hljs-number">1</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">try</span> context.fetch(descriptor).first
+}
+</code></pre>
+<p>Sorting by the stable ID matters too. Without a sort order, "the 1,234th quote" isn't guaranteed to be the same row tomorrow.</p>
+<hr>
+<h2 id="3-search-across-content-author-and-category-with-recent-searches" tabindex="-1"><a class="observablehq-header-anchor" href="#3-search-across-content-author-and-category-with-recent-searches">3. Search across content, author and category, with recent searches</a></h2>
+<p>SwiftUI's <code>searchable</code> (iOS 16+) and SwiftData's <code>#Predicate</code> (iOS 17+) do most of the work. <code>localizedStandardContains</code> gives the case- and diacritic-insensitive matching people expect from a search box:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> SwiftUI
+<span class="hljs-keyword">import</span> SwiftData
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">SearchView</span>: <span class="hljs-title class_ inherited__">View</span> {
+    <span class="hljs-meta">@State</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> text <span class="hljs-operator">=</span> <span class="hljs-string">""</span>
+    <span class="hljs-meta">@AppStorage</span>(<span class="hljs-string">"recentSearches"</span>) <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> recentData <span class="hljs-operator">=</span> <span class="hljs-type">Data</span>()
+
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">View</span> {
+        <span class="hljs-type">NavigationStack</span> {
+            <span class="hljs-type">QuoteResults</span>(query: text)
+                .navigationTitle(<span class="hljs-string">"Search"</span>)
+                .searchable(text: <span class="hljs-variable">$text</span>, prompt: <span class="hljs-string">"Quotes, authors, categories"</span>)
+                .searchSuggestions {
+                    <span class="hljs-keyword">if</span> text.isEmpty {
+                        <span class="hljs-type">ForEach</span>(recent, id: \.<span class="hljs-keyword">self</span>) { term <span class="hljs-keyword">in</span>
+                            <span class="hljs-type">Text</span>(term).searchCompletion(term)
+                        }
+                    }
+                }
+                .onSubmit(of: .search) { remember(text) }
+        }
+    }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> recent: [<span class="hljs-type">String</span>] { (<span class="hljs-keyword">try?</span> <span class="hljs-type">JSONDecoder</span>().decode([<span class="hljs-type">String</span>].<span class="hljs-keyword">self</span>, from: recentData)) <span class="hljs-operator">??</span> [] }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">remember</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">term</span>: <span class="hljs-type">String</span>) {
+        <span class="hljs-keyword">let</span> trimmed <span class="hljs-operator">=</span> term.trimmingCharacters(in: .whitespaces)
+        <span class="hljs-keyword">guard</span> <span class="hljs-operator">!</span>trimmed.isEmpty <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+        <span class="hljs-keyword">let</span> updated <span class="hljs-operator">=</span> ([trimmed] <span class="hljs-operator">+</span> recent.filter { <span class="hljs-variable">$0</span>.caseInsensitiveCompare(trimmed) <span class="hljs-operator">!=</span> .orderedSame }).prefix(<span class="hljs-number">8</span>)
+        recentData <span class="hljs-operator">=</span> (<span class="hljs-keyword">try?</span> <span class="hljs-type">JSONEncoder</span>().encode(<span class="hljs-type">Array</span>(updated))) <span class="hljs-operator">??</span> <span class="hljs-type">Data</span>()
+    }
+}
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">QuoteResults</span>: <span class="hljs-title class_ inherited__">View</span> {
+    <span class="hljs-meta">@Query</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> quotes: [<span class="hljs-type">Quote</span>]
+
+    <span class="hljs-keyword">init</span>(<span class="hljs-params">query</span>: <span class="hljs-type">String</span>) {
+        <span class="hljs-keyword">let</span> q <span class="hljs-operator">=</span> query
+        _quotes <span class="hljs-operator">=</span> <span class="hljs-type">Query</span>(filter: #<span class="hljs-type">Predicate</span>&lt;<span class="hljs-type">Quote</span>&gt; {
+            q.isEmpty <span class="hljs-operator">||</span>
+            <span class="hljs-variable">$0</span>.text.localizedStandardContains(q) <span class="hljs-operator">||</span>
+            <span class="hljs-variable">$0</span>.author.localizedStandardContains(q) <span class="hljs-operator">||</span>
+            <span class="hljs-variable">$0</span>.category.localizedStandardContains(q)
+        }, sort: \<span class="hljs-type">Quote</span>.author)
+    }
+
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">View</span> {
+        <span class="hljs-type">List</span>(quotes) { quote <span class="hljs-keyword">in</span>
+            <span class="hljs-type">VStack</span>(alignment: .leading, spacing: <span class="hljs-number">4</span>) {
+                <span class="hljs-type">Text</span>(<span class="hljs-string">"“<span class="hljs-subst">\(quote.text)</span>”"</span>)
+                <span class="hljs-type">Text</span>(<span class="hljs-string">"— <span class="hljs-subst">\(quote.author)</span>"</span>).font(.caption).foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+</code></pre>
+<p>Rebuilding the <code>Query</code> in the child view's initialiser is the standard way to drive a dynamic predicate from parent state. Recent searches are small and per-device, so <code>@AppStorage</code> is the right home for them.</p>
+<hr>
+<h2 id="4-collections-and-favourites" tabindex="-1"><a class="observablehq-header-anchor" href="#4-collections-and-favourites">4. Collections and favourites</a></h2>
+<p>With the many-to-many relationship from section 1, collections are a few lines. Favourites are just a flag. The listing says the Favorites collection "automatically syncs your liked quotes", so I'd treat it as a <em>virtual</em> collection, a query, rather than a stored one that can drift out of sync:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">FavoritesView</span>: <span class="hljs-title class_ inherited__">View</span> {
+    <span class="hljs-meta">@Query</span>(filter: #<span class="hljs-type">Predicate</span>&lt;<span class="hljs-type">Quote</span>&gt; { <span class="hljs-variable">$0</span>.isFavorite }, sort: \<span class="hljs-type">Quote</span>.author)
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> favorites: [<span class="hljs-type">Quote</span>]
+
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">View</span> {
+        <span class="hljs-type">List</span>(favorites) { <span class="hljs-type">Text</span>(<span class="hljs-variable">$0</span>.text) }
+            .overlay { <span class="hljs-keyword">if</span> favorites.isEmpty { <span class="hljs-type">ContentUnavailableView</span>(<span class="hljs-string">"No favourites yet"</span>, systemImage: <span class="hljs-string">"heart"</span>) } }
+    }
+}
+
+<span class="hljs-keyword">func</span> <span class="hljs-title function_">add</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">quote</span>: <span class="hljs-type">Quote</span>, <span class="hljs-params">to</span> <span class="hljs-params">collection</span>: <span class="hljs-type">QuoteCollection</span>) {
+    <span class="hljs-keyword">guard</span> <span class="hljs-operator">!</span>collection.quotes.contains(where: { <span class="hljs-variable">$0</span>.id <span class="hljs-operator">==</span> quote.id }) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+    collection.quotes.append(quote)
+}
+</code></pre>
+<p>Deleting a collection shouldn't delete its quotes. The default delete rule for a relationship, nullify, does exactly that.</p>
+<hr>
+<h2 id="5-streaks-that-survive-time-zones" tabindex="-1"><a class="observablehq-header-anchor" href="#5-streaks-that-survive-time-zones">5. Streaks that survive time zones</a></h2>
+<p>A streak is "the number of consecutive days, ending today, on which you read". The bugs come from storing <em>timestamps</em> and doing arithmetic in seconds. Then 23:50 and 00:10 count as the same day, or a flight makes a day disappear.</p>
+<p>The fix is to store <strong>calendar days as the user experienced them</strong>, as plain date strings, and count backwards:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> Foundation
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">StreakTracker</span> {
+    <span class="hljs-keyword">private(set)</span> <span class="hljs-keyword">var</span> days: <span class="hljs-type">Set</span>&lt;<span class="hljs-type">String</span>&gt;          <span class="hljs-comment">// "2026-10-22", in the user's local calendar at the time</span>
+    <span class="hljs-keyword">var</span> calendar <span class="hljs-operator">=</span> <span class="hljs-type">Calendar</span>.current
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">key</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">date</span>: <span class="hljs-type">Date</span>) -&gt; <span class="hljs-type">String</span> {
+        <span class="hljs-keyword">let</span> c <span class="hljs-operator">=</span> calendar.dateComponents([.year, .month, .day], from: date)
+        <span class="hljs-keyword">return</span> <span class="hljs-type">String</span>(format: <span class="hljs-string">"%04d-%02d-%02d"</span>, c.year<span class="hljs-operator">!</span>, c.month<span class="hljs-operator">!</span>, c.day<span class="hljs-operator">!</span>)
+    }
+
+    <span class="hljs-keyword">mutating</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">recordRead</span>(<span class="hljs-params">at</span> <span class="hljs-params">date</span>: <span class="hljs-type">Date</span> <span class="hljs-operator">=</span> .now) { days.insert(key(date)) }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">currentStreak</span>(<span class="hljs-params">asOf</span> <span class="hljs-params">now</span>: <span class="hljs-type">Date</span> <span class="hljs-operator">=</span> .now) -&gt; <span class="hljs-type">Int</span> {
+        <span class="hljs-keyword">var</span> day <span class="hljs-operator">=</span> calendar.startOfDay(for: now)
+        <span class="hljs-comment">// Not read yet today? The streak can still be alive from yesterday.</span>
+        <span class="hljs-keyword">if</span> <span class="hljs-operator">!</span>days.contains(key(day)) {
+            day <span class="hljs-operator">=</span> calendar.date(byAdding: .day, value: <span class="hljs-operator">-</span><span class="hljs-number">1</span>, to: day)<span class="hljs-operator">!</span>
+        }
+        <span class="hljs-keyword">var</span> count <span class="hljs-operator">=</span> <span class="hljs-number">0</span>
+        <span class="hljs-keyword">while</span> days.contains(key(day)) {
+            count <span class="hljs-operator">+=</span> <span class="hljs-number">1</span>
+            day <span class="hljs-operator">=</span> calendar.date(byAdding: .day, value: <span class="hljs-operator">-</span><span class="hljs-number">1</span>, to: day)<span class="hljs-operator">!</span>
+        }
+        <span class="hljs-keyword">return</span> count
+    }
+}
+</code></pre>
+<p>Why this is honest:</p>
+<ul>
+<li><strong>Each day is recorded in the local calendar at the moment it happens.</strong> Reading at 23:55 in Delhi is "the 22nd", whatever happens afterwards.</li>
+<li><strong>Today doesn't break the streak until it's over.</strong> Opening the app at 8 a.m. shouldn't show zero because you haven't read yet.</li>
+<li><strong>Calendar arithmetic, not 86,400-second arithmetic.</strong> <code>date(byAdding: .day…)</code> handles daylight-saving days of 23 or 25 hours.</li>
+</ul>
+<p>Achievements, like "7-day streak" or "read 100 quotes", are then pure functions of this data. Compute them; don't store them separately.</p>
+<hr>
+<h2 id="6-share-as-a-beautiful-image" tabindex="-1"><a class="observablehq-header-anchor" href="#6-share-as-a-beautiful-image">6. Share as a beautiful image</a></h2>
+<p>"Share quotes as beautiful images or text" is two lines of SwiftUI once you have the pieces: <code>ImageRenderer</code> (iOS 16+) to rasterise a SwiftUI view, and <code>ShareLink</code> with a <code>Transferable</code> item (iOS 16+):</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> SwiftUI
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">QuoteCard</span>: <span class="hljs-title class_ inherited__">View</span> {
+    <span class="hljs-keyword">let</span> quote: <span class="hljs-type">Quote</span>
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">View</span> {
+        <span class="hljs-type">VStack</span>(alignment: .leading, spacing: <span class="hljs-number">20</span>) {
+            <span class="hljs-type">Text</span>(<span class="hljs-string">"“<span class="hljs-subst">\(quote.text)</span>”"</span>).font(.system(size: <span class="hljs-number">44</span>, weight: .semibold, design: .serif))
+            <span class="hljs-type">Text</span>(<span class="hljs-string">"— <span class="hljs-subst">\(quote.author)</span>"</span>).font(.title2).foregroundStyle(.white.opacity(<span class="hljs-number">0.8</span>))
+        }
+        .foregroundStyle(.white)
+        .padding(<span class="hljs-number">80</span>)
+        .frame(width: <span class="hljs-number">1080</span>, height: <span class="hljs-number">1350</span>)                        <span class="hljs-comment">// a 4:5 portrait post</span>
+        .background(<span class="hljs-type">LinearGradient</span>(colors: [.indigo, .purple], startPoint: .topLeading, endPoint: .bottomTrailing))
+    }
+}
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">ShareableQuote</span>: <span class="hljs-title class_ inherited__">Transferable</span> {
+    <span class="hljs-keyword">let</span> quote: <span class="hljs-type">Quote</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">var</span> transferRepresentation: <span class="hljs-keyword">some</span> <span class="hljs-type">TransferRepresentation</span> {
+        <span class="hljs-type">DataRepresentation</span>(exportedContentType: .png) { item <span class="hljs-keyword">in</span>
+            <span class="hljs-keyword">await</span> <span class="hljs-type">MainActor</span>.run {
+                <span class="hljs-keyword">let</span> renderer <span class="hljs-operator">=</span> <span class="hljs-type">ImageRenderer</span>(content: <span class="hljs-type">QuoteCard</span>(quote: item.quote))
+                renderer.scale <span class="hljs-operator">=</span> <span class="hljs-number">1</span>                                <span class="hljs-comment">// the view is already 1080 px wide</span>
+                <span class="hljs-keyword">return</span> renderer.uiImage<span class="hljs-operator">?</span>.pngData() <span class="hljs-operator">??</span> <span class="hljs-type">Data</span>()
+            }
+        }
+        <span class="hljs-type">ProxyRepresentation</span> { <span class="hljs-string">"“<span class="hljs-subst">\(<span class="hljs-variable">$0</span>.quote.text)</span>” — <span class="hljs-subst">\(<span class="hljs-variable">$0</span>.quote.author)</span>"</span> }   <span class="hljs-comment">// text fallback</span>
+    }
+}
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">ShareButton</span>: <span class="hljs-title class_ inherited__">View</span> {
+    <span class="hljs-keyword">let</span> quote: <span class="hljs-type">Quote</span>
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">View</span> {
+        <span class="hljs-type">ShareLink</span>(item: <span class="hljs-type">ShareableQuote</span>(quote: quote),
+                  preview: <span class="hljs-type">SharePreview</span>(<span class="hljs-string">"Quote by <span class="hljs-subst">\(quote.author)</span>"</span>)) {
+            <span class="hljs-type">Label</span>(<span class="hljs-string">"Share"</span>, systemImage: <span class="hljs-string">"square.and.arrow.up"</span>)
+        }
+    }
+}
+</code></pre>
+<p>Details that matter:</p>
+<ul>
+<li><strong>Design the card at output pixel size</strong> and render with <code>scale = 1</code>. Sizes stay predictable, and text is sharp at the size social apps actually use.</li>
+<li><strong>Offer text too.</strong> The <code>ProxyRepresentation</code> gives the share sheet a plain-text version, so Messages or Notes receive words, not a picture of words.</li>
+<li><strong>Rendering happens on the main actor.</strong> <code>ImageRenderer</code> is main-actor bound, hence the <code>MainActor.run</code>.</li>
+</ul>
+<hr>
+<h2 id="7-light-dark-and-auto-with-colour-tokens" tabindex="-1"><a class="observablehq-header-anchor" href="#7-light-dark-and-auto-with-colour-tokens">7. Light, Dark and Auto, with colour tokens</a></h2>
+<p>"Light, Dark, and Auto" is a three-way setting where Auto means "follow the system". In SwiftUI, <code>preferredColorScheme(nil)</code> is exactly that:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">enum</span> <span class="hljs-title class_">ThemeSetting</span>: <span class="hljs-title class_ inherited__">String</span>, <span class="hljs-title class_ inherited__">CaseIterable</span> { <span class="hljs-keyword">case</span> auto, light, dark
+    <span class="hljs-keyword">var</span> scheme: <span class="hljs-type">ColorScheme</span>? { <span class="hljs-keyword">switch</span> <span class="hljs-keyword">self</span> { <span class="hljs-keyword">case</span> .auto: <span class="hljs-literal">nil</span>; <span class="hljs-keyword">case</span> .light: .light; <span class="hljs-keyword">case</span> .dark: .dark } }
+}
+
+<span class="hljs-keyword">@main</span>
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">QuotesApp</span>: <span class="hljs-title class_ inherited__">App</span> {
+    <span class="hljs-meta">@AppStorage</span>(<span class="hljs-string">"theme"</span>) <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> theme <span class="hljs-operator">=</span> <span class="hljs-type">ThemeSetting</span>.auto
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">Scene</span> {
+        <span class="hljs-type">WindowGroup</span> {
+            <span class="hljs-type">RootView</span>().preferredColorScheme(theme.scheme)
+        }
+        .modelContainer(for: [<span class="hljs-type">Quote</span>.<span class="hljs-keyword">self</span>, <span class="hljs-type">QuoteCollection</span>.<span class="hljs-keyword">self</span>])
+    }
+}
+</code></pre>
+<p>The listing mentions a design system with 50+ colour tokens. The approach I'd use is to define each token once in the asset catalog with light and dark variants, and refer to it by meaning (<code>Color("surfaceElevated")</code>, <code>Color("textSecondary")</code>) rather than by hue. Then a theme change is free, and no screen hard-codes <code>.black</code>.</p>
+<hr>
+<h2 id="8-real-world-example-facts-and-quotes" tabindex="-1"><a class="observablehq-header-anchor" href="#8-real-world-example-facts-and-quotes">8. Real-world example: Facts and Quotes</a></h2>
+<p>All of this comes from building <strong><a href="https://apps.apple.com/us/app/facts-and-quotes/id1607878544" target="_blank" rel="noopener noreferrer">Facts and Quotes</a></strong>. The code above is the approach I'd use, written for this article, not a copy of the app's source.</p>
+<p><img src="https://bestlatestapps.com/assets/blog/building-an-offline-quotes-app-in-swiftui/facts-and-quotes-screenshot-1.jpg" alt="Facts and Quotes App Store screenshot 1"></p>
+<p>At the time of writing, its App Store listing shows:</p>
+<ul>
+<li><strong>Free</strong>, in <strong>Health &amp; Fitness</strong> and <strong>Productivity</strong></li>
+<li>First released in <strong>August 2022</strong></li>
+<li><strong>3 ratings</strong> in the US store, all <strong>5 stars</strong></li>
+<li>Supports <strong>iOS 17.6 and later</strong></li>
+</ul>
+<p>How the listing maps to this article:</p>
+<table>
+<thead>
+<tr>
+<th>What the listing says</th>
+<th>Where it's covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"50,000+ curated quotes", "Offline access - read anywhere, anytime"</td>
+<td>Bundled library imported into SwiftData (section 1)</td>
+</tr>
+<tr>
+<td>"Daily new quotes automatically updated"</td>
+<td>Versioned importer plus a deterministic daily pick (sections 1–2)</td>
+</tr>
+<tr>
+<td>"Search quotes by content, author, or category" / "Recent searches"</td>
+<td><code>searchable</code> + <code>#Predicate</code> + <code>searchSuggestions</code> (section 3)</td>
+</tr>
+<tr>
+<td>"Create custom collections…" / "Favorites collection automatically syncs your liked quotes"</td>
+<td>SwiftData relationships and a query-based Favorites (section 4)</td>
+</tr>
+<tr>
+<td>"Track your reading streak and daily progress" / "Unlock achievements"</td>
+<td>Calendar-day streaks (section 5)</td>
+</tr>
+<tr>
+<td>"Share quotes as beautiful images or text"</td>
+<td><code>ImageRenderer</code> + <code>Transferable</code> + <code>ShareLink</code> (section 6)</td>
+</tr>
+<tr>
+<td>"Light, Dark, and Auto theme support" / "50+ color tokens"</td>
+<td><code>preferredColorScheme</code> and semantic colours (section 7)</td>
+</tr>
+</tbody>
+</table>
+<p><img src="https://bestlatestapps.com/assets/blog/building-an-offline-quotes-app-in-swiftui/facts-and-quotes-screenshot-2.jpg" alt="Facts and Quotes App Store screenshot 2"></p>
+<p>The listing also mentions AI-powered recommendations and haptic feedback. Those are topics for their own articles. I've written about haptics separately, in my Haptics Explorer piece.</p>
+<hr>
+<h2 id="9-before-you-ship-a-content-app-a-checklist" tabindex="-1"><a class="observablehq-header-anchor" href="#9-before-you-ship-a-content-app-a-checklist">9. Before you ship a content app: a checklist</a></h2>
+<ol>
+<li><strong>The first launch is fast.</strong> The import runs in the background, in batches, and the UI shows today's quote immediately.</li>
+<li><strong>Every item has a stable ID.</strong> Updates never break favourites or collections.</li>
+<li><strong>The daily pick uses a stable hash.</strong> No <code>hashValue</code>, and the fetch has a fixed sort order.</li>
+<li><strong>Search is case- and accent-insensitive</strong>, and recent searches are capped.</li>
+<li><strong>Streaks are tested across midnight, daylight saving and a time-zone change.</strong></li>
+<li><strong>Shared images are rendered at their target pixel size</strong>, with a text fallback.</li>
+<li><strong>Auto theme follows the system</strong>; no colour is hard-coded.</li>
+<li><strong>Attribution is correct.</strong> Every quote has an author, or "Unknown". Misattributed quotes are the most common complaint in this category.</li>
+<li><strong>Accessibility.</strong> Quote text scales with Dynamic Type, and VoiceOver reads the author after the quote.</li>
+</ol>
+<hr>
+<h2 id="wrapping-up" tabindex="-1"><a class="observablehq-header-anchor" href="#wrapping-up">Wrapping up</a></h2>
+<p>The app is simple to <em>use</em> because the hard parts are hidden. Ship content offline and import it once. Make "daily" deterministic. Store days, not seconds. Render share images at their real size. None of it needs a server, which is also why the app works on a plane.</p>
+<p>Try the app, or explore my other work:</p>
+<ul>
+<li><strong>Facts and Quotes (iOS):</strong> <a href="https://apps.apple.com/us/app/facts-and-quotes/id1607878544" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/facts-and-quotes/id1607878544</a></li>
+<li><strong>All of my free iOS apps:</strong> <a href="https://apps.apple.com/us/developer/alok-singh/id1508795536" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/developer/alok-singh/id1508795536</a></li>
+<li><strong>My portfolio:</strong> <a href="https://bestlatestapps.com/alok/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/alok/</a></li>
+</ul>
+<p>Got a favourite quote? Drop it in the comments.</p>
+<p><em>— Alok Kumar Singh</em></p>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/building-an-offline-quotes-app-in-swiftui/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/building-an-offline-quotes-app-in-swiftui/</a></em></p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./building-an-offline-ebook-reader-for-ios"><span>Building an Offline eBook Reader for iOS</span></a><a rel="next" href="./building-an-admob-earnings-dashboard-for-ios"><span>Building an AdMob Earnings Dashboard for iOS</span></a></nav>
+<div>Articles by Alok Kumar Singh. Originals at <a href="https://bestlatestapps.com/blog/" target="_blank" rel="noopener noreferrer">bestlatestapps.com/blog</a>.</div>
+</footer>
+</div>
+</body>
+</html>

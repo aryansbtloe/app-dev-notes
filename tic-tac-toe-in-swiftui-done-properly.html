@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>Tic Tac Toe in SwiftUI, Done Properly: Value-Type Game State, Win Detection and an Unbeatable Minimax Opponent | Alok Singh, App Dev Notes</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="modulepreload" href="./_observablehq/client.097df403.js">
+<link rel="modulepreload" href="./_observablehq/runtime.fa9f71c0.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.60afab10.js">
+<link rel="canonical" href="https://bestlatestapps.com/blog/tic-tac-toe-in-swiftui-done-properly/"><meta name="description" content="The smallest game worth architecting: an immutable board, testable rules, a view that just renders state, and the classic AI you can bolt on in 40 lines">
+<script type="module">
+
+import "./_observablehq/client.097df403.js";
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Alok Singh, App Dev Notes</a></li>
+  </ol>
+  <div id="observablehq-search"><input type="search" placeholder="Search"></div>
+  <div id="observablehq-search-results"></div>
+  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.755d897f.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
+  <ol>
+    <li class="observablehq-link observablehq-link-active"><a href="./tic-tac-toe-in-swiftui-done-properly">Tic Tac Toe in SwiftUI, Done Properly</a></li>
+    <li class="observablehq-link"><a href="./the-sending-side-of-apns">The Sending Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./the-device-side-of-apns">The Device Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./text-plus-audio-fully-offline">Text Plus Audio, Fully Offline</a></li>
+    <li class="observablehq-link"><a href="./stop-hand-rolling-unit-conversions">Stop Hand-Rolling Unit Conversions</a></li>
+    <li class="observablehq-link"><a href="./shipping-a-4k-wallpaper-app-without-running-out-of-memory">Shipping a 4K Wallpaper App Without Running Out of Memory</a></li>
+    <li class="observablehq-link"><a href="./medication-reminders-that-actually-fire">Medication Reminders That Actually Fire</a></li>
+    <li class="observablehq-link"><a href="./from-barcode-to-pdf">From Barcode to PDF</a></li>
+    <li class="observablehq-link"><a href="./drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game">Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game,</a></li>
+    <li class="observablehq-link"><a href="./convert-as-you-type-currency-conversion-in-swift">Convert-As-You-Type Currency Conversion in Swift</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-first-bible-reader-on-ios">Building an Offline-First Bible Reader on iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-ebook-reader-for-ios">Building an Offline eBook Reader for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-quotes-app-in-swiftui">Building an Offline Quotes App in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-an-admob-earnings-dashboard-for-ios">Building an AdMob Earnings Dashboard for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-tap-to-match-marble-game-with-spritekit-and-swiftui">Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine">Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine</a></li>
+    <li class="observablehq-link"><a href="./building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe">Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioE</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-ios-component-catalogue">Building a Live iOS Component Catalogue</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-temple-darshan-app-for-ios">Building a Live Temple Darshan App for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-hashtag-copier-for-ios">Building a Hashtag Copier for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-chromatic-guitar-tuner-on-ios">Building a Chromatic Guitar Tuner on iOS</a></li>
+    <li class="observablehq-link"><a href="./animating-algorithms-in-swiftui">Animating Algorithms in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./a-practical-guide-to-ios-haptics">A Practical Guide to iOS Haptics</a></li>
+    <li class="observablehq-link"><a href="./a-document-scanner-in-an-afternoon">A Document Scanner in an Afternoon</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#1-why-architecture-matters-even-here">1. Why architecture matters even here</a></li>
+<li class="observablehq-secondary-link"><a href="#2-the-model-a-board-that-cant-be-wrong">2. The model: a board that can&#x27;t be wrong</a></li>
+<li class="observablehq-secondary-link"><a href="#3-testing-the-rules">3. Testing the rules</a></li>
+<li class="observablehq-secondary-link"><a href="#4-the-view-render-state-forward-taps">4. The view: render state, forward taps</a></li>
+<li class="observablehq-secondary-link"><a href="#5-adding-a-computer-opponent-minimax">5. Adding a computer opponent: minimax</a></li>
+<li class="observablehq-secondary-link"><a href="#6-real-world-example-tic-tac-toe-time-pass">6. Real-world example: Tic Tac Toe : Time Pass</a></li>
+<li class="observablehq-secondary-link"><a href="#7-before-you-ship-a-small-game-a-checklist">7. Before you ship a small game: a checklist</a></li>
+<li class="observablehq-secondary-link"><a href="#wrapping-up">Wrapping up</a></li>
+</ol>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="tic-tac-toe-in-swift-ui-done-properly-value-type-game-state-win-detection-and-an-unbeatable-minimax-opponent" tabindex="-1"><a class="observablehq-header-anchor" href="#tic-tac-toe-in-swift-ui-done-properly-value-type-game-state-win-detection-and-an-unbeatable-minimax-opponent">Tic Tac Toe in SwiftUI, Done Properly: Value-Type Game State, Win Detection and an Unbeatable Minimax Opponent</a></h1>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/tic-tac-toe-in-swiftui-done-properly/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/tic-tac-toe-in-swiftui-done-properly/</a></em></p>
+<p><em>The smallest game worth architecting: an immutable board, testable rules, a view that just renders state, and the classic AI you can bolt on in 40 lines</em></p>
+<p><img src="https://bestlatestapps.com/assets/blog/tic-tac-toe-in-swiftui-done-properly/tic-tac-toe-icon-512.jpg" alt="Tic Tac Toe : Time Pass app icon"></p>
+<p>Tic tac toe is the "hello world" of game development, which is exactly why it's worth doing properly. It's small enough to hold in your head, but it still has every piece a real game needs: state, rules, turns, an end condition, a UI that reflects state, and, if you want it, an opponent that thinks.</p>
+<p>One of my earliest App Store apps is <strong>Tic Tac Toe : Time Pass</strong>, published in April 2020. Its listing is as short as the game: "Put away your pencil and paper", with one-player and two-player modes, so you can play against another person or against yourself.</p>
+<p>This article uses tic tac toe to show an architecture I'd use for any turn-based game: a <strong>value-type model</strong> that owns all the rules, a <strong>SwiftUI view</strong> that only renders state and forwards taps, <strong>unit tests</strong> for the rules, and a <strong>minimax opponent</strong> as an optional extension. To be clear: the listing doesn't say the app has a computer opponent. The minimax section is the approach I'd add, not a description of the app. API names are checked against Apple's documentation.</p>
+<hr>
+<h2 id="1-why-architecture-matters-even-here" tabindex="-1"><a class="observablehq-header-anchor" href="#1-why-architecture-matters-even-here">1. Why architecture matters even here</a></h2>
+<p>The quick version of tic tac toe puts nine <code>@State</code> strings in a view and checks for a winner inside the button action. It works for an afternoon. Then you want an undo button, a computer player, a "new game" animation, a stats screen and tests, and every one of those features has to reach into the view.</p>
+<p>Instead, split it like this:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-type">Game</span> (<span class="hljs-keyword">struct</span>)      <span class="hljs-operator">←</span> all rules: whose turn, legal moves, winner, draw
+   <span class="hljs-operator">▲</span>     <span class="hljs-operator">│</span>
+   <span class="hljs-operator">│</span>     <span class="hljs-operator">▼</span>
+<span class="hljs-type">GameViewModel</span>      <span class="hljs-operator">←</span> owns a <span class="hljs-type">Game</span>, applies moves, triggers <span class="hljs-type">AI</span>, publishes state
+   <span class="hljs-operator">▲</span>     <span class="hljs-operator">│</span>
+   <span class="hljs-operator">│</span>     <span class="hljs-operator">▼</span>
+<span class="hljs-type">GameView</span> (<span class="hljs-type">SwiftUI</span>) <span class="hljs-operator">←</span> renders state, sends taps; no rules at all
+</code></pre>
+<p>The model is a plain struct with no UIKit, SwiftUI or timers, which means you can test it, copy it (undo is free), and hand a copy to an AI to explore future moves without touching the real game.</p>
+<hr>
+<h2 id="2-the-model-a-board-that-cant-be-wrong" tabindex="-1"><a class="observablehq-header-anchor" href="#2-the-model-a-board-that-cant-be-wrong">2. The model: a board that can't be wrong</a></h2>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">enum</span> <span class="hljs-title class_">Player</span>: <span class="hljs-title class_ inherited__">String</span>, <span class="hljs-title class_ inherited__">CaseIterable</span> {
+    <span class="hljs-keyword">case</span> x <span class="hljs-operator">=</span> <span class="hljs-string">"X"</span>, o <span class="hljs-operator">=</span> <span class="hljs-string">"O"</span>
+    <span class="hljs-keyword">var</span> opponent: <span class="hljs-type">Player</span> { <span class="hljs-keyword">self</span> <span class="hljs-operator">==</span> .x <span class="hljs-operator">?</span> .o : .x }
+}
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">Outcome</span>: <span class="hljs-title class_ inherited__">Equatable</span> {
+    <span class="hljs-keyword">case</span> inProgress
+    <span class="hljs-keyword">case</span> win(<span class="hljs-type">Player</span>, line: [<span class="hljs-type">Int</span>])
+    <span class="hljs-keyword">case</span> draw
+}
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">Game</span>: <span class="hljs-title class_ inherited__">Equatable</span> {
+    <span class="hljs-keyword">private(set)</span> <span class="hljs-keyword">var</span> cells: [<span class="hljs-type">Player</span>?] <span class="hljs-operator">=</span> <span class="hljs-type">Array</span>(repeating: <span class="hljs-literal">nil</span>, count: <span class="hljs-number">9</span>)
+    <span class="hljs-keyword">private(set)</span> <span class="hljs-keyword">var</span> current: <span class="hljs-type">Player</span> <span class="hljs-operator">=</span> .x
+    <span class="hljs-keyword">private(set)</span> <span class="hljs-keyword">var</span> moves: [<span class="hljs-type">Int</span>] <span class="hljs-operator">=</span> []          <span class="hljs-comment">// history, for undo and replays</span>
+
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> lines: [[<span class="hljs-type">Int</span>]] <span class="hljs-operator">=</span> [
+        [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>], [<span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>], [<span class="hljs-number">6</span>, <span class="hljs-number">7</span>, <span class="hljs-number">8</span>],         <span class="hljs-comment">// rows</span>
+        [<span class="hljs-number">0</span>, <span class="hljs-number">3</span>, <span class="hljs-number">6</span>], [<span class="hljs-number">1</span>, <span class="hljs-number">4</span>, <span class="hljs-number">7</span>], [<span class="hljs-number">2</span>, <span class="hljs-number">5</span>, <span class="hljs-number">8</span>],         <span class="hljs-comment">// columns</span>
+        [<span class="hljs-number">0</span>, <span class="hljs-number">4</span>, <span class="hljs-number">8</span>], [<span class="hljs-number">2</span>, <span class="hljs-number">4</span>, <span class="hljs-number">6</span>]                     <span class="hljs-comment">// diagonals</span>
+    ]
+
+    <span class="hljs-keyword">var</span> outcome: <span class="hljs-type">Outcome</span> {
+        <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> <span class="hljs-keyword">Self</span>.lines {
+            <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> p <span class="hljs-operator">=</span> cells[line[<span class="hljs-number">0</span>]], cells[line[<span class="hljs-number">1</span>]] <span class="hljs-operator">==</span> p, cells[line[<span class="hljs-number">2</span>]] <span class="hljs-operator">==</span> p {
+                <span class="hljs-keyword">return</span> .win(p, line: line)
+            }
+        }
+        <span class="hljs-keyword">return</span> cells.allSatisfy { <span class="hljs-variable">$0</span> <span class="hljs-operator">!=</span> <span class="hljs-literal">nil</span> } <span class="hljs-operator">?</span> .draw : .inProgress
+    }
+
+    <span class="hljs-keyword">var</span> legalMoves: [<span class="hljs-type">Int</span>] {
+        <span class="hljs-keyword">guard</span> outcome <span class="hljs-operator">==</span> .inProgress <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> [] }
+        <span class="hljs-keyword">return</span> cells.indices.filter { cells[<span class="hljs-variable">$0</span>] <span class="hljs-operator">==</span> <span class="hljs-literal">nil</span> }
+    }
+
+    <span class="hljs-comment">/// Returns a new game with the move applied, or nil if the move is illegal.</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">playing</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">index</span>: <span class="hljs-type">Int</span>) -&gt; <span class="hljs-type">Game</span>? {
+        <span class="hljs-keyword">guard</span> legalMoves.contains(index) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span> }
+        <span class="hljs-keyword">var</span> next <span class="hljs-operator">=</span> <span class="hljs-keyword">self</span>
+        next.cells[index] <span class="hljs-operator">=</span> current
+        next.moves.append(index)
+        next.current <span class="hljs-operator">=</span> current.opponent
+        <span class="hljs-keyword">return</span> next
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">undoing</span>() -&gt; <span class="hljs-type">Game</span> {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> last <span class="hljs-operator">=</span> moves.last <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-keyword">self</span> }
+        <span class="hljs-keyword">var</span> previous <span class="hljs-operator">=</span> <span class="hljs-keyword">self</span>
+        previous.cells[last] <span class="hljs-operator">=</span> <span class="hljs-literal">nil</span>
+        previous.moves.removeLast()
+        previous.current <span class="hljs-operator">=</span> current.opponent
+        <span class="hljs-keyword">return</span> previous
+    }
+}
+</code></pre>
+<p>A few deliberate choices:</p>
+<ul>
+<li><strong><code>private(set)</code> everywhere.</strong> Nothing outside the model can put an X in an occupied square or skip a turn. The only way to change the game is <code>playing(_:)</code>, and it validates.</li>
+<li><strong><code>playing(_:)</code> returns a new value</strong> instead of mutating. That makes the AI trivial, because it explores copies, and it makes "what if?" previews free.</li>
+<li><strong>Eight hard-coded lines beat a clever loop.</strong> For a 3×3 board, a literal table is the most readable rules engine possible. (For an N×N variant, you'd generate the lines instead.)</li>
+</ul>
+<hr>
+<h2 id="3-testing-the-rules" tabindex="-1"><a class="observablehq-header-anchor" href="#3-testing-the-rules">3. Testing the rules</a></h2>
+<p>Because the model is pure, the tests read like the rules of the game:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> XCTest
+
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">GameTests</span>: <span class="hljs-title class_ inherited__">XCTestCase</span> {
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">play</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">moves</span>: [<span class="hljs-type">Int</span>]) -&gt; <span class="hljs-type">Game</span> {
+        moves.reduce(<span class="hljs-type">Game</span>()) { game, move <span class="hljs-keyword">in</span>
+            <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> next <span class="hljs-operator">=</span> game.playing(move) <span class="hljs-keyword">else</span> {
+                <span class="hljs-type">XCTFail</span>(<span class="hljs-string">"Illegal move <span class="hljs-subst">\(move)</span>"</span>); <span class="hljs-keyword">return</span> game
+            }
+            <span class="hljs-keyword">return</span> next
+        }
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">testRowWin</span>() {
+        <span class="hljs-comment">// X: 0, 1, 2   O: 3, 4</span>
+        <span class="hljs-type">XCTAssertEqual</span>(play([<span class="hljs-number">0</span>, <span class="hljs-number">3</span>, <span class="hljs-number">1</span>, <span class="hljs-number">4</span>, <span class="hljs-number">2</span>]).outcome, .win(.x, line: [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>]))
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">testDiagonalWinForO</span>() {
+        <span class="hljs-comment">// X: 0, 1, 5   O: 2, 4, 6</span>
+        <span class="hljs-type">XCTAssertEqual</span>(play([<span class="hljs-number">0</span>, <span class="hljs-number">2</span>, <span class="hljs-number">1</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span>]).outcome, .win(.o, line: [<span class="hljs-number">2</span>, <span class="hljs-number">4</span>, <span class="hljs-number">6</span>]))
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">testDraw</span>() {
+        <span class="hljs-comment">// X O X / X O O / O X X</span>
+        <span class="hljs-type">XCTAssertEqual</span>(play([<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">4</span>, <span class="hljs-number">3</span>, <span class="hljs-number">5</span>, <span class="hljs-number">7</span>, <span class="hljs-number">6</span>, <span class="hljs-number">8</span>]).outcome, .draw)
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">testCannotPlayOccupiedSquareOrAfterWin</span>() {
+        <span class="hljs-keyword">let</span> game <span class="hljs-operator">=</span> play([<span class="hljs-number">0</span>, <span class="hljs-number">3</span>, <span class="hljs-number">1</span>, <span class="hljs-number">4</span>, <span class="hljs-number">2</span>])          <span class="hljs-comment">// X has won</span>
+        <span class="hljs-type">XCTAssertNil</span>(<span class="hljs-type">Game</span>().playing(<span class="hljs-number">0</span>)<span class="hljs-operator">?</span>.playing(<span class="hljs-number">0</span>))
+        <span class="hljs-type">XCTAssertNil</span>(game.playing(<span class="hljs-number">8</span>))
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">testUndoRestoresTurn</span>() {
+        <span class="hljs-keyword">let</span> game <span class="hljs-operator">=</span> play([<span class="hljs-number">4</span>]).undoing()
+        <span class="hljs-type">XCTAssertEqual</span>(game, <span class="hljs-type">Game</span>())
+    }
+}
+</code></pre>
+<p>These run in milliseconds, with no simulator UI. When you later add an AI or a new mode, they're your safety net.</p>
+<hr>
+<h2 id="4-the-view-render-state-forward-taps" tabindex="-1"><a class="observablehq-header-anchor" href="#4-the-view-render-state-forward-taps">4. The view: render state, forward taps</a></h2>
+<p>The view model holds the game and the mode. The view is a grid:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> SwiftUI
+
+<span class="hljs-meta">@MainActor</span>
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">GameViewModel</span>: <span class="hljs-title class_ inherited__">ObservableObject</span> {
+    <span class="hljs-keyword">enum</span> <span class="hljs-title class_">Mode</span> { <span class="hljs-keyword">case</span> twoPlayer, onePlayer(computer: <span class="hljs-type">Player</span>) }
+
+    <span class="hljs-meta">@Published</span> <span class="hljs-keyword">private(set)</span> <span class="hljs-keyword">var</span> game <span class="hljs-operator">=</span> <span class="hljs-type">Game</span>()
+    <span class="hljs-meta">@Published</span> <span class="hljs-keyword">var</span> mode: <span class="hljs-type">Mode</span> <span class="hljs-operator">=</span> .twoPlayer
+    <span class="hljs-meta">@Published</span> <span class="hljs-keyword">private(set)</span> <span class="hljs-keyword">var</span> isThinking <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">tap</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">index</span>: <span class="hljs-type">Int</span>) {
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">case</span> .onePlayer(<span class="hljs-keyword">let</span> computer) <span class="hljs-operator">=</span> mode, game.current <span class="hljs-operator">==</span> computer { <span class="hljs-keyword">return</span> }
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> next <span class="hljs-operator">=</span> game.playing(index) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+        game <span class="hljs-operator">=</span> next
+        computerMoveIfNeeded()
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">undo</span>() { game <span class="hljs-operator">=</span> game.undoing() }
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">reset</span>() { game <span class="hljs-operator">=</span> <span class="hljs-type">Game</span>(); computerMoveIfNeeded() }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">computerMoveIfNeeded</span>() {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">case</span> .onePlayer(<span class="hljs-keyword">let</span> computer) <span class="hljs-operator">=</span> mode,
+              game.current <span class="hljs-operator">==</span> computer, game.outcome <span class="hljs-operator">==</span> .inProgress <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+        isThinking <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>
+        <span class="hljs-keyword">let</span> snapshot <span class="hljs-operator">=</span> game
+        <span class="hljs-type">Task</span> {
+            <span class="hljs-keyword">try?</span> <span class="hljs-keyword">await</span> <span class="hljs-type">Task</span>.sleep(for: .milliseconds(<span class="hljs-number">350</span>))   <span class="hljs-comment">// feels less robotic</span>
+            <span class="hljs-keyword">let</span> move <span class="hljs-operator">=</span> <span class="hljs-type">Minimax</span>.bestMove(in: snapshot)
+            <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> move, <span class="hljs-keyword">let</span> next <span class="hljs-operator">=</span> game.playing(move) { game <span class="hljs-operator">=</span> next }
+            isThinking <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>
+        }
+    }
+}
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">GameView</span>: <span class="hljs-title class_ inherited__">View</span> {
+    <span class="hljs-meta">@StateObject</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> model <span class="hljs-operator">=</span> <span class="hljs-type">GameViewModel</span>()
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> columns <span class="hljs-operator">=</span> <span class="hljs-type">Array</span>(repeating: <span class="hljs-type">GridItem</span>(.flexible(), spacing: <span class="hljs-number">8</span>), count: <span class="hljs-number">3</span>)
+
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">View</span> {
+        <span class="hljs-type">VStack</span>(spacing: <span class="hljs-number">20</span>) {
+            <span class="hljs-type">Text</span>(status).font(.title2.bold())
+
+            <span class="hljs-type">LazyVGrid</span>(columns: columns, spacing: <span class="hljs-number">8</span>) {
+                <span class="hljs-type">ForEach</span>(<span class="hljs-number">0</span><span class="hljs-operator">..&lt;</span><span class="hljs-number">9</span>, id: \.<span class="hljs-keyword">self</span>) { index <span class="hljs-keyword">in</span>
+                    <span class="hljs-keyword">let</span> mark <span class="hljs-operator">=</span> model.game.cells[index]
+                    <span class="hljs-type">Button</span> { model.tap(index) } label: {
+                        <span class="hljs-type">Text</span>(mark<span class="hljs-operator">?</span>.rawValue <span class="hljs-operator">??</span> <span class="hljs-string">" "</span>)
+                            .font(.system(size: <span class="hljs-number">56</span>, weight: .heavy, design: .rounded))
+                            .frame(maxWidth: .infinity, minHeight: <span class="hljs-number">96</span>)
+                            .background(background(for: index),
+                                        in: <span class="hljs-type">RoundedRectangle</span>(cornerRadius: <span class="hljs-number">12</span>))
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(mark <span class="hljs-operator">!=</span> <span class="hljs-literal">nil</span> <span class="hljs-operator">||</span> model.game.outcome <span class="hljs-operator">!=</span> .inProgress)
+                    .accessibilityLabel(label(for: index, mark: mark))
+                }
+            }
+            .padding(.horizontal)
+
+            <span class="hljs-type">HStack</span> {
+                <span class="hljs-type">Button</span>(<span class="hljs-string">"Undo"</span>, action: model.undo).disabled(model.game.moves.isEmpty)
+                <span class="hljs-type">Spacer</span>()
+                <span class="hljs-type">Button</span>(<span class="hljs-string">"New Game"</span>, action: model.reset)
+            }
+            .padding(.horizontal)
+        }
+        .animation(.easeOut(duration: <span class="hljs-number">0.2</span>), value: model.game)
+        .sensoryFeedback(.selection, trigger: model.game.moves.count)   <span class="hljs-comment">// iOS 17+</span>
+    }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> status: <span class="hljs-type">String</span> {
+        <span class="hljs-keyword">switch</span> model.game.outcome {
+        <span class="hljs-keyword">case</span> .inProgress: <span class="hljs-keyword">return</span> model.isThinking <span class="hljs-operator">?</span> <span class="hljs-string">"Thinking…"</span> : <span class="hljs-string">"<span class="hljs-subst">\(model.game.current.rawValue)</span> to play"</span>
+        <span class="hljs-keyword">case</span> .win(<span class="hljs-keyword">let</span> p, <span class="hljs-keyword">_</span>): <span class="hljs-keyword">return</span> <span class="hljs-string">"<span class="hljs-subst">\(p.rawValue)</span> wins!"</span>
+        <span class="hljs-keyword">case</span> .draw: <span class="hljs-keyword">return</span> <span class="hljs-string">"It's a draw"</span>
+        }
+    }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">background</span>(<span class="hljs-params">for</span> <span class="hljs-params">index</span>: <span class="hljs-type">Int</span>) -&gt; <span class="hljs-type">Color</span> {
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">case</span> .win(<span class="hljs-keyword">_</span>, <span class="hljs-keyword">let</span> line) <span class="hljs-operator">=</span> model.game.outcome, line.contains(index) {
+            <span class="hljs-keyword">return</span> .green.opacity(<span class="hljs-number">0.3</span>)
+        }
+        <span class="hljs-keyword">return</span> <span class="hljs-type">Color</span>(.secondarySystemBackground)
+    }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">label</span>(<span class="hljs-params">for</span> <span class="hljs-params">index</span>: <span class="hljs-type">Int</span>, <span class="hljs-params">mark</span>: <span class="hljs-type">Player</span>?) -&gt; <span class="hljs-type">String</span> {
+        <span class="hljs-keyword">let</span> row <span class="hljs-operator">=</span> index <span class="hljs-operator">/</span> <span class="hljs-number">3</span> <span class="hljs-operator">+</span> <span class="hljs-number">1</span>, column <span class="hljs-operator">=</span> index <span class="hljs-operator">%</span> <span class="hljs-number">3</span> <span class="hljs-operator">+</span> <span class="hljs-number">1</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-string">"Row <span class="hljs-subst">\(row)</span>, column <span class="hljs-subst">\(column)</span>, <span class="hljs-subst">\(mark.map { <span class="hljs-variable">$0</span>.rawValue } <span class="hljs-operator">??</span> <span class="hljs-string">"empty"</span>)</span>"</span>
+    }
+}
+</code></pre>
+<p>Notice what the view <em>doesn't</em> do: it never decides who won or whether a move is legal. Even the disabled state just reads the model.</p>
+<p>Version notes, since the app supports iOS 12: <code>LazyVGrid</code> is iOS 14+, <code>.sensoryFeedback</code> is iOS 17+, and <code>Task.sleep(for:)</code> is iOS 16+. On an older target, use nested <code>HStack</code>s, <code>UIImpactFeedbackGenerator</code> and <code>Task.sleep(nanoseconds:)</code>, or build the same view model behind a UIKit grid. SwiftUI itself starts at iOS 13, so a genuinely iOS 12-compatible app is UIKit. The architecture doesn't change; only the view layer does.</p>
+<hr>
+<h2 id="5-adding-a-computer-opponent-minimax" tabindex="-1"><a class="observablehq-header-anchor" href="#5-adding-a-computer-opponent-minimax">5. Adding a computer opponent: minimax</a></h2>
+<p>Tic tac toe is small enough to search <em>completely</em>. Minimax explores every possible continuation and assumes both players play perfectly: the computer picks the move with the best guaranteed outcome, and assumes you'll pick the one that's worst for it.</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">enum</span> <span class="hljs-title class_">Minimax</span> {
+    <span class="hljs-comment">/// Best move for `game.current`, or nil if the game is over.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">bestMove</span>(<span class="hljs-params">in</span> <span class="hljs-params">game</span>: <span class="hljs-type">Game</span>) -&gt; <span class="hljs-type">Int</span>? {
+        <span class="hljs-keyword">let</span> me <span class="hljs-operator">=</span> game.current
+        <span class="hljs-keyword">var</span> best: (move: <span class="hljs-type">Int</span>, score: <span class="hljs-type">Int</span>)<span class="hljs-operator">?</span>
+        <span class="hljs-keyword">for</span> move <span class="hljs-keyword">in</span> game.legalMoves {
+            <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> next <span class="hljs-operator">=</span> game.playing(move) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">continue</span> }
+            <span class="hljs-keyword">let</span> score <span class="hljs-operator">=</span> minimax(next, maximizing: <span class="hljs-literal">false</span>, me: me, depth: <span class="hljs-number">1</span>,
+                                alpha: <span class="hljs-type">Int</span>.min, beta: <span class="hljs-type">Int</span>.max)
+            <span class="hljs-keyword">if</span> best <span class="hljs-operator">==</span> <span class="hljs-literal">nil</span> <span class="hljs-operator">||</span> score <span class="hljs-operator">&gt;</span> best<span class="hljs-operator">!</span>.score { best <span class="hljs-operator">=</span> (move, score) }
+        }
+        <span class="hljs-keyword">return</span> best<span class="hljs-operator">?</span>.move
+    }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">minimax</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">game</span>: <span class="hljs-type">Game</span>, <span class="hljs-params">maximizing</span>: <span class="hljs-type">Bool</span>, <span class="hljs-params">me</span>: <span class="hljs-type">Player</span>,
+                                <span class="hljs-params">depth</span>: <span class="hljs-type">Int</span>, <span class="hljs-params">alpha</span>: <span class="hljs-type">Int</span>, <span class="hljs-params">beta</span>: <span class="hljs-type">Int</span>) -&gt; <span class="hljs-type">Int</span> {
+        <span class="hljs-keyword">switch</span> game.outcome {
+        <span class="hljs-keyword">case</span> .win(<span class="hljs-keyword">let</span> p, <span class="hljs-keyword">_</span>): <span class="hljs-keyword">return</span> p <span class="hljs-operator">==</span> me <span class="hljs-operator">?</span> <span class="hljs-number">10</span> <span class="hljs-operator">-</span> depth : depth <span class="hljs-operator">-</span> <span class="hljs-number">10</span>   <span class="hljs-comment">// win sooner, lose later</span>
+        <span class="hljs-keyword">case</span> .draw: <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>
+        <span class="hljs-keyword">case</span> .inProgress: <span class="hljs-keyword">break</span>
+        }
+        <span class="hljs-keyword">var</span> alpha <span class="hljs-operator">=</span> alpha, beta <span class="hljs-operator">=</span> beta
+        <span class="hljs-keyword">var</span> best <span class="hljs-operator">=</span> maximizing <span class="hljs-operator">?</span> <span class="hljs-type">Int</span>.min : <span class="hljs-type">Int</span>.max
+        <span class="hljs-keyword">for</span> move <span class="hljs-keyword">in</span> game.legalMoves {
+            <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> next <span class="hljs-operator">=</span> game.playing(move) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">continue</span> }
+            <span class="hljs-keyword">let</span> score <span class="hljs-operator">=</span> minimax(next, maximizing: <span class="hljs-operator">!</span>maximizing, me: me,
+                                depth: depth <span class="hljs-operator">+</span> <span class="hljs-number">1</span>, alpha: alpha, beta: beta)
+            <span class="hljs-keyword">if</span> maximizing {
+                best <span class="hljs-operator">=</span> <span class="hljs-built_in">max</span>(best, score); alpha <span class="hljs-operator">=</span> <span class="hljs-built_in">max</span>(alpha, best)
+            } <span class="hljs-keyword">else</span> {
+                best <span class="hljs-operator">=</span> <span class="hljs-built_in">min</span>(best, score); beta <span class="hljs-operator">=</span> <span class="hljs-built_in">min</span>(beta, best)
+            }
+            <span class="hljs-keyword">if</span> beta <span class="hljs-operator">&lt;=</span> alpha { <span class="hljs-keyword">break</span> }      <span class="hljs-comment">// alpha-beta pruning: this branch can't matter</span>
+        }
+        <span class="hljs-keyword">return</span> best
+    }
+}
+</code></pre>
+<p>Two details make this feel right:</p>
+<ul>
+<li><strong>Depth in the score.</strong> <code>10 - depth</code> makes the AI prefer winning <em>now</em> over winning later, and losing later over losing now. Without it, a perfect AI sometimes "plays with its food" and looks broken.</li>
+<li><strong>Alpha-beta pruning</strong> skips branches that can't change the result. The full game tree is only a few hundred thousand positions, so the AI is instant either way, but pruning is a habit worth building for bigger games.</li>
+</ul>
+<h3 id="making-it-beatable" tabindex="-1"><a class="observablehq-header-anchor" href="#making-it-beatable">Making it beatable</a></h3>
+<p>A perfect tic tac toe opponent never loses, which makes it boring quickly. A simple difficulty dial:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">extension</span> <span class="hljs-title class_">Minimax</span> {
+    <span class="hljs-comment">/// skill 0.0 = random, 1.0 = perfect</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">move</span>(<span class="hljs-params">in</span> <span class="hljs-params">game</span>: <span class="hljs-type">Game</span>, <span class="hljs-params">skill</span>: <span class="hljs-type">Double</span>) -&gt; <span class="hljs-type">Int</span>? {
+        <span class="hljs-keyword">if</span> <span class="hljs-type">Double</span>.random(in: <span class="hljs-number">0</span><span class="hljs-operator">..&lt;</span><span class="hljs-number">1</span>) <span class="hljs-operator">&gt;</span> skill { <span class="hljs-keyword">return</span> game.legalMoves.randomElement() }
+        <span class="hljs-keyword">return</span> bestMove(in: game)
+    }
+}
+</code></pre>
+<p>"Easy" around 0.3, "medium" around 0.7 and "hard" at 1.0 gives three genuinely different games from one function.</p>
+<hr>
+<h2 id="6-real-world-example-tic-tac-toe-time-pass" tabindex="-1"><a class="observablehq-header-anchor" href="#6-real-world-example-tic-tac-toe-time-pass">6. Real-world example: Tic Tac Toe : Time Pass</a></h2>
+<p>The patterns above are how I'd structure <strong><a href="https://apps.apple.com/us/app/tic-tac-toe-time-pass/id1509555889" target="_blank" rel="noopener noreferrer">Tic Tac Toe : Time Pass</a></strong> today, or any small turn-based game.</p>
+<p><img src="https://bestlatestapps.com/assets/blog/tic-tac-toe-in-swiftui-done-properly/tic-tac-toe-screenshot-1.jpg" alt="Tic Tac Toe App Store screenshot 1"></p>
+<p>At the time of writing, its App Store listing shows:</p>
+<ul>
+<li><strong>Free</strong>, in <strong>Games</strong> (Strategy, Casual) and <strong>Entertainment</strong></li>
+<li>First released in <strong>April 2020</strong></li>
+<li><strong>13 ratings</strong> in the US store, averaging about <strong>3.9 stars</strong></li>
+<li>Supports <strong>iOS 12.0 and later</strong></li>
+</ul>
+<p>The listing says: "Tic Tac Toe supports one player and two player gameplay, so you can play against another human or against yourself."</p>
+<table>
+<thead>
+<tr>
+<th>What the listing says</th>
+<th>Where it's covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Put away your pencil and paper"</td>
+<td>A value-type <code>Game</code> model that enforces the rules (section 2)</td>
+</tr>
+<tr>
+<td>"Two player gameplay… against another human"</td>
+<td><code>.twoPlayer</code> mode: one device, alternating turns (section 4)</td>
+</tr>
+<tr>
+<td>"One player… against yourself"</td>
+<td><code>.onePlayer</code> mode; minimax is the extension I'd add for a computer opponent (section 5)</td>
+</tr>
+<tr>
+<td>iOS 12.0 and later</td>
+<td>UIKit is required below iOS 13; the model is identical either way (section 4)</td>
+</tr>
+</tbody>
+</table>
+<p><img src="https://bestlatestapps.com/assets/blog/tic-tac-toe-in-swiftui-done-properly/tic-tac-toe-screenshot-2.jpg" alt="Tic Tac Toe App Store screenshot 2"></p>
+<p>A 3.9 average on a game this simple tells me something too. Casual players expect polish even from "time pass" games: clear win highlighting, a satisfying tap, an easy rematch. The architecture above is what makes that polish cheap to add.</p>
+<hr>
+<h2 id="7-before-you-ship-a-small-game-a-checklist" tabindex="-1"><a class="observablehq-header-anchor" href="#7-before-you-ship-a-small-game-a-checklist">7. Before you ship a small game: a checklist</a></h2>
+<ol>
+<li><strong>Rules live in one pure model</strong>, with no UI framework imports.</li>
+<li><strong>Illegal states are impossible</strong>: <code>private(set)</code> state, and validated moves that return new values.</li>
+<li><strong>Every rule has a test</strong>: each kind of win, a draw, illegal moves, moves after a win, and undo.</li>
+<li><strong>The view only renders and forwards.</strong> If a view contains <code>if winner…</code> logic, move it.</li>
+<li><strong>The AI works on copies</strong> and never on the live game. It's tested too: it should never lose from any position where a draw is possible.</li>
+<li><strong>Difficulty is a dial, not three AIs.</strong></li>
+<li><strong>Accessibility:</strong> every cell has a spoken label with row, column and contents, and the result is announced.</li>
+<li><strong>Rematch is one tap.</strong> The fastest way to a better rating in a casual game.</li>
+</ol>
+<hr>
+<h2 id="wrapping-up" tabindex="-1"><a class="observablehq-header-anchor" href="#wrapping-up">Wrapping up</a></h2>
+<p>Tic tac toe is small, but the lessons scale. Put the rules in a value type that can't be put into an illegal state, test it like a spec, keep the view dumb, and treat the AI as just another consumer of the model, one that explores copies. The same shape works for chess, card games and anything else turn-based.</p>
+<p>Play it, or explore my other apps:</p>
+<ul>
+<li><strong>Tic Tac Toe : Time Pass (iOS):</strong> <a href="https://apps.apple.com/us/app/tic-tac-toe-time-pass/id1509555889" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/tic-tac-toe-time-pass/id1509555889</a></li>
+<li><strong>All of my free iOS apps:</strong> <a href="https://apps.apple.com/us/developer/alok-singh/id1508795536" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/developer/alok-singh/id1508795536</a></li>
+<li><strong>My portfolio:</strong> <a href="https://bestlatestapps.com/alok/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/alok/</a></li>
+</ul>
+<p>What's your favourite "tiny game, big lesson" project? Tell me in the comments.</p>
+<p><em>— Alok Kumar Singh</em></p>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/tic-tac-toe-in-swiftui-done-properly/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/tic-tac-toe-in-swiftui-done-properly/</a></em></p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./"><span>Alok Singh, App Dev Notes</span></a><a rel="next" href="./the-sending-side-of-apns"><span>The Sending Side of APNs</span></a></nav>
+<div>Articles by Alok Kumar Singh. Originals at <a href="https://bestlatestapps.com/blog/" target="_blank" rel="noopener noreferrer">bestlatestapps.com/blog</a>.</div>
+</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>Text Plus Audio, Fully Offline: Building a Prayer App with AVAudioPlayer and Lock-Screen Controls | Alok Singh, App Dev Notes</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="modulepreload" href="./_observablehq/client.097df403.js">
+<link rel="modulepreload" href="./_observablehq/runtime.fa9f71c0.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.60afab10.js">
+<link rel="canonical" href="https://bestlatestapps.com/blog/text-plus-audio-fully-offline/"><meta name="description" content="Bundled recitation audio, verse-by-verse highlighting from a cue sheet, background playback, Now Playing controls and the interruptions you must handle, on…">
+<script type="module">
+
+import "./_observablehq/client.097df403.js";
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Alok Singh, App Dev Notes</a></li>
+  </ol>
+  <div id="observablehq-search"><input type="search" placeholder="Search"></div>
+  <div id="observablehq-search-results"></div>
+  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.755d897f.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
+  <ol>
+    <li class="observablehq-link"><a href="./tic-tac-toe-in-swiftui-done-properly">Tic Tac Toe in SwiftUI, Done Properly</a></li>
+    <li class="observablehq-link"><a href="./the-sending-side-of-apns">The Sending Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./the-device-side-of-apns">The Device Side of APNs</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./text-plus-audio-fully-offline">Text Plus Audio, Fully Offline</a></li>
+    <li class="observablehq-link"><a href="./stop-hand-rolling-unit-conversions">Stop Hand-Rolling Unit Conversions</a></li>
+    <li class="observablehq-link"><a href="./shipping-a-4k-wallpaper-app-without-running-out-of-memory">Shipping a 4K Wallpaper App Without Running Out of Memory</a></li>
+    <li class="observablehq-link"><a href="./medication-reminders-that-actually-fire">Medication Reminders That Actually Fire</a></li>
+    <li class="observablehq-link"><a href="./from-barcode-to-pdf">From Barcode to PDF</a></li>
+    <li class="observablehq-link"><a href="./drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game">Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game,</a></li>
+    <li class="observablehq-link"><a href="./convert-as-you-type-currency-conversion-in-swift">Convert-As-You-Type Currency Conversion in Swift</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-first-bible-reader-on-ios">Building an Offline-First Bible Reader on iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-ebook-reader-for-ios">Building an Offline eBook Reader for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-quotes-app-in-swiftui">Building an Offline Quotes App in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-an-admob-earnings-dashboard-for-ios">Building an AdMob Earnings Dashboard for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-tap-to-match-marble-game-with-spritekit-and-swiftui">Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine">Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine</a></li>
+    <li class="observablehq-link"><a href="./building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe">Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioE</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-ios-component-catalogue">Building a Live iOS Component Catalogue</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-temple-darshan-app-for-ios">Building a Live Temple Darshan App for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-hashtag-copier-for-ios">Building a Hashtag Copier for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-chromatic-guitar-tuner-on-ios">Building a Chromatic Guitar Tuner on iOS</a></li>
+    <li class="observablehq-link"><a href="./animating-algorithms-in-swiftui">Animating Algorithms in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./a-practical-guide-to-ios-haptics">A Practical Guide to iOS Haptics</a></li>
+    <li class="observablehq-link"><a href="./a-document-scanner-in-an-afternoon">A Document Scanner in an Afternoon</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#1-what-offline-text-plus-audio-requires">1. What &quot;offline text plus audio&quot; requires</a></li>
+<li class="observablehq-secondary-link"><a href="#2-bundle-the-content-with-a-cue-sheet">2. Bundle the content with a cue sheet</a></li>
+<li class="observablehq-secondary-link"><a href="#3-av-audio-player-and-a-session-that-keeps-playing">3. AVAudioPlayer and a session that keeps playing</a></li>
+<li class="observablehq-secondary-link"><a href="#4-highlighting-the-current-verse">4. Highlighting the current verse</a></li>
+<li class="observablehq-secondary-link"><a href="#5-lock-screen-and-control-center">5. Lock Screen and Control Center</a></li>
+<li class="observablehq-secondary-link"><a href="#6-interruptions-and-route-changes">6. Interruptions and route changes</a></li>
+<li class="observablehq-secondary-link"><a href="#7-real-world-example-hanuman-chalisa-offline">7. Real-world example: Hanuman Chalisa : Offline</a></li>
+<li class="observablehq-secondary-link"><a href="#8-before-you-ship-a-text-plus-audio-app-a-checklist">8. Before you ship a text-plus-audio app: a checklist</a></li>
+<li class="observablehq-secondary-link"><a href="#wrapping-up">Wrapping up</a></li>
+</ol>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="text-plus-audio-fully-offline-building-a-prayer-app-with-av-audio-player-and-lock-screen-controls" tabindex="-1"><a class="observablehq-header-anchor" href="#text-plus-audio-fully-offline-building-a-prayer-app-with-av-audio-player-and-lock-screen-controls">Text Plus Audio, Fully Offline: Building a Prayer App with AVAudioPlayer and Lock-Screen Controls</a></h1>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/text-plus-audio-fully-offline/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/text-plus-audio-fully-offline/</a></em></p>
+<p><em>Bundled recitation audio, verse-by-verse highlighting from a cue sheet, background playback, Now Playing controls and the interruptions you must handle, on an app that still supports iOS 11</em></p>
+<p><img src="https://bestlatestapps.com/assets/blog/text-plus-audio-fully-offline/hanuman-chalisa-icon-512.jpg" alt="Hanuman Chalisa app icon"></p>
+<p>Some apps are used in a very particular moment. A prayer app is opened in the morning, often before anything else, frequently by someone older who isn't interested in settings screens, and sometimes somewhere with no signal at all. It has to open instantly, play immediately and never ask for an account.</p>
+<p><strong>Hanuman Chalisa : Offline</strong> was the second app I published, in April 2020, one day after my Bible app. The Hanuman Chalisa is a devotional hymn to Lord Hanuman, attributed to the poet-saint Tulsidas. The app does two things: it shows the Chalisa in English-language script for reading, and it plays an audio recitation, all without an internet connection.</p>
+<p>That combination, text plus audio that stay in step, is a pattern you'll find in language-learning apps, audiobooks with text, karaoke lyrics and guided meditations. This article walks through how I'd build it on iOS: bundling text and audio, a cue sheet for verse timing, <code>AVAudioPlayer</code> with a proper <code>.playback</code> session, highlighting the current verse, lock-screen controls through <code>MPNowPlayingInfoCenter</code> and <code>MPRemoteCommandCenter</code>, and the interruptions and route changes a real device throws at you. The app supports iOS 11 and later, so the code is UIKit-first and stays on long-established APIs. I'm describing the approach I'd use and recommend, not the app's exact source.</p>
+<hr>
+<h2 id="1-what-offline-text-plus-audio-requires" tabindex="-1"><a class="observablehq-header-anchor" href="#1-what-offline-text-plus-audio-requires">1. What "offline text plus audio" requires</a></h2>
+<p>Three requirements shape the design:</p>
+<ul>
+<li><strong>Zero network, zero setup.</strong> Everything ships in the app bundle. First launch is the same as the hundredth.</li>
+<li><strong>Audio and text are one experience.</strong> When the recitation reaches a verse, that verse is highlighted and scrolled into view. When the user taps a verse, the audio jumps there.</li>
+<li><strong>It behaves like a real audio app.</strong> It keeps playing with the screen locked, shows controls on the Lock Screen and in Control Center, pauses for a phone call, and stops when headphones are pulled out.</li>
+</ul>
+<p>The first two are about your data model. The third is about respecting the system.</p>
+<hr>
+<h2 id="2-bundle-the-content-with-a-cue-sheet" tabindex="-1"><a class="observablehq-header-anchor" href="#2-bundle-the-content-with-a-cue-sheet">2. Bundle the content with a cue sheet</a></h2>
+<p>I keep the text and the timing together in one small JSON file in the bundle, next to the audio file:</p>
+<pre data-language="swift"><code class="language-swift">{
+  <span class="hljs-string">"title"</span>: <span class="hljs-string">"Hanuman Chalisa"</span>,
+  <span class="hljs-string">"audio"</span>: <span class="hljs-string">"chalisa.m4a"</span>,
+  <span class="hljs-string">"verses"</span>: [
+    { <span class="hljs-string">"id"</span>: <span class="hljs-number">1</span>, <span class="hljs-string">"kind"</span>: <span class="hljs-string">"doha"</span>,  <span class="hljs-string">"start"</span>: <span class="hljs-number">0.0</span>,  <span class="hljs-string">"text"</span>: <span class="hljs-string">"…"</span> },
+    { <span class="hljs-string">"id"</span>: <span class="hljs-number">2</span>, <span class="hljs-string">"kind"</span>: <span class="hljs-string">"doha"</span>,  <span class="hljs-string">"start"</span>: <span class="hljs-number">14.2</span>, <span class="hljs-string">"text"</span>: <span class="hljs-string">"…"</span> },
+    { <span class="hljs-string">"id"</span>: <span class="hljs-number">3</span>, <span class="hljs-string">"kind"</span>: <span class="hljs-string">"chaupai"</span>, <span class="hljs-string">"start"</span>: <span class="hljs-number">27.8</span>, <span class="hljs-string">"text"</span>: <span class="hljs-string">"…"</span> }
+  ]
+}
+</code></pre>
+<p>Each verse carries the time, in seconds, at which its recitation <strong>starts</strong>. That's the whole cue sheet. You produce it once, by listening with a waveform editor open, and it never changes unless the recording does.</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> Foundation
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">Verse</span>: <span class="hljs-title class_ inherited__">Decodable</span> {
+    <span class="hljs-keyword">let</span> id: <span class="hljs-type">Int</span>
+    <span class="hljs-keyword">let</span> kind: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">let</span> start: <span class="hljs-type">TimeInterval</span>
+    <span class="hljs-keyword">let</span> text: <span class="hljs-type">String</span>
+}
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">Recitation</span>: <span class="hljs-title class_ inherited__">Decodable</span> {
+    <span class="hljs-keyword">let</span> title: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">let</span> audio: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">let</span> verses: [<span class="hljs-type">Verse</span>]
+
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">loadBundled</span>(<span class="hljs-params">named</span> <span class="hljs-params">name</span>: <span class="hljs-type">String</span> <span class="hljs-operator">=</span> <span class="hljs-string">"chalisa"</span>) <span class="hljs-keyword">throws</span> -&gt; <span class="hljs-type">Recitation</span> {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> url <span class="hljs-operator">=</span> <span class="hljs-type">Bundle</span>.main.url(forResource: name, withExtension: <span class="hljs-string">"json"</span>) <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">throw</span> <span class="hljs-type">CocoaError</span>(.fileNoSuchFile)
+        }
+        <span class="hljs-keyword">let</span> recitation <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> <span class="hljs-type">JSONDecoder</span>().decode(<span class="hljs-type">Recitation</span>.<span class="hljs-keyword">self</span>, from: <span class="hljs-type">Data</span>(contentsOf: url))
+        <span class="hljs-comment">// Cue sheets must be sorted; fail loudly in debug if someone edits one by hand.</span>
+        <span class="hljs-built_in">assert</span>(<span class="hljs-built_in">zip</span>(recitation.verses, recitation.verses.dropFirst()).allSatisfy { <span class="hljs-variable">$0</span>.start <span class="hljs-operator">&lt;</span> <span class="hljs-variable">$1</span>.start })
+        <span class="hljs-keyword">return</span> recitation
+    }
+
+    <span class="hljs-comment">/// Index of the verse being recited at `time` (binary search over start times).</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">verseIndex</span>(<span class="hljs-params">at</span> <span class="hljs-params">time</span>: <span class="hljs-type">TimeInterval</span>) -&gt; <span class="hljs-type">Int</span> {
+        <span class="hljs-keyword">var</span> low <span class="hljs-operator">=</span> <span class="hljs-number">0</span>, high <span class="hljs-operator">=</span> verses.count <span class="hljs-operator">-</span> <span class="hljs-number">1</span>, answer <span class="hljs-operator">=</span> <span class="hljs-number">0</span>
+        <span class="hljs-keyword">while</span> low <span class="hljs-operator">&lt;=</span> high {
+            <span class="hljs-keyword">let</span> mid <span class="hljs-operator">=</span> (low <span class="hljs-operator">+</span> high) <span class="hljs-operator">/</span> <span class="hljs-number">2</span>
+            <span class="hljs-keyword">if</span> verses[mid].start <span class="hljs-operator">&lt;=</span> time { answer <span class="hljs-operator">=</span> mid; low <span class="hljs-operator">=</span> mid <span class="hljs-operator">+</span> <span class="hljs-number">1</span> } <span class="hljs-keyword">else</span> { high <span class="hljs-operator">=</span> mid <span class="hljs-operator">-</span> <span class="hljs-number">1</span> }
+        }
+        <span class="hljs-keyword">return</span> answer
+    }
+}
+</code></pre>
+<p>A few practical notes:</p>
+<ul>
+<li><strong>AAC (<code>.m4a</code>) is the right format</strong> for a bundled spoken or sung recording: small, and decoded in hardware.</li>
+<li><strong>Keep the text as Unicode text, not images.</strong> It scales with Dynamic Type, it works with VoiceOver, and you can offer other scripts later from the same structure.</li>
+<li><strong>Binary search is overkill for 40-odd verses</strong>, but it costs nothing, and the same code works for a 300-chapter audiobook.</li>
+</ul>
+<hr>
+<h2 id="3-av-audio-player-and-a-session-that-keeps-playing" tabindex="-1"><a class="observablehq-header-anchor" href="#3-av-audio-player-and-a-session-that-keeps-playing">3. AVAudioPlayer and a session that keeps playing</a></h2>
+<p>For a single bundled file, <code>AVAudioPlayer</code> (available since iOS 2.2) is all you need. There's no engine graph and nothing to stream. What matters is the <strong>audio session category</strong>:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> AVFoundation
+
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">RecitationPlayer</span>: <span class="hljs-title class_ inherited__">NSObject</span>, <span class="hljs-title class_ inherited__">AVAudioPlayerDelegate</span> {
+    <span class="hljs-keyword">private(set)</span> <span class="hljs-keyword">var</span> player: <span class="hljs-type">AVAudioPlayer</span>?
+    <span class="hljs-keyword">var</span> onFinish: (() -&gt; <span class="hljs-type">Void</span>)<span class="hljs-operator">?</span>
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">load</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">recitation</span>: <span class="hljs-type">Recitation</span>) <span class="hljs-keyword">throws</span> {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> url <span class="hljs-operator">=</span> <span class="hljs-type">Bundle</span>.main.url(forResource: recitation.audio, withExtension: <span class="hljs-literal">nil</span>) <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">throw</span> <span class="hljs-type">CocoaError</span>(.fileNoSuchFile)
+        }
+        <span class="hljs-keyword">let</span> player <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> <span class="hljs-type">AVAudioPlayer</span>(contentsOf: url)
+        player.delegate <span class="hljs-operator">=</span> <span class="hljs-keyword">self</span>
+        player.enableRate <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>          <span class="hljs-comment">// must be set before prepareToPlay() to allow rate changes</span>
+        player.prepareToPlay()
+        <span class="hljs-keyword">self</span>.player <span class="hljs-operator">=</span> player
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">play</span>() <span class="hljs-keyword">throws</span> {
+        <span class="hljs-keyword">let</span> session <span class="hljs-operator">=</span> <span class="hljs-type">AVAudioSession</span>.sharedInstance()
+        <span class="hljs-comment">// .playback: audio is central to the app; it plays with the Silent switch on</span>
+        <span class="hljs-comment">// and, with the "audio" background mode, keeps going when the screen locks.</span>
+        <span class="hljs-keyword">try</span> session.setCategory(.playback, mode: .spokenAudio, options: [])
+        <span class="hljs-keyword">try</span> session.setActive(<span class="hljs-literal">true</span>)
+        player<span class="hljs-operator">?</span>.play()
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">pause</span>() { player<span class="hljs-operator">?</span>.pause() }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">seek</span>(<span class="hljs-params">to</span> <span class="hljs-params">time</span>: <span class="hljs-type">TimeInterval</span>) {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> player <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+        player.currentTime <span class="hljs-operator">=</span> <span class="hljs-built_in">max</span>(<span class="hljs-number">0</span>, <span class="hljs-built_in">min</span>(time, player.duration))
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">audioPlayerDidFinishPlaying</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">player</span>: <span class="hljs-type">AVAudioPlayer</span>, <span class="hljs-params">successfully</span> <span class="hljs-params">flag</span>: <span class="hljs-type">Bool</span>) {
+        <span class="hljs-keyword">try?</span> <span class="hljs-type">AVAudioSession</span>.sharedInstance().setActive(<span class="hljs-literal">false</span>, options: .notifyOthersOnDeactivation)
+        onFinish<span class="hljs-operator">?</span>()
+    }
+}
+</code></pre>
+<p>Three details that matter more than they look:</p>
+<ul>
+<li><strong><code>.playback</code>, not the default.</strong> The default category (<code>.soloAmbient</code>) is silenced by the ring/silent switch and stops when the screen locks. For a prayer app, both are bugs.</li>
+<li><strong>Add the background mode.</strong> In Xcode, enable Background Modes → "Audio, AirPlay, and Picture in Picture" (<code>audio</code> in <code>UIBackgroundModes</code>). Without it, <code>.playback</code> alone won't keep you alive after the screen locks.</li>
+<li><strong>The <code>.spokenAudio</code> mode</strong> (iOS 9+) is meant for continuous spoken audio. Per Apple's docs, your audio <em>pauses</em> rather than ducks when another app plays a short spoken prompt, such as a navigation instruction, and you can resume afterwards. A sung recitation sits somewhere between speech and music, so <code>.default</code> is a reasonable choice too. <code>setCategory(_:mode:options:)</code> is iOS 10+, so it's safe on an iOS 11 target.</li>
+</ul>
+<hr>
+<h2 id="4-highlighting-the-current-verse" tabindex="-1"><a class="observablehq-header-anchor" href="#4-highlighting-the-current-verse">4. Highlighting the current verse</a></h2>
+<p>To keep the text in step with the audio, poll <code>currentTime</code> a few times a second and move the highlight when the verse index changes. On iOS 11 I use a <code>CADisplayLink</code> (or a plain <code>Timer</code>) rather than anything newer:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> UIKit
+
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">RecitationViewController</span>: <span class="hljs-title class_ inherited__">UITableViewController</span> {
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> recitation: <span class="hljs-type">Recitation</span>
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> audio <span class="hljs-operator">=</span> <span class="hljs-type">RecitationPlayer</span>()
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> link: <span class="hljs-type">CADisplayLink</span>?
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> currentIndex <span class="hljs-operator">=</span> <span class="hljs-operator">-</span><span class="hljs-number">1</span>
+
+    <span class="hljs-keyword">init</span>(<span class="hljs-params">recitation</span>: <span class="hljs-type">Recitation</span>) {
+        <span class="hljs-keyword">self</span>.recitation <span class="hljs-operator">=</span> recitation
+        <span class="hljs-keyword">super</span>.<span class="hljs-keyword">init</span>(style: .plain)
+    }
+    <span class="hljs-keyword">required</span> <span class="hljs-keyword">init?</span>(<span class="hljs-params">coder</span>: <span class="hljs-type">NSCoder</span>) { <span class="hljs-built_in">fatalError</span>(<span class="hljs-string">"init(coder:) is not supported"</span>) }
+
+    <span class="hljs-keyword">override</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">viewDidLoad</span>() {
+        <span class="hljs-keyword">super</span>.viewDidLoad()
+        tableView.register(<span class="hljs-type">UITableViewCell</span>.<span class="hljs-keyword">self</span>, forCellReuseIdentifier: <span class="hljs-string">"verse"</span>)
+        tableView.rowHeight <span class="hljs-operator">=</span> <span class="hljs-type">UITableView</span>.automaticDimension
+        <span class="hljs-keyword">try?</span> audio.load(recitation)
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">startPlayback</span>() {
+        <span class="hljs-keyword">try?</span> audio.play()
+        link <span class="hljs-operator">=</span> <span class="hljs-type">CADisplayLink</span>(target: <span class="hljs-keyword">self</span>, selector: <span class="hljs-keyword">#selector</span>(tick))
+        link<span class="hljs-operator">?</span>.preferredFramesPerSecond <span class="hljs-operator">=</span> <span class="hljs-number">10</span>     <span class="hljs-comment">// plenty for text; saves battery</span>
+        link<span class="hljs-operator">?</span>.add(to: .main, forMode: .common)
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">stopUpdates</span>() {
+        link<span class="hljs-operator">?</span>.invalidate(); link <span class="hljs-operator">=</span> <span class="hljs-literal">nil</span>
+    }
+
+    <span class="hljs-keyword">@objc</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">tick</span>() {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> time <span class="hljs-operator">=</span> audio.player<span class="hljs-operator">?</span>.currentTime <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+        <span class="hljs-keyword">let</span> index <span class="hljs-operator">=</span> recitation.verseIndex(at: time)
+        <span class="hljs-keyword">guard</span> index <span class="hljs-operator">!=</span> currentIndex <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+        <span class="hljs-keyword">let</span> previous <span class="hljs-operator">=</span> currentIndex
+        currentIndex <span class="hljs-operator">=</span> index
+        <span class="hljs-keyword">let</span> rows <span class="hljs-operator">=</span> [previous, index].filter { <span class="hljs-variable">$0</span> <span class="hljs-operator">&gt;=</span> <span class="hljs-number">0</span> }.map { <span class="hljs-type">IndexPath</span>(row: <span class="hljs-variable">$0</span>, section: <span class="hljs-number">0</span>) }
+        tableView.reloadRows(at: rows, with: .fade)
+        tableView.scrollToRow(at: <span class="hljs-type">IndexPath</span>(row: index, section: <span class="hljs-number">0</span>), at: .middle, animated: <span class="hljs-literal">true</span>)
+    }
+
+    <span class="hljs-comment">// Tap a verse to jump the audio there.</span>
+    <span class="hljs-keyword">override</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">tableView</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">tableView</span>: <span class="hljs-type">UITableView</span>, <span class="hljs-params">didSelectRowAt</span> <span class="hljs-params">indexPath</span>: <span class="hljs-type">IndexPath</span>) {
+        audio.seek(to: recitation.verses[indexPath.row].start)
+        tableView.deselectRow(at: indexPath, animated: <span class="hljs-literal">true</span>)
+    }
+
+    <span class="hljs-keyword">override</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">tableView</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">tableView</span>: <span class="hljs-type">UITableView</span>, <span class="hljs-params">numberOfRowsInSection</span> <span class="hljs-params">section</span>: <span class="hljs-type">Int</span>) -&gt; <span class="hljs-type">Int</span> {
+        recitation.verses.count
+    }
+
+    <span class="hljs-keyword">override</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">tableView</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">tableView</span>: <span class="hljs-type">UITableView</span>, <span class="hljs-params">cellForRowAt</span> <span class="hljs-params">indexPath</span>: <span class="hljs-type">IndexPath</span>) -&gt; <span class="hljs-type">UITableViewCell</span> {
+        <span class="hljs-keyword">let</span> cell <span class="hljs-operator">=</span> tableView.dequeueReusableCell(withIdentifier: <span class="hljs-string">"verse"</span>, for: indexPath)
+        <span class="hljs-keyword">let</span> isCurrent <span class="hljs-operator">=</span> indexPath.row <span class="hljs-operator">==</span> currentIndex
+        cell.textLabel<span class="hljs-operator">?</span>.text <span class="hljs-operator">=</span> recitation.verses[indexPath.row].text
+        cell.textLabel<span class="hljs-operator">?</span>.numberOfLines <span class="hljs-operator">=</span> <span class="hljs-number">0</span>
+        cell.textLabel<span class="hljs-operator">?</span>.font <span class="hljs-operator">=</span> <span class="hljs-type">UIFont</span>.preferredFont(forTextStyle: isCurrent <span class="hljs-operator">?</span> .headline : .body)
+        cell.textLabel<span class="hljs-operator">?</span>.adjustsFontForContentSizeCategory <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>
+        cell.backgroundColor <span class="hljs-operator">=</span> isCurrent <span class="hljs-operator">?</span> <span class="hljs-type">UIColor</span>.orange.withAlphaComponent(<span class="hljs-number">0.15</span>) : .clear
+        <span class="hljs-keyword">return</span> cell
+    }
+}
+</code></pre>
+<p>Two accessibility points that matter especially for this audience:</p>
+<ul>
+<li><strong>Dynamic Type everywhere</strong> (<code>preferredFont(forTextStyle:)</code> with <code>adjustsFontForContentSizeCategory</code>). Many people reading a prayer app use larger text sizes.</li>
+<li><strong>Don't fight the user's scrolling.</strong> If they've scrolled away to read ahead, pause auto-scrolling for a few seconds. Detect it in <code>scrollViewWillBeginDragging(_:)</code>.</li>
+</ul>
+<p>Stop the display link when the view disappears or playback ends. A display link running in the background is wasted battery.</p>
+<hr>
+<h2 id="5-lock-screen-and-control-center" tabindex="-1"><a class="observablehq-header-anchor" href="#5-lock-screen-and-control-center">5. Lock Screen and Control Center</a></h2>
+<p>Once you're a real <code>.playback</code> app, people expect to control it from the Lock Screen, Control Center, headphones and the car. That's two APIs: <code>MPNowPlayingInfoCenter</code> (iOS 5+) for <em>what's playing</em> and <code>MPRemoteCommandCenter</code> (iOS 7.1+) for <em>what the buttons do</em>.</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> MediaPlayer
+<span class="hljs-keyword">import</span> UIKit
+
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">NowPlayingController</span> {
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">weak</span> <span class="hljs-keyword">var</span> audio: <span class="hljs-type">RecitationPlayer</span>?
+
+    <span class="hljs-keyword">init</span>(<span class="hljs-params">audio</span>: <span class="hljs-type">RecitationPlayer</span>, <span class="hljs-params">title</span>: <span class="hljs-type">String</span>, <span class="hljs-params">artwork</span>: <span class="hljs-type">UIImage</span>?) {
+        <span class="hljs-keyword">self</span>.audio <span class="hljs-operator">=</span> audio
+        configureCommands()
+        <span class="hljs-keyword">var</span> info: [<span class="hljs-type">String</span>: <span class="hljs-keyword">Any</span>] <span class="hljs-operator">=</span> [
+            <span class="hljs-type">MPMediaItemPropertyTitle</span>: title,
+            <span class="hljs-type">MPMediaItemPropertyArtist</span>: <span class="hljs-string">"Recitation"</span>,
+            <span class="hljs-type">MPMediaItemPropertyPlaybackDuration</span>: audio.player<span class="hljs-operator">?</span>.duration <span class="hljs-operator">??</span> <span class="hljs-number">0</span>
+        ]
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> artwork {
+            info[<span class="hljs-type">MPMediaItemPropertyArtwork</span>] <span class="hljs-operator">=</span>
+                <span class="hljs-type">MPMediaItemArtwork</span>(boundsSize: artwork.size) { <span class="hljs-keyword">_</span> <span class="hljs-keyword">in</span> artwork }
+        }
+        <span class="hljs-type">MPNowPlayingInfoCenter</span>.default().nowPlayingInfo <span class="hljs-operator">=</span> info
+    }
+
+    <span class="hljs-comment">/// Call on play, pause and seek, not every frame. The system extrapolates</span>
+    <span class="hljs-comment">/// elapsed time from the rate you give it.</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">update</span>() {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> player <span class="hljs-operator">=</span> audio<span class="hljs-operator">?</span>.player <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+        <span class="hljs-keyword">var</span> info <span class="hljs-operator">=</span> <span class="hljs-type">MPNowPlayingInfoCenter</span>.default().nowPlayingInfo <span class="hljs-operator">??</span> [:]
+        info[<span class="hljs-type">MPNowPlayingInfoPropertyElapsedPlaybackTime</span>] <span class="hljs-operator">=</span> player.currentTime
+        info[<span class="hljs-type">MPNowPlayingInfoPropertyPlaybackRate</span>] <span class="hljs-operator">=</span> player.isPlaying <span class="hljs-operator">?</span> <span class="hljs-number">1.0</span> : <span class="hljs-number">0.0</span>
+        <span class="hljs-type">MPNowPlayingInfoCenter</span>.default().nowPlayingInfo <span class="hljs-operator">=</span> info
+    }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">configureCommands</span>() {
+        <span class="hljs-keyword">let</span> center <span class="hljs-operator">=</span> <span class="hljs-type">MPRemoteCommandCenter</span>.shared()
+
+        center.playCommand.addTarget { [<span class="hljs-keyword">weak</span> <span class="hljs-keyword">self</span>] <span class="hljs-keyword">_</span> <span class="hljs-keyword">in</span>
+            <span class="hljs-keyword">try?</span> <span class="hljs-keyword">self</span><span class="hljs-operator">?</span>.audio<span class="hljs-operator">?</span>.play(); <span class="hljs-keyword">self</span><span class="hljs-operator">?</span>.update(); <span class="hljs-keyword">return</span> .success
+        }
+        center.pauseCommand.addTarget { [<span class="hljs-keyword">weak</span> <span class="hljs-keyword">self</span>] <span class="hljs-keyword">_</span> <span class="hljs-keyword">in</span>
+            <span class="hljs-keyword">self</span><span class="hljs-operator">?</span>.audio<span class="hljs-operator">?</span>.pause(); <span class="hljs-keyword">self</span><span class="hljs-operator">?</span>.update(); <span class="hljs-keyword">return</span> .success
+        }
+        center.togglePlayPauseCommand.addTarget { [<span class="hljs-keyword">weak</span> <span class="hljs-keyword">self</span>] <span class="hljs-keyword">_</span> <span class="hljs-keyword">in</span>
+            <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> player <span class="hljs-operator">=</span> <span class="hljs-keyword">self</span><span class="hljs-operator">?</span>.audio<span class="hljs-operator">?</span>.player <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> .commandFailed }
+            <span class="hljs-keyword">if</span> player.isPlaying { <span class="hljs-keyword">self</span><span class="hljs-operator">?</span>.audio<span class="hljs-operator">?</span>.pause() } <span class="hljs-keyword">else</span> { <span class="hljs-keyword">try?</span> <span class="hljs-keyword">self</span><span class="hljs-operator">?</span>.audio<span class="hljs-operator">?</span>.play() }
+            <span class="hljs-keyword">self</span><span class="hljs-operator">?</span>.update(); <span class="hljs-keyword">return</span> .success
+        }
+        center.changePlaybackPositionCommand.addTarget { [<span class="hljs-keyword">weak</span> <span class="hljs-keyword">self</span>] event <span class="hljs-keyword">in</span>
+            <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> e <span class="hljs-operator">=</span> event <span class="hljs-keyword">as?</span> <span class="hljs-type">MPChangePlaybackPositionCommandEvent</span> <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> .commandFailed }
+            <span class="hljs-keyword">self</span><span class="hljs-operator">?</span>.audio<span class="hljs-operator">?</span>.seek(to: e.positionTime); <span class="hljs-keyword">self</span><span class="hljs-operator">?</span>.update(); <span class="hljs-keyword">return</span> .success
+        }
+        <span class="hljs-comment">// Commands you don't support should be disabled, so the UI doesn't show dead buttons.</span>
+        center.nextTrackCommand.isEnabled <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>
+        center.previousTrackCommand.isEnabled <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>
+    }
+}
+</code></pre>
+<p><code>MPMediaItemArtwork(boundsSize:requestHandler:)</code> is iOS 10+, so it's fine on iOS 11. The scrubber on the Lock Screen needs <code>changePlaybackPositionCommand</code> (iOS 9.1+); without it, the scrubber is display-only.</p>
+<p><strong>Don't update Now Playing on every tick.</strong> Set elapsed time and rate on play, pause and seek, and the system animates the progress itself.</p>
+<hr>
+<h2 id="6-interruptions-and-route-changes" tabindex="-1"><a class="observablehq-header-anchor" href="#6-interruptions-and-route-changes">6. Interruptions and route changes</a></h2>
+<p>Real phones ring. Here are the two notifications every audio app must handle:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> AVFoundation
+
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">AudioInterruptionHandler</span> {
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">weak</span> <span class="hljs-keyword">var</span> audio: <span class="hljs-type">RecitationPlayer</span>?
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> tokens: [<span class="hljs-type">NSObjectProtocol</span>] <span class="hljs-operator">=</span> []
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> wasPlaying <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>
+    <span class="hljs-keyword">var</span> onChange: (() -&gt; <span class="hljs-type">Void</span>)<span class="hljs-operator">?</span>
+
+    <span class="hljs-keyword">init</span>(<span class="hljs-params">audio</span>: <span class="hljs-type">RecitationPlayer</span>) {
+        <span class="hljs-keyword">self</span>.audio <span class="hljs-operator">=</span> audio
+        <span class="hljs-keyword">let</span> center <span class="hljs-operator">=</span> <span class="hljs-type">NotificationCenter</span>.default
+        <span class="hljs-keyword">let</span> session <span class="hljs-operator">=</span> <span class="hljs-type">AVAudioSession</span>.sharedInstance()
+
+        tokens.append(center.addObserver(forName: <span class="hljs-type">AVAudioSession</span>.interruptionNotification,
+                                         object: session, queue: .main) { [<span class="hljs-keyword">weak</span> <span class="hljs-keyword">self</span>] note <span class="hljs-keyword">in</span>
+            <span class="hljs-keyword">self</span><span class="hljs-operator">?</span>.handleInterruption(note)
+        })
+        tokens.append(center.addObserver(forName: <span class="hljs-type">AVAudioSession</span>.routeChangeNotification,
+                                         object: session, queue: .main) { [<span class="hljs-keyword">weak</span> <span class="hljs-keyword">self</span>] note <span class="hljs-keyword">in</span>
+            <span class="hljs-keyword">self</span><span class="hljs-operator">?</span>.handleRouteChange(note)
+        })
+    }
+
+    <span class="hljs-keyword">deinit</span> { tokens.forEach(<span class="hljs-type">NotificationCenter</span>.default.removeObserver) }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">handleInterruption</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">note</span>: <span class="hljs-type">Notification</span>) {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> raw <span class="hljs-operator">=</span> note.userInfo<span class="hljs-operator">?</span>[<span class="hljs-type">AVAudioSessionInterruptionTypeKey</span>] <span class="hljs-keyword">as?</span> <span class="hljs-type">UInt</span>,
+              <span class="hljs-keyword">let</span> type <span class="hljs-operator">=</span> <span class="hljs-type">AVAudioSession</span>.<span class="hljs-type">InterruptionType</span>(rawValue: raw) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+        <span class="hljs-keyword">switch</span> type {
+        <span class="hljs-keyword">case</span> .began:
+            wasPlaying <span class="hljs-operator">=</span> audio<span class="hljs-operator">?</span>.player<span class="hljs-operator">?</span>.isPlaying <span class="hljs-operator">??</span> <span class="hljs-literal">false</span>   <span class="hljs-comment">// the system has already paused us</span>
+        <span class="hljs-keyword">case</span> .ended:
+            <span class="hljs-keyword">let</span> optionsRaw <span class="hljs-operator">=</span> note.userInfo<span class="hljs-operator">?</span>[<span class="hljs-type">AVAudioSessionInterruptionOptionKey</span>] <span class="hljs-keyword">as?</span> <span class="hljs-type">UInt</span> <span class="hljs-operator">??</span> <span class="hljs-number">0</span>
+            <span class="hljs-keyword">if</span> wasPlaying, <span class="hljs-type">AVAudioSession</span>.<span class="hljs-type">InterruptionOptions</span>(rawValue: optionsRaw).contains(.shouldResume) {
+                <span class="hljs-keyword">try?</span> audio<span class="hljs-operator">?</span>.play()
+            }
+            wasPlaying <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>
+        <span class="hljs-keyword">@unknown</span> <span class="hljs-keyword">default</span>: <span class="hljs-keyword">break</span>
+        }
+        onChange<span class="hljs-operator">?</span>()
+    }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">handleRouteChange</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">note</span>: <span class="hljs-type">Notification</span>) {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> raw <span class="hljs-operator">=</span> note.userInfo<span class="hljs-operator">?</span>[<span class="hljs-type">AVAudioSessionRouteChangeReasonKey</span>] <span class="hljs-keyword">as?</span> <span class="hljs-type">UInt</span>,
+              <span class="hljs-keyword">let</span> reason <span class="hljs-operator">=</span> <span class="hljs-type">AVAudioSession</span>.<span class="hljs-type">RouteChangeReason</span>(rawValue: raw) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+        <span class="hljs-comment">// Headphones unplugged / Bluetooth gone: pause, as Apple recommends for media apps,</span>
+        <span class="hljs-comment">// instead of suddenly reciting out loud on the speaker.</span>
+        <span class="hljs-keyword">if</span> reason <span class="hljs-operator">==</span> .oldDeviceUnavailable { audio<span class="hljs-operator">?</span>.pause(); onChange<span class="hljs-operator">?</span>() }
+    }
+}
+</code></pre>
+<p>Two version notes. The Swift names <code>AVAudioSession.interruptionNotification</code> and <code>routeChangeNotification</code> are the modern spellings; on the very oldest SDKs they were <code>NSNotification.Name.AVAudioSessionInterruption</code> and <code>AVAudioSessionRouteChange</code>. And Apple's current docs mark <code>.shouldResume</code> as deprecated in iOS 27 in favour of a newer resumption-recommendation mechanism. It still works on every version this app supports, so I've kept it here.</p>
+<hr>
+<h2 id="7-real-world-example-hanuman-chalisa-offline" tabindex="-1"><a class="observablehq-header-anchor" href="#7-real-world-example-hanuman-chalisa-offline">7. Real-world example: Hanuman Chalisa : Offline</a></h2>
+<p>This is the approach I'd use for <strong><a href="https://apps.apple.com/us/app/hanuman-chalisa-offline/id1509206340" target="_blank" rel="noopener noreferrer">Hanuman Chalisa : Offline</a></strong>, and for any text-plus-audio app.</p>
+<p><img src="https://bestlatestapps.com/assets/blog/text-plus-audio-fully-offline/hanuman-chalisa-screenshot-1.jpg" alt="Hanuman Chalisa App Store screenshot 1"></p>
+<p>At the time of writing, its App Store listing shows:</p>
+<ul>
+<li><strong>Free</strong>, in the <strong>Book</strong> and <strong>Music</strong> categories</li>
+<li>First released in <strong>April 2020</strong></li>
+<li><strong>22 ratings</strong> in the US store, averaging about <strong>4.8 stars</strong>, the highest average among my apps with ten or more ratings</li>
+<li>Supports <strong>iOS 11.0 and later</strong>, on iPhone, iPad and iPod touch</li>
+</ul>
+<p>The listing describes the content simply: "This version has both Chalisa in English Language Script (for reading) and Audio." Here's how that maps to this article:</p>
+<table>
+<thead>
+<tr>
+<th>What the listing says</th>
+<th>Where it's covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Hanuman Chalisa : Offline"</td>
+<td>Text, cue sheet and audio all bundled; no network code at all (section 2)</td>
+</tr>
+<tr>
+<td>"Chalisa in English Language Script (for reading)"</td>
+<td>Unicode text with Dynamic Type in a table view (section 4)</td>
+</tr>
+<tr>
+<td>"…and Audio"</td>
+<td><code>AVAudioPlayer</code> with a <code>.playback</code> session and background mode (section 3)</td>
+</tr>
+<tr>
+<td>"The iPhone, iPod &amp; iPad version"</td>
+<td>UIKit-first code on long-standing APIs, iOS 11 and up (throughout)</td>
+</tr>
+</tbody>
+</table>
+<p><img src="https://bestlatestapps.com/assets/blog/text-plus-audio-fully-offline/hanuman-chalisa-screenshot-2.jpg" alt="Hanuman Chalisa App Store screenshot 2"></p>
+<p>I later built a much larger devotional app, <strong>Mandir Darshan</strong>, with live temple streams, the Bhagavad Gita and a chalisa collection. That one's a very different technical story, built on live streaming and picture-in-picture, and I'm covering it in its own article.</p>
+<hr>
+<h2 id="8-before-you-ship-a-text-plus-audio-app-a-checklist" tabindex="-1"><a class="observablehq-header-anchor" href="#8-before-you-ship-a-text-plus-audio-app-a-checklist">8. Before you ship a text-plus-audio app: a checklist</a></h2>
+<ol>
+<li><strong>It works in Airplane Mode from a fresh install</strong>: text, audio and highlighting.</li>
+<li><strong>The category is <code>.playback</code></strong> and the <code>audio</code> background mode is enabled, so audio survives the Silent switch and the Lock Screen.</li>
+<li><strong>The cue sheet is validated.</strong> Start times are sorted, and every verse has one. Assert it in debug builds.</li>
+<li><strong>Tapping a verse seeks the audio</strong>, and the highlight follows the audio, never the other way round.</li>
+<li><strong>Lock-screen controls work</strong>, including the scrubber, and unsupported commands are disabled.</li>
+<li><strong>A phone call pauses playback</strong>, and it resumes only if it was playing and the system says it may.</li>
+<li><strong>Unplugging headphones pauses playback.</strong></li>
+<li><strong>Text respects Dynamic Type and VoiceOver.</strong> Test at the largest accessibility sizes.</li>
+<li><strong>The session is deactivated when playback finishes</strong>, with <code>.notifyOthersOnDeactivation</code>, so other audio can resume.</li>
+</ol>
+<hr>
+<h2 id="wrapping-up" tabindex="-1"><a class="observablehq-header-anchor" href="#wrapping-up">Wrapping up</a></h2>
+<p>A text-plus-audio app looks simple, and it can be, as long as you treat the audio session with respect. Bundle everything, describe timing with a tiny cue sheet, let <code>AVAudioPlayer</code> play, keep the highlight driven by <code>currentTime</code>, and give the system what it needs for the Lock Screen and for interruptions. It's well-established API, which is exactly why it still runs on iOS 11.</p>
+<p>Try the app, or explore my other work:</p>
+<ul>
+<li><strong>Hanuman Chalisa : Offline (iOS):</strong> <a href="https://apps.apple.com/us/app/hanuman-chalisa-offline/id1509206340" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/hanuman-chalisa-offline/id1509206340</a></li>
+<li><strong>All of my free iOS apps:</strong> <a href="https://apps.apple.com/us/developer/alok-singh/id1508795536" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/developer/alok-singh/id1508795536</a></li>
+<li><strong>My portfolio:</strong> <a href="https://bestlatestapps.com/alok/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/alok/</a></li>
+</ul>
+<p>Have you built synchronised text and audio for lyrics, language lessons or audiobooks? I'd love to hear how you produced your timings. Tell me in the comments.</p>
+<p><em>— Alok Kumar Singh</em></p>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/text-plus-audio-fully-offline/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/text-plus-audio-fully-offline/</a></em></p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./the-device-side-of-apns"><span>The Device Side of APNs</span></a><a rel="next" href="./stop-hand-rolling-unit-conversions"><span>Stop Hand-Rolling Unit Conversions</span></a></nav>
+<div>Articles by Alok Kumar Singh. Originals at <a href="https://bestlatestapps.com/blog/" target="_blank" rel="noopener noreferrer">bestlatestapps.com/blog</a>.</div>
+</footer>
+</div>
+</body>
+</html>

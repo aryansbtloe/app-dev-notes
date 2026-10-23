@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>A Document Scanner in an Afternoon: VisionKit&#x27;s Camera, Core Image Clean-Up and AirPrint | Alok Singh, App Dev Notes</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="modulepreload" href="./_observablehq/client.097df403.js">
+<link rel="modulepreload" href="./_observablehq/runtime.fa9f71c0.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.60afab10.js">
+<link rel="canonical" href="https://bestlatestapps.com/blog/a-document-scanner-in-an-afternoon/"><meta name="description" content="Apple's document camera on iOS 13+, a Vision rectangle-detection fallback for older devices, enhancing scans with Core Image, saving locally, sharing PNGs…">
+<script type="module">
+
+import "./_observablehq/client.097df403.js";
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Alok Singh, App Dev Notes</a></li>
+  </ol>
+  <div id="observablehq-search"><input type="search" placeholder="Search"></div>
+  <div id="observablehq-search-results"></div>
+  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.755d897f.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
+  <ol>
+    <li class="observablehq-link"><a href="./tic-tac-toe-in-swiftui-done-properly">Tic Tac Toe in SwiftUI, Done Properly</a></li>
+    <li class="observablehq-link"><a href="./the-sending-side-of-apns">The Sending Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./the-device-side-of-apns">The Device Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./text-plus-audio-fully-offline">Text Plus Audio, Fully Offline</a></li>
+    <li class="observablehq-link"><a href="./stop-hand-rolling-unit-conversions">Stop Hand-Rolling Unit Conversions</a></li>
+    <li class="observablehq-link"><a href="./shipping-a-4k-wallpaper-app-without-running-out-of-memory">Shipping a 4K Wallpaper App Without Running Out of Memory</a></li>
+    <li class="observablehq-link"><a href="./medication-reminders-that-actually-fire">Medication Reminders That Actually Fire</a></li>
+    <li class="observablehq-link"><a href="./from-barcode-to-pdf">From Barcode to PDF</a></li>
+    <li class="observablehq-link"><a href="./drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game">Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game,</a></li>
+    <li class="observablehq-link"><a href="./convert-as-you-type-currency-conversion-in-swift">Convert-As-You-Type Currency Conversion in Swift</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-first-bible-reader-on-ios">Building an Offline-First Bible Reader on iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-ebook-reader-for-ios">Building an Offline eBook Reader for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-quotes-app-in-swiftui">Building an Offline Quotes App in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-an-admob-earnings-dashboard-for-ios">Building an AdMob Earnings Dashboard for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-tap-to-match-marble-game-with-spritekit-and-swiftui">Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine">Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine</a></li>
+    <li class="observablehq-link"><a href="./building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe">Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioE</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-ios-component-catalogue">Building a Live iOS Component Catalogue</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-temple-darshan-app-for-ios">Building a Live Temple Darshan App for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-hashtag-copier-for-ios">Building a Hashtag Copier for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-chromatic-guitar-tuner-on-ios">Building a Chromatic Guitar Tuner on iOS</a></li>
+    <li class="observablehq-link"><a href="./animating-algorithms-in-swiftui">Animating Algorithms in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./a-practical-guide-to-ios-haptics">A Practical Guide to iOS Haptics</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./a-document-scanner-in-an-afternoon">A Document Scanner in an Afternoon</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#1-the-scanner-pipeline">1. The scanner pipeline</a></li>
+<li class="observablehq-secondary-link"><a href="#2-capture-with-vn-document-camera-view-controller-i-os-13">2. Capture with VNDocumentCameraViewController (iOS 13+)</a></li>
+<li class="observablehq-secondary-link"><a href="#3-the-i-os-12-fallback-vision-rectangles-and-perspective-correction">3. The iOS 12 fallback: Vision rectangles and perspective correction</a></li>
+<li class="observablehq-secondary-link"><a href="#4-optimise-scan-quality-enhancing-with-core-image">4. &quot;Optimise scan quality&quot;: enhancing with Core Image</a></li>
+<li class="observablehq-secondary-link"><a href="#5-saved-on-your-phone-local-storage-done-properly">5. &quot;Saved on your phone&quot;: local storage done properly</a></li>
+<li class="observablehq-secondary-link"><a href="#6-share-as-png-and-print-with-air-print">6. Share as PNG, and print with AirPrint</a></li>
+<li class="observablehq-secondary-link"><a href="#7-real-world-example-scan-via-cam">7. Real-world example: Scan Via Cam</a></li>
+<li class="observablehq-secondary-link"><a href="#8-before-you-ship-a-scanner-a-checklist">8. Before you ship a scanner: a checklist</a></li>
+<li class="observablehq-secondary-link"><a href="#wrapping-up">Wrapping up</a></li>
+</ol>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="a-document-scanner-in-an-afternoon-vision-kits-camera-core-image-clean-up-and-air-print" tabindex="-1"><a class="observablehq-header-anchor" href="#a-document-scanner-in-an-afternoon-vision-kits-camera-core-image-clean-up-and-air-print">A Document Scanner in an Afternoon: VisionKit's Camera, Core Image Clean-Up and AirPrint</a></h1>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/a-document-scanner-in-an-afternoon/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/a-document-scanner-in-an-afternoon/</a></em></p>
+<p><em>Apple's document camera on iOS 13+, a Vision rectangle-detection fallback for older devices, enhancing scans with Core Image, saving locally, sharing PNGs and printing</em></p>
+<p><img src="https://bestlatestapps.com/assets/blog/a-document-scanner-in-an-afternoon/scan-via-cam-icon-512.jpg" alt="Scan Via Cam app icon"></p>
+<p>Document scanning used to be a serious computer-vision project: find the page's edges, correct the perspective, flatten the lighting, sharpen the text. Today, most of that is a system view controller, but there's still plenty to get right around it. That includes older devices, enhancement that doesn't destroy a receipt's faint print, storage that never leaves the phone, and sharing and printing that just work.</p>
+<p><strong>Scan Via Cam</strong> is my take on the simple version: point the camera at a receipt, note, invoice, whiteboard, business card or certificate, and get "clear &amp; sharp" images you can share as PNGs or print over AirPrint. Its listing adds two promises I care about: "Documents are saved on your phone, and we do not save them on our server", and "No Signup, No Credit Card".</p>
+<p>This article covers how I'd build that on iOS: <code>VNDocumentCameraViewController</code> for capture, a fallback for the app's iOS 12 minimum, Core Image enhancement, local storage, sharing and AirPrint. API names and availability are checked against Apple's docs. As always, this is the approach I'd use, not a line-by-line tour of the app.</p>
+<hr>
+<h2 id="1-the-scanner-pipeline" tabindex="-1"><a class="observablehq-header-anchor" href="#1-the-scanner-pipeline">1. The scanner pipeline</a></h2>
+<pre data-language="swift"><code class="language-swift">capture <span class="hljs-operator">──▶</span> detect edges <span class="hljs-operator">──▶</span> perspective<span class="hljs-operator">-</span>correct <span class="hljs-operator">──▶</span> enhance <span class="hljs-operator">──▶</span> save (<span class="hljs-type">PNG</span>) <span class="hljs-operator">──▶</span> share <span class="hljs-operator">/</span> print
+   <span class="hljs-operator">│</span>                 <span class="hljs-operator">└────</span> <span class="hljs-type">VNDocumentCameraViewController</span> does these on iOS <span class="hljs-number">13</span><span class="hljs-operator">+</span> <span class="hljs-operator">────┘</span>
+   <span class="hljs-operator">└──</span> iOS <span class="hljs-number">12</span> fallback: camera photo <span class="hljs-operator">→</span> <span class="hljs-type">VNDetectRectanglesRequest</span> <span class="hljs-operator">→</span> <span class="hljs-type">CIPerspectiveCorrection</span>
+</code></pre>
+<p>On iOS 13 and later, Apple's document camera handles capture, edge detection, auto-capture and perspective correction. The app supports <strong>iOS 12.0 and later</strong>, so it also needs a path for devices that can't use it. Both paths end up with plain <code>UIImage</code>s, and everything after that is shared.</p>
+<hr>
+<h2 id="2-capture-with-vn-document-camera-view-controller-i-os-13" tabindex="-1"><a class="observablehq-header-anchor" href="#2-capture-with-vn-document-camera-view-controller-i-os-13">2. Capture with VNDocumentCameraViewController (iOS 13+)</a></h2>
+<p><code>VNDocumentCameraViewController</code> (VisionKit, iOS 13+) presents the full scanning UI: live edge highlighting, automatic or manual capture, multi-page scans and per-page crop adjustment. You get back a <code>VNDocumentCameraScan</code> with one corrected image per page.</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> UIKit
+<span class="hljs-keyword">import</span> VisionKit
+
+<span class="hljs-keyword">@available</span>(<span class="hljs-keyword">iOS</span> <span class="hljs-number">13.0</span>, <span class="hljs-operator">*</span>)
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DocumentCameraCoordinator</span>: <span class="hljs-title class_ inherited__">NSObject</span>, <span class="hljs-title class_ inherited__">VNDocumentCameraViewControllerDelegate</span> {
+    <span class="hljs-keyword">var</span> onPages: (([<span class="hljs-type">UIImage</span>]) -&gt; <span class="hljs-type">Void</span>)<span class="hljs-operator">?</span>
+
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">var</span> isSupported: <span class="hljs-type">Bool</span> { <span class="hljs-type">VNDocumentCameraViewController</span>.isSupported }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">makeController</span>() -&gt; <span class="hljs-type">VNDocumentCameraViewController</span> {
+        <span class="hljs-keyword">let</span> controller <span class="hljs-operator">=</span> <span class="hljs-type">VNDocumentCameraViewController</span>()
+        controller.delegate <span class="hljs-operator">=</span> <span class="hljs-keyword">self</span>
+        <span class="hljs-keyword">return</span> controller
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">documentCameraViewController</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">controller</span>: <span class="hljs-type">VNDocumentCameraViewController</span>,
+                                      <span class="hljs-params">didFinishWith</span> <span class="hljs-params">scan</span>: <span class="hljs-type">VNDocumentCameraScan</span>) {
+        <span class="hljs-keyword">let</span> pages <span class="hljs-operator">=</span> (<span class="hljs-number">0</span><span class="hljs-operator">..&lt;</span>scan.pageCount).map { scan.imageOfPage(at: <span class="hljs-variable">$0</span>) }
+        controller.dismiss(animated: <span class="hljs-literal">true</span>) { <span class="hljs-keyword">self</span>.onPages<span class="hljs-operator">?</span>(pages) }
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">documentCameraViewControllerDidCancel</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">controller</span>: <span class="hljs-type">VNDocumentCameraViewController</span>) {
+        controller.dismiss(animated: <span class="hljs-literal">true</span>)
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">documentCameraViewController</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">controller</span>: <span class="hljs-type">VNDocumentCameraViewController</span>,
+                                      <span class="hljs-params">didFailWithError</span> <span class="hljs-params">error</span>: <span class="hljs-type">Error</span>) {
+        controller.dismiss(animated: <span class="hljs-literal">true</span>)
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">"Scan failed: <span class="hljs-subst">\(error)</span>"</span>)
+    }
+}
+</code></pre>
+<p>Notes:</p>
+<ul>
+<li><strong>Camera permission is still yours to declare.</strong> Add <code>NSCameraUsageDescription</code>, for example "Scan Via Cam uses the camera to scan your documents." The system shows the prompt the first time the scanner opens.</li>
+<li><strong>Check <code>isSupported</code></strong> before offering the button. If it's false, use the fallback below.</li>
+<li><strong>The scanner's images are already cropped and flattened</strong>, so don't run your own perspective correction on them again.</li>
+</ul>
+<hr>
+<h2 id="3-the-i-os-12-fallback-vision-rectangles-and-perspective-correction" tabindex="-1"><a class="observablehq-header-anchor" href="#3-the-i-os-12-fallback-vision-rectangles-and-perspective-correction">3. The iOS 12 fallback: Vision rectangles and perspective correction</a></h2>
+<p>Vision's <code>VNDetectRectanglesRequest</code> has been around since iOS 11. It finds quadrilaterals in an image, which you can then flatten with Core Image's perspective-correction filter. Take the photo with <code>UIImagePickerController</code>, then:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> UIKit
+<span class="hljs-keyword">import</span> Vision
+<span class="hljs-keyword">import</span> CoreImage
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">ManualDocumentDetector</span> {
+
+    <span class="hljs-comment">/// Finds the most prominent page-like rectangle and returns a flattened crop.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">flatten</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">image</span>: <span class="hljs-type">UIImage</span>, <span class="hljs-params">completion</span>: <span class="hljs-keyword">@escaping</span> (<span class="hljs-type">UIImage</span>?) -&gt; <span class="hljs-type">Void</span>) {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> cgImage <span class="hljs-operator">=</span> image.cgImage <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> completion(<span class="hljs-literal">nil</span>) }
+        <span class="hljs-keyword">let</span> orientation <span class="hljs-operator">=</span> <span class="hljs-type">CGImagePropertyOrientation</span>(image.imageOrientation)
+
+        <span class="hljs-keyword">let</span> request <span class="hljs-operator">=</span> <span class="hljs-type">VNDetectRectanglesRequest</span> { request, <span class="hljs-keyword">_</span> <span class="hljs-keyword">in</span>
+            <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> rect <span class="hljs-operator">=</span> (request.results <span class="hljs-keyword">as?</span> [<span class="hljs-type">VNRectangleObservation</span>])<span class="hljs-operator">?</span>.first <span class="hljs-keyword">else</span> {
+                <span class="hljs-keyword">return</span> <span class="hljs-type">DispatchQueue</span>.main.async { completion(image) }   <span class="hljs-comment">// no page found: keep original</span>
+            }
+            <span class="hljs-keyword">let</span> output <span class="hljs-operator">=</span> correct(<span class="hljs-type">CIImage</span>(cgImage: cgImage).oriented(orientation), using: rect)
+            <span class="hljs-type">DispatchQueue</span>.main.async { completion(output) }
+        }
+        request.minimumAspectRatio <span class="hljs-operator">=</span> <span class="hljs-number">0.3</span>          <span class="hljs-comment">// receipts are tall and thin</span>
+        request.maximumAspectRatio <span class="hljs-operator">=</span> <span class="hljs-number">1.0</span>
+        request.minimumSize <span class="hljs-operator">=</span> <span class="hljs-number">0.3</span>                 <span class="hljs-comment">// page should fill a fair part of the frame</span>
+        request.minimumConfidence <span class="hljs-operator">=</span> <span class="hljs-number">0.6</span>
+        request.maximumObservations <span class="hljs-operator">=</span> <span class="hljs-number">1</span>
+
+        <span class="hljs-type">DispatchQueue</span>.global(qos: .userInitiated).async {
+            <span class="hljs-keyword">try?</span> <span class="hljs-type">VNImageRequestHandler</span>(cgImage: cgImage, orientation: orientation).perform([request])
+        }
+    }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">correct</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">image</span>: <span class="hljs-type">CIImage</span>, <span class="hljs-params">using</span> <span class="hljs-params">r</span>: <span class="hljs-type">VNRectangleObservation</span>) -&gt; <span class="hljs-type">UIImage</span>? {
+        <span class="hljs-comment">// Vision returns normalised coordinates (0...1, origin bottom-left); scale to pixels.</span>
+        <span class="hljs-keyword">let</span> size <span class="hljs-operator">=</span> image.extent.size
+        <span class="hljs-keyword">func</span> <span class="hljs-title function_">point</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">p</span>: <span class="hljs-type">CGPoint</span>) -&gt; <span class="hljs-type">CIVector</span> { <span class="hljs-type">CIVector</span>(x: p.x <span class="hljs-operator">*</span> size.width, y: p.y <span class="hljs-operator">*</span> size.height) }
+
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> filter <span class="hljs-operator">=</span> <span class="hljs-type">CIFilter</span>(name: <span class="hljs-string">"CIPerspectiveCorrection"</span>) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span> }
+        filter.setValue(image, forKey: kCIInputImageKey)
+        filter.setValue(point(r.topLeft), forKey: <span class="hljs-string">"inputTopLeft"</span>)
+        filter.setValue(point(r.topRight), forKey: <span class="hljs-string">"inputTopRight"</span>)
+        filter.setValue(point(r.bottomLeft), forKey: <span class="hljs-string">"inputBottomLeft"</span>)
+        filter.setValue(point(r.bottomRight), forKey: <span class="hljs-string">"inputBottomRight"</span>)
+
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> output <span class="hljs-operator">=</span> filter.outputImage,
+              <span class="hljs-keyword">let</span> cg <span class="hljs-operator">=</span> <span class="hljs-type">CIContext</span>().createCGImage(output, from: output.extent) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span> }
+        <span class="hljs-keyword">return</span> <span class="hljs-type">UIImage</span>(cgImage: cg)
+    }
+}
+
+<span class="hljs-keyword">extension</span> <span class="hljs-title class_">CGImagePropertyOrientation</span> {
+    <span class="hljs-keyword">init</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">o</span>: <span class="hljs-type">UIImage</span>.<span class="hljs-type">Orientation</span>) {
+        <span class="hljs-keyword">switch</span> o {
+        <span class="hljs-keyword">case</span> .up: <span class="hljs-keyword">self</span> <span class="hljs-operator">=</span> .up; <span class="hljs-keyword">case</span> .down: <span class="hljs-keyword">self</span> <span class="hljs-operator">=</span> .down; <span class="hljs-keyword">case</span> .left: <span class="hljs-keyword">self</span> <span class="hljs-operator">=</span> .left; <span class="hljs-keyword">case</span> .right: <span class="hljs-keyword">self</span> <span class="hljs-operator">=</span> .right
+        <span class="hljs-keyword">case</span> .upMirrored: <span class="hljs-keyword">self</span> <span class="hljs-operator">=</span> .upMirrored; <span class="hljs-keyword">case</span> .downMirrored: <span class="hljs-keyword">self</span> <span class="hljs-operator">=</span> .downMirrored
+        <span class="hljs-keyword">case</span> .leftMirrored: <span class="hljs-keyword">self</span> <span class="hljs-operator">=</span> .leftMirrored; <span class="hljs-keyword">case</span> .rightMirrored: <span class="hljs-keyword">self</span> <span class="hljs-operator">=</span> .rightMirrored
+        <span class="hljs-keyword">@unknown</span> <span class="hljs-keyword">default</span>: <span class="hljs-keyword">self</span> <span class="hljs-operator">=</span> .up
+        }
+    }
+}
+</code></pre>
+<p>The string-keyed <code>CIFilter(name:)</code> form is used on purpose. The type-safe <code>CIFilter.perspectiveCorrection()</code> builders are iOS 13+, so on an iOS 12 target the classic API is the one that works everywhere.</p>
+<p>Show the detected quadrilateral over the photo and let the user drag the corners before you flatten. Automatic detection fails on low-contrast pages (white paper on a white desk), and a manual adjust step rescues those.</p>
+<hr>
+<h2 id="4-optimise-scan-quality-enhancing-with-core-image" tabindex="-1"><a class="observablehq-header-anchor" href="#4-optimise-scan-quality-enhancing-with-core-image">4. "Optimise scan quality": enhancing with Core Image</a></h2>
+<p>The listing says "Smart cropping and auto enhancing make the texts and graphics look clear and sharp." Cropping is done by now. For enhancement, Core Image has a filter built for exactly this, <code>CIDocumentEnhancer</code>, which "adjusts an image's shadows and contrast", plus the general-purpose <code>CIColorControls</code>:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> CoreImage
+<span class="hljs-keyword">import</span> CoreImage.CIFilterBuiltins
+<span class="hljs-keyword">import</span> UIKit
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">ScanEnhancer</span> {
+    <span class="hljs-keyword">enum</span> <span class="hljs-title class_">Mode</span> { <span class="hljs-keyword">case</span> original, enhanced, blackAndWhite }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> context <span class="hljs-operator">=</span> <span class="hljs-type">CIContext</span>()          <span class="hljs-comment">// create once; it's expensive</span>
+
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">apply</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">mode</span>: <span class="hljs-type">Mode</span>, <span class="hljs-params">to</span> <span class="hljs-params">image</span>: <span class="hljs-type">UIImage</span>) -&gt; <span class="hljs-type">UIImage</span> {
+        <span class="hljs-keyword">guard</span> mode <span class="hljs-operator">!=</span> .original, <span class="hljs-keyword">let</span> input <span class="hljs-operator">=</span> <span class="hljs-type">CIImage</span>(image: image) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> image }
+        <span class="hljs-keyword">var</span> output <span class="hljs-operator">=</span> input
+
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">#available</span>(<span class="hljs-keyword">iOS</span> <span class="hljs-number">13.0</span>, <span class="hljs-operator">*</span>) {
+            <span class="hljs-keyword">let</span> enhancer <span class="hljs-operator">=</span> <span class="hljs-type">CIFilter</span>.documentEnhancer()
+            enhancer.inputImage <span class="hljs-operator">=</span> output
+            enhancer.amount <span class="hljs-operator">=</span> <span class="hljs-number">1.0</span>
+            output <span class="hljs-operator">=</span> enhancer.outputImage <span class="hljs-operator">??</span> output
+
+            <span class="hljs-keyword">if</span> mode <span class="hljs-operator">==</span> .blackAndWhite {
+                <span class="hljs-keyword">let</span> controls <span class="hljs-operator">=</span> <span class="hljs-type">CIFilter</span>.colorControls()
+                controls.inputImage <span class="hljs-operator">=</span> output
+                controls.saturation <span class="hljs-operator">=</span> <span class="hljs-number">0</span>          <span class="hljs-comment">// greyscale</span>
+                controls.contrast <span class="hljs-operator">=</span> <span class="hljs-number">1.3</span>          <span class="hljs-comment">// push faint print darker</span>
+                output <span class="hljs-operator">=</span> controls.outputImage <span class="hljs-operator">??</span> output
+            }
+        } <span class="hljs-keyword">else</span> {
+            <span class="hljs-comment">// iOS 12: string-keyed filters only.</span>
+            <span class="hljs-keyword">let</span> controls <span class="hljs-operator">=</span> <span class="hljs-type">CIFilter</span>(name: <span class="hljs-string">"CIColorControls"</span>)<span class="hljs-operator">!</span>
+            controls.setValue(output, forKey: kCIInputImageKey)
+            controls.setValue(mode <span class="hljs-operator">==</span> .blackAndWhite <span class="hljs-operator">?</span> <span class="hljs-number">0</span> : <span class="hljs-number">1</span>, forKey: kCIInputSaturationKey)
+            controls.setValue(<span class="hljs-number">1.2</span>, forKey: kCIInputContrastKey)
+            output <span class="hljs-operator">=</span> controls.outputImage <span class="hljs-operator">??</span> output
+        }
+
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> cg <span class="hljs-operator">=</span> context.createCGImage(output, from: input.extent) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> image }
+        <span class="hljs-keyword">return</span> <span class="hljs-type">UIImage</span>(cgImage: cg, scale: image.scale, orientation: .up)
+    }
+}
+</code></pre>
+<p>A few rules I'd follow:</p>
+<ul>
+<li><strong>Keep the original.</strong> Store the unenhanced image and apply the filter for display and export. Users switch modes, and enhancement can't be undone on pixels you've thrown away.</li>
+<li><strong>Offer three modes, not ten sliders</strong>: Original, Enhanced and Black &amp; White. That covers receipts, colourful whiteboards and text-heavy pages.</li>
+<li><strong>Black &amp; White isn't thresholding.</strong> A hard threshold destroys faint thermal-printer receipts. A contrast push on greyscale keeps them readable.</li>
+<li><strong>One shared <code>CIContext</code>.</strong> Creating one per image is the most common Core Image performance mistake.</li>
+</ul>
+<hr>
+<h2 id="5-saved-on-your-phone-local-storage-done-properly" tabindex="-1"><a class="observablehq-header-anchor" href="#5-saved-on-your-phone-local-storage-done-properly">5. "Saved on your phone": local storage done properly</a></h2>
+<p>There's no server and no account, so the files on the device <em>are</em> the product. Store each scan as a folder with the original and its settings:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> UIKit
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">ScanRecord</span>: <span class="hljs-title class_ inherited__">Codable</span>, <span class="hljs-title class_ inherited__">Identifiable</span> {
+    <span class="hljs-keyword">let</span> id: <span class="hljs-type">UUID</span>
+    <span class="hljs-keyword">let</span> createdAt: <span class="hljs-type">Date</span>
+    <span class="hljs-keyword">var</span> title: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">var</span> pageCount: <span class="hljs-type">Int</span>
+    <span class="hljs-keyword">var</span> mode: <span class="hljs-type">String</span>           <span class="hljs-comment">// "original", "enhanced", "bw"</span>
+}
+
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ScanLibrary</span> {
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> root: <span class="hljs-type">URL</span> <span class="hljs-operator">=</span> {
+        <span class="hljs-keyword">let</span> docs <span class="hljs-operator">=</span> <span class="hljs-type">FileManager</span>.default.urls(for: .documentDirectory, in: .userDomainMask)[<span class="hljs-number">0</span>]
+        <span class="hljs-keyword">let</span> dir <span class="hljs-operator">=</span> docs.appendingPathComponent(<span class="hljs-string">"Scans"</span>, isDirectory: <span class="hljs-literal">true</span>)
+        <span class="hljs-keyword">try?</span> <span class="hljs-type">FileManager</span>.default.createDirectory(at: dir, withIntermediateDirectories: <span class="hljs-literal">true</span>)
+        <span class="hljs-keyword">return</span> dir
+    }()
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">save</span>(<span class="hljs-params">pages</span>: [<span class="hljs-type">UIImage</span>], <span class="hljs-params">title</span>: <span class="hljs-type">String</span>) <span class="hljs-keyword">throws</span> -&gt; <span class="hljs-type">ScanRecord</span> {
+        <span class="hljs-keyword">let</span> record <span class="hljs-operator">=</span> <span class="hljs-type">ScanRecord</span>(id: <span class="hljs-type">UUID</span>(), createdAt: <span class="hljs-type">Date</span>(), title: title,
+                                pageCount: pages.count, mode: <span class="hljs-string">"enhanced"</span>)
+        <span class="hljs-keyword">let</span> folder <span class="hljs-operator">=</span> root.appendingPathComponent(record.id.uuidString, isDirectory: <span class="hljs-literal">true</span>)
+        <span class="hljs-keyword">try</span> <span class="hljs-type">FileManager</span>.default.createDirectory(at: folder, withIntermediateDirectories: <span class="hljs-literal">true</span>)
+
+        <span class="hljs-keyword">for</span> (i, page) <span class="hljs-keyword">in</span> pages.enumerated() {
+            <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> png <span class="hljs-operator">=</span> page.pngData() <span class="hljs-keyword">else</span> { <span class="hljs-keyword">continue</span> }
+            <span class="hljs-comment">// Encrypted at rest while the device is locked.</span>
+            <span class="hljs-keyword">try</span> png.write(to: folder.appendingPathComponent(<span class="hljs-string">"page-<span class="hljs-subst">\(i <span class="hljs-operator">+</span> <span class="hljs-number">1</span>)</span>-original.png"</span>),
+                          options: [.atomic, .completeFileProtection])
+        }
+        <span class="hljs-keyword">try</span> <span class="hljs-type">JSONEncoder</span>().encode(record).write(to: folder.appendingPathComponent(<span class="hljs-string">"record.json"</span>),
+                                               options: [.atomic, .completeFileProtection])
+        <span class="hljs-keyword">return</span> record
+    }
+}
+</code></pre>
+<p>Two privacy decisions are worth calling out:</p>
+<ul>
+<li><strong><code>.completeFileProtection</code>.</strong> Scans are receipts, IDs and certificates, so they should be unreadable while the phone is locked. Unlike a reminder app, a scanner never needs to write in the background, so the strongest protection costs nothing.</li>
+<li><strong>Think about backups deliberately.</strong> Files in Documents are included in the user's own iCloud or computer backup, which is usually what people want for their documents. If you'd rather exclude them, set <code>URLResourceValues.isExcludedFromBackup</code> and say so in the app.</li>
+</ul>
+<hr>
+<h2 id="6-share-as-png-and-print-with-air-print" tabindex="-1"><a class="observablehq-header-anchor" href="#6-share-as-png-and-print-with-air-print">6. Share as PNG, and print with AirPrint</a></h2>
+<p>The listing calls out both: "Easily share documents in Png format… via social media, email attachment" and "Instantly print out docs… with nearby printer via AirPrint".</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> UIKit
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">ScanOutput</span> {
+
+    <span class="hljs-comment">/// Share sheet: Mail, Messages, social apps, Files, AirDrop… and Print.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">share</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">pages</span>: [<span class="hljs-type">UIImage</span>], <span class="hljs-params">from</span> <span class="hljs-params">source</span>: <span class="hljs-type">UIViewController</span>, <span class="hljs-params">anchor</span>: <span class="hljs-type">UIView</span>) {
+        <span class="hljs-keyword">let</span> items: [<span class="hljs-keyword">Any</span>] <span class="hljs-operator">=</span> pages.compactMap { <span class="hljs-variable">$0</span>.pngData() }
+        <span class="hljs-keyword">let</span> sheet <span class="hljs-operator">=</span> <span class="hljs-type">UIActivityViewController</span>(activityItems: items, applicationActivities: <span class="hljs-literal">nil</span>)
+        sheet.popoverPresentationController<span class="hljs-operator">?</span>.sourceView <span class="hljs-operator">=</span> anchor     <span class="hljs-comment">// required on iPad</span>
+        source.present(sheet, animated: <span class="hljs-literal">true</span>)
+    }
+
+    <span class="hljs-comment">/// Direct AirPrint, for a dedicated Print button.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">print</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">pages</span>: [<span class="hljs-type">UIImage</span>], <span class="hljs-params">jobName</span>: <span class="hljs-type">String</span>) {
+        <span class="hljs-keyword">guard</span> <span class="hljs-type">UIPrintInteractionController</span>.isPrintingAvailable <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+        <span class="hljs-keyword">let</span> info <span class="hljs-operator">=</span> <span class="hljs-type">UIPrintInfo</span>(dictionary: <span class="hljs-literal">nil</span>)
+        info.outputType <span class="hljs-operator">=</span> .grayscale        <span class="hljs-comment">// documents: cheaper and usually crisper</span>
+        info.jobName <span class="hljs-operator">=</span> jobName
+
+        <span class="hljs-keyword">let</span> controller <span class="hljs-operator">=</span> <span class="hljs-type">UIPrintInteractionController</span>.shared
+        controller.printInfo <span class="hljs-operator">=</span> info
+        controller.printingItems <span class="hljs-operator">=</span> pages    <span class="hljs-comment">// one image per page</span>
+        controller.present(animated: <span class="hljs-literal">true</span>, completionHandler: <span class="hljs-literal">nil</span>)
+    }
+}
+</code></pre>
+<p>Sharing PNG <code>Data</code> rather than <code>UIImage</code> objects means the receiving app gets the lossless file you saved, not a re-compressed JPEG. And <code>popoverPresentationController.sourceView</code> isn't optional on iPad: without it, presenting the share sheet crashes.</p>
+<p>Set <code>outputType</code> to <code>.photo</code> for scanned photos or colour certificates. For text documents, <code>.grayscale</code> is the better default.</p>
+<hr>
+<h2 id="7-real-world-example-scan-via-cam" tabindex="-1"><a class="observablehq-header-anchor" href="#7-real-world-example-scan-via-cam">7. Real-world example: Scan Via Cam</a></h2>
+<p>This is the approach I'd use, and recommend, for <strong><a href="https://apps.apple.com/us/app/scan-via-cam/id1525874032" target="_blank" rel="noopener noreferrer">Scan Via Cam</a></strong>.</p>
+<p><img src="https://bestlatestapps.com/assets/blog/a-document-scanner-in-an-afternoon/scan-via-cam-screenshot-1.jpg" alt="Scan Via Cam App Store screenshot 1"></p>
+<p>At the time of writing, its App Store listing shows:</p>
+<ul>
+<li><strong>Free</strong>, in <strong>Productivity</strong> and <strong>Utilities</strong></li>
+<li>First released in <strong>August 2020</strong></li>
+<li><strong>6 ratings</strong> in the US store, averaging about <strong>4.7 stars</strong></li>
+<li>Supports <strong>iOS 12.0 and later</strong></li>
+</ul>
+<p>How the listing maps to this article:</p>
+<table>
+<thead>
+<tr>
+<th>What the listing says</th>
+<th>Where it's covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Use your phone camera to scan receipts, notes, invoices, whiteboard discussions, business cards, certificates"</td>
+<td>Document camera on iOS 13+, Vision fallback on iOS 12 (sections 2–3)</td>
+</tr>
+<tr>
+<td>"Smart cropping and auto enhancing make the texts and graphics look clear and sharp"</td>
+<td>Rectangle detection and perspective correction; <code>CIDocumentEnhancer</code> and colour controls (sections 3–4)</td>
+</tr>
+<tr>
+<td>"Easily share documents in Png format… via social media, email attachment"</td>
+<td><code>UIActivityViewController</code> with PNG data (section 6)</td>
+</tr>
+<tr>
+<td>"Instantly print out docs… via AirPrint"</td>
+<td><code>UIPrintInteractionController</code> (section 6)</td>
+</tr>
+<tr>
+<td>"Documents are saved on your phone, and we do not save them on our server" / "No Signup, No Credit Card"</td>
+<td>Local folder storage with complete file protection, no account (section 5)</td>
+</tr>
+</tbody>
+</table>
+<p><img src="https://bestlatestapps.com/assets/blog/a-document-scanner-in-an-afternoon/scan-via-cam-screenshot-2.jpg" alt="Scan Via Cam App Store screenshot 2"></p>
+<p>The iOS 12 minimum is the most interesting constraint here. It's why the article carries a Vision-based fallback and string-keyed Core Image filters, while devices on iOS 13 and later get Apple's full document camera.</p>
+<hr>
+<h2 id="8-before-you-ship-a-scanner-a-checklist" tabindex="-1"><a class="observablehq-header-anchor" href="#8-before-you-ship-a-scanner-a-checklist">8. Before you ship a scanner: a checklist</a></h2>
+<ol>
+<li><strong>Camera permission has a clear purpose string</strong>, and a denied state links to Settings.</li>
+<li><strong><code>VNDocumentCameraViewController.isSupported</code> is checked</strong>, and older devices get a working fallback.</li>
+<li><strong>Detected corners are adjustable</strong> before flattening.</li>
+<li><strong>Originals are kept</strong>, and enhancement is re-applied, never baked in.</li>
+<li><strong>Faint receipts survive Black &amp; White mode.</strong> Test with a real thermal-paper receipt.</li>
+<li><strong>Files use complete protection</strong>, and your backup behaviour is a deliberate choice.</li>
+<li><strong>Sharing sends PNG data</strong>, and the share sheet has a source view on iPad.</li>
+<li><strong>AirPrint is tested on a real printer</strong>, in greyscale and colour.</li>
+<li><strong>Your privacy claims are literally true.</strong> No upload, no analytics on document content, and App Privacy details to match.</li>
+</ol>
+<hr>
+<h2 id="wrapping-up" tabindex="-1"><a class="observablehq-header-anchor" href="#wrapping-up">Wrapping up</a></h2>
+<p>The hardest parts of document scanning are now system features: on iOS 13 and later, <code>VNDocumentCameraViewController</code> gives you capture, edge detection and flattening in a few lines. What's left is product craft: a fallback for older devices, enhancement that respects faint print, private local storage, and output that works with every app and printer the user has.</p>
+<p>Try it, or explore my other apps:</p>
+<ul>
+<li><strong>Scan Via Cam (iOS):</strong> <a href="https://apps.apple.com/us/app/scan-via-cam/id1525874032" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/scan-via-cam/id1525874032</a></li>
+<li><strong>All of my free iOS apps:</strong> <a href="https://apps.apple.com/us/developer/alok-singh/id1508795536" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/developer/alok-singh/id1508795536</a></li>
+<li><strong>My portfolio:</strong> <a href="https://bestlatestapps.com/alok/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/alok/</a></li>
+</ul>
+<p>What's the hardest document you've had to scan? Glossy certificates under office lights are my nemesis. Tell me yours in the comments.</p>
+<p><em>— Alok Kumar Singh</em></p>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/a-document-scanner-in-an-afternoon/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/a-document-scanner-in-an-afternoon/</a></em></p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./a-practical-guide-to-ios-haptics"><span>A Practical Guide to iOS Haptics</span></a></nav>
+<div>Articles by Alok Kumar Singh. Originals at <a href="https://bestlatestapps.com/blog/" target="_blank" rel="noopener noreferrer">bestlatestapps.com/blog</a>.</div>
+</footer>
+</div>
+</body>
+</html>

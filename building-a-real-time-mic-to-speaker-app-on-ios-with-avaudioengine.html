@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine | Alok Singh, App Dev Notes</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="modulepreload" href="./_observablehq/client.097df403.js">
+<link rel="modulepreload" href="./_observablehq/runtime.fa9f71c0.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.60afab10.js">
+<link rel="canonical" href="https://bestlatestapps.com/blog/building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine/"><meta name="description" content="Live audio passthrough in Swift: session setup, permissions, feedback, interruptions and route changes, from shipping an app that does exactly this">
+<script type="module">
+
+import "./_observablehq/client.097df403.js";
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Alok Singh, App Dev Notes</a></li>
+  </ol>
+  <div id="observablehq-search"><input type="search" placeholder="Search"></div>
+  <div id="observablehq-search-results"></div>
+  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.755d897f.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
+  <ol>
+    <li class="observablehq-link"><a href="./tic-tac-toe-in-swiftui-done-properly">Tic Tac Toe in SwiftUI, Done Properly</a></li>
+    <li class="observablehq-link"><a href="./the-sending-side-of-apns">The Sending Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./the-device-side-of-apns">The Device Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./text-plus-audio-fully-offline">Text Plus Audio, Fully Offline</a></li>
+    <li class="observablehq-link"><a href="./stop-hand-rolling-unit-conversions">Stop Hand-Rolling Unit Conversions</a></li>
+    <li class="observablehq-link"><a href="./shipping-a-4k-wallpaper-app-without-running-out-of-memory">Shipping a 4K Wallpaper App Without Running Out of Memory</a></li>
+    <li class="observablehq-link"><a href="./medication-reminders-that-actually-fire">Medication Reminders That Actually Fire</a></li>
+    <li class="observablehq-link"><a href="./from-barcode-to-pdf">From Barcode to PDF</a></li>
+    <li class="observablehq-link"><a href="./drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game">Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game,</a></li>
+    <li class="observablehq-link"><a href="./convert-as-you-type-currency-conversion-in-swift">Convert-As-You-Type Currency Conversion in Swift</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-first-bible-reader-on-ios">Building an Offline-First Bible Reader on iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-ebook-reader-for-ios">Building an Offline eBook Reader for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-quotes-app-in-swiftui">Building an Offline Quotes App in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-an-admob-earnings-dashboard-for-ios">Building an AdMob Earnings Dashboard for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-tap-to-match-marble-game-with-spritekit-and-swiftui">Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine">Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine</a></li>
+    <li class="observablehq-link"><a href="./building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe">Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioE</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-ios-component-catalogue">Building a Live iOS Component Catalogue</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-temple-darshan-app-for-ios">Building a Live Temple Darshan App for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-hashtag-copier-for-ios">Building a Hashtag Copier for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-chromatic-guitar-tuner-on-ios">Building a Chromatic Guitar Tuner on iOS</a></li>
+    <li class="observablehq-link"><a href="./animating-algorithms-in-swiftui">Animating Algorithms in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./a-practical-guide-to-ios-haptics">A Practical Guide to iOS Haptics</a></li>
+    <li class="observablehq-link"><a href="./a-document-scanner-in-an-afternoon">A Document Scanner in an Afternoon</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#1-the-problem-what-mic-to-speaker-really-needs">1. The problem: what &quot;mic to speaker&quot; really needs</a></li>
+<li class="observablehq-secondary-link"><a href="#2-microphone-permission-the-modern-way">2. Microphone permission, the modern way</a></li>
+<li class="observablehq-secondary-link"><a href="#3-configuring-av-audio-session">3. Configuring AVAudioSession</a></li>
+<li class="observablehq-secondary-link"><a href="#4-the-av-audio-engine-graph">4. The AVAudioEngine graph</a></li>
+<li class="observablehq-secondary-link"><a href="#5-taming-feedback-and-latency">5. Taming feedback and latency</a></li>
+<li class="observablehq-secondary-link"><a href="#6-interruptions-and-route-changes">6. Interruptions and route changes</a></li>
+<li class="observablehq-secondary-link"><a href="#7-background-audio-and-app-store-notes">7. Background audio and App Store notes</a></li>
+<li class="observablehq-secondary-link"><a href="#8-real-world-example-virtual-mic-a-k-a-mic-to-speaker">8. Real-world example: Virtual Mic, a.k.a. Mic to Speaker</a></li>
+<li class="observablehq-secondary-link"><a href="#9-before-you-ship-live-audio-a-7-point-checklist">9. Before you ship live audio: a 7-point checklist</a></li>
+<li class="observablehq-secondary-link"><a href="#wrapping-up">Wrapping up</a></li>
+</ol>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="building-a-real-time-mic-to-speaker-app-on-i-os-with-av-audio-engine" tabindex="-1"><a class="observablehq-header-anchor" href="#building-a-real-time-mic-to-speaker-app-on-i-os-with-av-audio-engine">Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine</a></h1>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine/</a></em></p>
+<p><em>Live audio passthrough in Swift: session setup, permissions, feedback, interruptions and route changes, from shipping an app that does exactly this</em></p>
+<p><img src="https://bestlatestapps.com/assets/blog/building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine/virtual-mic-icon-512.jpg" alt="Virtual Mic app icon"></p>
+<p>Most audio tutorials on iOS cover one of two things: playing a file, or recording one. Very few cover the strange in-between case where the microphone and the speaker are both live at the same time, and whatever goes in comes straight back out.</p>
+<p>That in-between case is exactly what my app <strong>Mic to Speaker – Virtual Mic</strong> does. You plug your iPhone into a speaker, or connect over Bluetooth or AirPlay, tap the screen, and your voice comes out of the speaker. I first shipped it in May 2020. Since then it has collected more than 3,400 ratings on the US App Store, and it is still the most popular of the 24 free apps I have published under my developer name.</p>
+<p>It looks like a weekend project, and the first working version really is only a few dozen lines of Swift. But the gap between "it works on my desk" and "it works for thousands of people on random speakers, in cars, during phone calls" is where the real work lives.</p>
+<p>This is the guide I wish I'd had: permissions, session setup, the engine graph, feedback, interruptions, route changes, background audio and App Store review. I've checked API names and availability against Apple's developer documentation and flag what's new or recently changed.</p>
+<hr>
+<h2 id="1-the-problem-what-mic-to-speaker-really-needs" tabindex="-1"><a class="observablehq-header-anchor" href="#1-the-problem-what-mic-to-speaker-really-needs">1. The problem: what "mic to speaker" really needs</a></h2>
+<p>On paper the requirement is one sentence: <em>take audio from the microphone and play it through the speaker, right now.</em> In practice that sentence hides three hard requirements.</p>
+<p><strong>Low latency.</strong> When you hear your own voice back, your brain notices delay quickly. A little sounds "roomy"; more sounds like an echo and makes it hard to keep talking. Every buffer between mic and speaker adds delay, so you want the smallest buffers the device can reliably handle.</p>
+<p><strong>The right output route.</strong> By default, when an iPhone records and plays at the same time, output goes to the <em>receiver</em>, the small earpiece you hold to your ear for calls. Users expect the loud bottom speaker, their Bluetooth speaker, the car stereo or an AirPlay device. Getting audio to the right place, and keeping it there, is half the job.</p>
+<p><strong>No howling feedback.</strong> If the mic can hear the speaker, the sound loops and grows into that painful squeal everyone knows from school assemblies. On a phone, with mic and speaker centimetres apart, that's the default outcome unless you plan for it.</p>
+<p>I underestimated all three. My first build played through the earpiece. The second howled as soon as I turned the volume up. The third worked beautifully until a phone call came in, then stayed silent until I killed the app. Each section below is, roughly, one of those lessons.</p>
+<hr>
+<h2 id="2-microphone-permission-the-modern-way" tabindex="-1"><a class="observablehq-header-anchor" href="#2-microphone-permission-the-modern-way">2. Microphone permission, the modern way</a></h2>
+<p>Before anything else, you need the user's permission to use the microphone. Two things are required.</p>
+<p><strong>First, a purpose string.</strong> Add <code>NSMicrophoneUsageDescription</code> to your <code>Info.plist</code>. Apple's documentation is blunt about this: if your app tries to access the microphone without this key, the app exits. Make it specific, for example: <em>"Virtual Mic uses the microphone to play your voice live through your speaker or headphones."</em></p>
+<p><strong>Second, the request itself.</strong> In iOS 17, Apple moved record permission from <code>AVAudioSession</code> to a new class, <code>AVAudioApplication</code>. The old <code>AVAudioSession.requestRecordPermission(_:)</code> is deprecated as of iOS 17. The new API has both a completion-handler version and an <code>async</code> version:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">class</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">requestRecordPermission</span>() <span class="hljs-keyword">async</span> -&gt; <span class="hljs-type">Bool</span>
+</code></pre>
+<p>If your deployment target is below iOS 17, you need both paths. Mic to Speaker currently supports iOS 16.6 and later, so this is not theoretical for me. Here's a small helper that handles both, plus the "denied" case:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> AVFoundation
+<span class="hljs-keyword">import</span> UIKit
+
+<span class="hljs-meta">@MainActor</span>
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">MicPermissionManager</span> {
+
+    <span class="hljs-comment">/// Prompts if needed. Returns true if we may record.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">request</span>() <span class="hljs-keyword">async</span> -&gt; <span class="hljs-type">Bool</span> {
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">#available</span>(<span class="hljs-keyword">iOS</span> <span class="hljs-number">17.0</span>, <span class="hljs-operator">*</span>) {
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">await</span> <span class="hljs-type">AVAudioApplication</span>.requestRecordPermission()
+        } <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">await</span> withCheckedContinuation { continuation <span class="hljs-keyword">in</span>
+                <span class="hljs-type">AVAudioSession</span>.sharedInstance().requestRecordPermission { granted <span class="hljs-keyword">in</span>
+                    continuation.resume(returning: granted)
+                }
+            }
+        }
+    }
+
+    <span class="hljs-comment">/// The system will not show the prompt again after a denial,</span>
+    <span class="hljs-comment">/// so the only way forward is the Settings app.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">openSettings</span>() {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> url <span class="hljs-operator">=</span> <span class="hljs-type">URL</span>(string: <span class="hljs-type">UIApplication</span>.openSettingsURLString) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+        <span class="hljs-type">UIApplication</span>.shared.open(url)
+    }
+}
+</code></pre>
+<p>Three practical notes:</p>
+<ul>
+<li><strong>Ask at the moment of need</strong>, when the user first taps "start", not at launch.</li>
+<li><strong>Denied is permanent from the app's side.</strong> The system won't prompt again, so show a short explanation and a button that calls <code>openSettings()</code>.</li>
+<li><strong>Silence is not an error.</strong> Apple's docs note that without permission the app captures only silence. The engine starts "fine" and plays nothing, so always check permission first or you'll get confusing "no sound" bug reports.</li>
+</ul>
+<hr>
+<h2 id="3-configuring-av-audio-session" tabindex="-1"><a class="observablehq-header-anchor" href="#3-configuring-av-audio-session">3. Configuring AVAudioSession</a></h2>
+<p><code>AVAudioSession</code> is how your app tells iOS what kind of audio it does. Get this wrong and nothing else matters.</p>
+<h3 id="category-and-options" tabindex="-1"><a class="observablehq-header-anchor" href="#category-and-options">Category and options</a></h3>
+<p>For simultaneous input and output you need the <code>.playAndRecord</code> category. On top of that, the options do most of the heavy lifting:</p>
+<ul>
+<li><strong><code>.defaultToSpeaker</code></strong>: uses the built-in loudspeaker instead of the earpiece when nothing else is connected. This one option fixes "why is it so quiet?"</li>
+<li><strong><code>.allowBluetoothA2DP</code></strong>: lets output go to high-quality Bluetooth speakers and headphones. A2DP is output-only, so the iPhone's mic stays the input, which is usually what a mic-to-speaker app wants.</li>
+<li><strong><code>.allowBluetoothHFP</code></strong> (formerly <code>.allowBluetooth</code>): lets Bluetooth <em>hands-free</em> devices act as input and output. Apple's current docs mark the old <code>.allowBluetooth</code> name deprecated in favour of <code>.allowBluetoothHFP</code>; on an older SDK, use <code>.allowBluetooth</code>. HFP is the "phone call" profile with noticeably lower quality than A2DP, so I enable it only when the user wants a headset's own microphone.</li>
+<li><strong><code>.allowAirPlay</code></strong>: lets output go to AirPlay devices; for <code>.playAndRecord</code> you must set it explicitly. AirPlay buffers over the network, so expect extra latency you can't control.</li>
+</ul>
+<h3 id="mode" tabindex="-1"><a class="observablehq-header-anchor" href="#mode">Mode</a></h3>
+<p>The mode tunes the session for a use case:</p>
+<ul>
+<li><strong><code>.default</code></strong>: no special processing; best for music and singing, and required for echo-cancelled input (below).</li>
+<li><strong><code>.voiceChat</code></strong>: tuned for two-way voice. Apple's docs say it optimises EQ for voice, limits routes to voice-suitable ones and automatically applies the Bluetooth HFP option. Great for speech, not for music.</li>
+<li><strong><code>.measurement</code></strong>: minimises system signal processing for the rawest input.</li>
+</ul>
+<p>I default to <code>.default</code> and offer voice processing (section 5) as a user choice.</p>
+<h3 id="buffer-duration-and-sample-rate" tabindex="-1"><a class="observablehq-header-anchor" href="#buffer-duration-and-sample-rate">Buffer duration and sample rate</a></h3>
+<p>You can <em>ask</em> for a smaller I/O buffer and a particular sample rate:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">try</span> session.setPreferredIOBufferDuration(<span class="hljs-number">0.005</span>)  <span class="hljs-comment">// a request, not a guarantee</span>
+<span class="hljs-keyword">try</span> session.setPreferredSampleRate(<span class="hljs-number">48_000</span>)
+</code></pre>
+<p>These are <em>preferences</em>; the system decides based on hardware and route. After activating, read <code>ioBufferDuration</code> and <code>sampleRate</code> to see what you actually got, and log them. Bluetooth routes often differ from what you asked for.</p>
+<h3 id="echo-cancelled-input-i-os-18-2" tabindex="-1"><a class="observablehq-header-anchor" href="#echo-cancelled-input-i-os-18-2">Echo-cancelled input (iOS 18.2+)</a></h3>
+<p>Starting with <strong>iOS 18.2</strong>, <code>AVAudioSession</code> has three new members:</p>
+<ul>
+<li><code>isEchoCancelledInputAvailable</code> — whether the device and current setup support it</li>
+<li><code>setPrefersEchoCancelledInput(_:)</code> — ask for it</li>
+<li><code>isEchoCancelledInputEnabled</code> — whether the system actually turned it on</li>
+</ul>
+<p>Per Apple's docs, it works only with <code>.playAndRecord</code> and <code>.default</code> mode, on certain 2024-or-later iPhones, on the built-in mic and speaker route. It's tuned for a wider range of sounds than voice processing, and can switch off when the route changes (say, a headset is plugged in). Treat it as a bonus on supported hardware, not your feedback strategy.</p>
+<h3 id="temporary-speaker-override" tabindex="-1"><a class="observablehq-header-anchor" href="#temporary-speaker-override">Temporary speaker override</a></h3>
+<p>For a "force loudspeaker" toggle, use <code>overrideOutputAudioPort(_:)</code>. It temporarily changes the current route, and the override clears when the route changes again.</p>
+<h3 id="putting-it-together" tabindex="-1"><a class="observablehq-header-anchor" href="#putting-it-together">Putting it together</a></h3>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> AVFoundation
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">AudioSessionConfigurator</span> {
+
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">configure</span>(<span class="hljs-params">allowBluetoothMic</span>: <span class="hljs-type">Bool</span> <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>,
+                          <span class="hljs-params">preferEchoCancellation</span>: <span class="hljs-type">Bool</span> <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>) <span class="hljs-keyword">throws</span> {
+        <span class="hljs-keyword">let</span> session <span class="hljs-operator">=</span> <span class="hljs-type">AVAudioSession</span>.sharedInstance()
+
+        <span class="hljs-keyword">var</span> options: <span class="hljs-type">AVAudioSession</span>.<span class="hljs-type">CategoryOptions</span> <span class="hljs-operator">=</span> [
+            .defaultToSpeaker,
+            .allowBluetoothA2DP,
+            .allowAirPlay
+        ]
+        <span class="hljs-keyword">if</span> allowBluetoothMic {
+            <span class="hljs-comment">// Use .allowBluetooth if your SDK predates .allowBluetoothHFP.</span>
+            options.insert(.allowBluetoothHFP)
+        }
+
+        <span class="hljs-keyword">try</span> session.setCategory(.playAndRecord, mode: .default, options: options)
+        <span class="hljs-keyword">try</span> session.setPreferredSampleRate(<span class="hljs-number">48_000</span>)
+        <span class="hljs-keyword">try</span> session.setPreferredIOBufferDuration(<span class="hljs-number">0.005</span>)
+
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">#available</span>(<span class="hljs-keyword">iOS</span> <span class="hljs-number">18.2</span>, <span class="hljs-operator">*</span>),
+           preferEchoCancellation,
+           session.isEchoCancelledInputAvailable {
+            <span class="hljs-keyword">try</span> session.setPrefersEchoCancelledInput(<span class="hljs-literal">true</span>)
+        }
+
+        <span class="hljs-keyword">try</span> session.setActive(<span class="hljs-literal">true</span>)
+
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">"Sample rate: <span class="hljs-subst">\(session.sampleRate)</span> Hz, "</span>
+            <span class="hljs-operator">+</span> <span class="hljs-string">"IO buffer: <span class="hljs-subst">\(session.ioBufferDuration <span class="hljs-operator">*</span> <span class="hljs-number">1000</span>)</span> ms, "</span>
+            <span class="hljs-operator">+</span> <span class="hljs-string">"route: <span class="hljs-subst">\(session.currentRoute.outputs.map(\.portType.rawValue))</span>"</span>)
+    }
+
+    <span class="hljs-comment">/// Force the built-in speaker (true) or go back to the normal route (false).</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">setSpeakerOverride</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">on</span>: <span class="hljs-type">Bool</span>) <span class="hljs-keyword">throws</span> {
+        <span class="hljs-keyword">try</span> <span class="hljs-type">AVAudioSession</span>.sharedInstance()
+            .overrideOutputAudioPort(on <span class="hljs-operator">?</span> .speaker : .none)
+    }
+
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">deactivate</span>() {
+        <span class="hljs-keyword">try?</span> <span class="hljs-type">AVAudioSession</span>.sharedInstance()
+            .setActive(<span class="hljs-literal">false</span>, options: .notifyOthersOnDeactivation)
+    }
+}
+</code></pre>
+<hr>
+<h2 id="4-the-av-audio-engine-graph" tabindex="-1"><a class="observablehq-header-anchor" href="#4-the-av-audio-engine-graph">4. The AVAudioEngine graph</a></h2>
+<p><code>AVAudioEngine</code> lets you connect audio nodes like guitar pedals. For mic-to-speaker the graph is short:</p>
+<pre data-language="swift"><code class="language-swift">inputNode <span class="hljs-operator">→</span> [<span class="hljs-type">EQ</span>] <span class="hljs-operator">→</span> [<span class="hljs-type">Reverb</span>] <span class="hljs-operator">→</span> mainMixerNode <span class="hljs-operator">→</span> outputNode
+</code></pre>
+<ul>
+<li><strong><code>inputNode</code></strong> is the current microphone input.</li>
+<li><strong><code>AVAudioUnitEQ</code></strong> gives bass/treble bands and a <code>globalGain</code> boost (documented range −96 to +24 dB).</li>
+<li><strong><code>AVAudioUnitReverb</code></strong> adds room character; <code>wetDryMix</code> runs 0–100%, where 0 is fully dry.</li>
+<li><strong><code>mainMixerNode</code></strong> is created and wired to <code>outputNode</code> the first time you access it. Its <code>outputVolume</code> (0.0–1.0) is a natural master volume.</li>
+</ul>
+<h3 id="format-matching" tabindex="-1"><a class="observablehq-header-anchor" href="#format-matching">Format matching</a></h3>
+<p>The most common live-audio crash is a format mismatch. My rule: <strong>use the input node's own format for every connection carrying the mic signal</strong>, and let the mixer convert for the output hardware. Also validate it first: with no input available, the format can come back with a 0 Hz sample rate or zero channels, and connecting with that raises an exception Swift can't catch.</p>
+<h3 id="the-complete-class" tabindex="-1"><a class="observablehq-header-anchor" href="#the-complete-class">The complete class</a></h3>
+<p>Here's a minimal, complete engine class: one object that owns the engine, exposes a few controls and starts and stops cleanly.</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> AVFoundation
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">LiveAudioError</span>: <span class="hljs-title class_ inherited__">Error</span> {
+    <span class="hljs-keyword">case</span> noInputAvailable
+}
+
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">LiveAudioEngine</span> {
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> engine <span class="hljs-operator">=</span> <span class="hljs-type">AVAudioEngine</span>()
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> eq <span class="hljs-operator">=</span> <span class="hljs-type">AVAudioUnitEQ</span>(numberOfBands: <span class="hljs-number">2</span>)
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> reverb <span class="hljs-operator">=</span> <span class="hljs-type">AVAudioUnitReverb</span>()
+
+    <span class="hljs-keyword">private(set)</span> <span class="hljs-keyword">var</span> isRunning <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>
+
+    <span class="hljs-comment">// MARK: Controls</span>
+
+    <span class="hljs-comment">/// Master volume, 0.0 ... 1.0</span>
+    <span class="hljs-keyword">var</span> volume: <span class="hljs-type">Float</span> {
+        <span class="hljs-keyword">get</span> { engine.mainMixerNode.outputVolume }
+        <span class="hljs-keyword">set</span> { engine.mainMixerNode.outputVolume <span class="hljs-operator">=</span> <span class="hljs-built_in">min</span>(<span class="hljs-built_in">max</span>(newValue, <span class="hljs-number">0</span>), <span class="hljs-number">1</span>) }
+    }
+
+    <span class="hljs-comment">/// Extra input gain in dB, clamped to a sane range.</span>
+    <span class="hljs-keyword">var</span> boostDB: <span class="hljs-type">Float</span> {
+        <span class="hljs-keyword">get</span> { eq.globalGain }
+        <span class="hljs-keyword">set</span> { eq.globalGain <span class="hljs-operator">=</span> <span class="hljs-built_in">min</span>(<span class="hljs-built_in">max</span>(newValue, <span class="hljs-operator">-</span><span class="hljs-number">24</span>), <span class="hljs-number">24</span>) }
+    }
+
+    <span class="hljs-comment">/// Bass and treble in dB.</span>
+    <span class="hljs-keyword">var</span> bassDB: <span class="hljs-type">Float</span> {
+        <span class="hljs-keyword">get</span> { eq.bands[<span class="hljs-number">0</span>].gain }
+        <span class="hljs-keyword">set</span> { eq.bands[<span class="hljs-number">0</span>].gain <span class="hljs-operator">=</span> <span class="hljs-built_in">min</span>(<span class="hljs-built_in">max</span>(newValue, <span class="hljs-operator">-</span><span class="hljs-number">12</span>), <span class="hljs-number">12</span>) }
+    }
+    <span class="hljs-keyword">var</span> trebleDB: <span class="hljs-type">Float</span> {
+        <span class="hljs-keyword">get</span> { eq.bands[<span class="hljs-number">1</span>].gain }
+        <span class="hljs-keyword">set</span> { eq.bands[<span class="hljs-number">1</span>].gain <span class="hljs-operator">=</span> <span class="hljs-built_in">min</span>(<span class="hljs-built_in">max</span>(newValue, <span class="hljs-operator">-</span><span class="hljs-number">12</span>), <span class="hljs-number">12</span>) }
+    }
+
+    <span class="hljs-comment">/// Reverb amount, 0 (off) ... 100</span>
+    <span class="hljs-keyword">var</span> reverbMix: <span class="hljs-type">Float</span> {
+        <span class="hljs-keyword">get</span> { reverb.wetDryMix }
+        <span class="hljs-keyword">set</span> { reverb.wetDryMix <span class="hljs-operator">=</span> <span class="hljs-built_in">min</span>(<span class="hljs-built_in">max</span>(newValue, <span class="hljs-number">0</span>), <span class="hljs-number">100</span>) }
+    }
+
+    <span class="hljs-comment">// MARK: Setup</span>
+
+    <span class="hljs-keyword">init</span>() {
+        <span class="hljs-keyword">let</span> bass <span class="hljs-operator">=</span> eq.bands[<span class="hljs-number">0</span>]
+        bass.filterType <span class="hljs-operator">=</span> .lowShelf
+        bass.frequency <span class="hljs-operator">=</span> <span class="hljs-number">150</span>
+        bass.gain <span class="hljs-operator">=</span> <span class="hljs-number">0</span>
+        bass.bypass <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>
+
+        <span class="hljs-keyword">let</span> treble <span class="hljs-operator">=</span> eq.bands[<span class="hljs-number">1</span>]
+        treble.filterType <span class="hljs-operator">=</span> .highShelf
+        treble.frequency <span class="hljs-operator">=</span> <span class="hljs-number">6_000</span>
+        treble.gain <span class="hljs-operator">=</span> <span class="hljs-number">0</span>
+        treble.bypass <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>
+
+        reverb.loadFactoryPreset(.mediumRoom)
+        reverb.wetDryMix <span class="hljs-operator">=</span> <span class="hljs-number">0</span>
+
+        engine.attach(eq)
+        engine.attach(reverb)
+    }
+
+    <span class="hljs-comment">// MARK: Start / stop</span>
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">start</span>() <span class="hljs-keyword">throws</span> {
+        <span class="hljs-keyword">guard</span> <span class="hljs-operator">!</span>isRunning <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+
+        <span class="hljs-keyword">let</span> input <span class="hljs-operator">=</span> engine.inputNode
+        <span class="hljs-keyword">let</span> format <span class="hljs-operator">=</span> input.outputFormat(forBus: <span class="hljs-number">0</span>)
+        <span class="hljs-keyword">guard</span> format.sampleRate <span class="hljs-operator">&gt;</span> <span class="hljs-number">0</span>, format.channelCount <span class="hljs-operator">&gt;</span> <span class="hljs-number">0</span> <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">throw</span> <span class="hljs-type">LiveAudioError</span>.noInputAvailable
+        }
+
+        <span class="hljs-comment">// Rebuild connections every time: the input format can change</span>
+        <span class="hljs-comment">// between runs (new route, new sample rate).</span>
+        engine.disconnectNodeOutput(input)
+        engine.disconnectNodeOutput(eq)
+        engine.disconnectNodeOutput(reverb)
+
+        engine.connect(input, to: eq, format: format)
+        engine.connect(eq, to: reverb, format: format)
+        engine.connect(reverb, to: engine.mainMixerNode, format: format)
+
+        engine.prepare()
+        <span class="hljs-keyword">try</span> engine.start()
+        isRunning <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">stop</span>() {
+        <span class="hljs-keyword">guard</span> isRunning <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+        engine.stop()
+        isRunning <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>
+    }
+
+    <span class="hljs-comment">/// Voice processing (echo cancellation, AGC, noise suppression).</span>
+    <span class="hljs-comment">/// Must be changed while the engine is stopped.</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">setVoiceProcessing</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">enabled</span>: <span class="hljs-type">Bool</span>) <span class="hljs-keyword">throws</span> {
+        <span class="hljs-keyword">let</span> wasRunning <span class="hljs-operator">=</span> isRunning
+        stop()
+        <span class="hljs-keyword">try</span> engine.inputNode.setVoiceProcessingEnabled(enabled)
+        <span class="hljs-keyword">if</span> wasRunning { <span class="hljs-keyword">try</span> start() }
+    }
+
+    <span class="hljs-comment">/// Exposed so the owner can observe engine configuration changes.</span>
+    <span class="hljs-keyword">var</span> underlyingEngine: <span class="hljs-type">AVAudioEngine</span> { engine }
+}
+</code></pre>
+<p>And using it from a view model:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-meta">@MainActor</span>
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MicViewModel</span>: <span class="hljs-title class_ inherited__">ObservableObject</span> {
+    <span class="hljs-meta">@Published</span> <span class="hljs-keyword">var</span> isLive <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>
+    <span class="hljs-meta">@Published</span> <span class="hljs-keyword">var</span> errorMessage: <span class="hljs-type">String</span>?
+
+    <span class="hljs-keyword">let</span> audio <span class="hljs-operator">=</span> <span class="hljs-type">LiveAudioEngine</span>()
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">toggle</span>() <span class="hljs-keyword">async</span> {
+        <span class="hljs-keyword">if</span> audio.isRunning {
+            audio.stop()
+            <span class="hljs-type">AudioSessionConfigurator</span>.deactivate()
+            isLive <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>
+            <span class="hljs-keyword">return</span>
+        }
+
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">await</span> <span class="hljs-type">MicPermissionManager</span>.request() <span class="hljs-keyword">else</span> {
+            errorMessage <span class="hljs-operator">=</span> <span class="hljs-string">"Microphone access is off. Turn it on in Settings."</span>
+            <span class="hljs-keyword">return</span>
+        }
+
+        <span class="hljs-keyword">do</span> {
+            <span class="hljs-keyword">try</span> <span class="hljs-type">AudioSessionConfigurator</span>.configure()
+            audio.volume <span class="hljs-operator">=</span> <span class="hljs-number">0.3</span>          <span class="hljs-comment">// start low, always</span>
+            <span class="hljs-keyword">try</span> audio.start()
+            isLive <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>
+        } <span class="hljs-keyword">catch</span> {
+            errorMessage <span class="hljs-operator">=</span> <span class="hljs-string">"Couldn't start audio: <span class="hljs-subst">\(error.localizedDescription)</span>"</span>
+        }
+    }
+}
+</code></pre>
+<p>Note <code>audio.volume = 0.3</code>. Starting quiet is a safety feature, not a nicety.</p>
+<hr>
+<h2 id="5-taming-feedback-and-latency" tabindex="-1"><a class="observablehq-header-anchor" href="#5-taming-feedback-and-latency">5. Taming feedback and latency</a></h2>
+<p>No single switch removes feedback. There are trade-offs; pick sensible defaults and let the user adjust.</p>
+<h3 id="headphones-vs-speaker" tabindex="-1"><a class="observablehq-header-anchor" href="#headphones-vs-speaker">Headphones vs. speaker</a></h3>
+<p>The most reliable fix is physics: if the mic can't hear the speaker, there's no loop. With headphones, feedback basically disappears. With a Bluetooth speaker across the room, it's manageable. With the phone's own loudspeaker centimetres from the mic, you're fighting acoustics at any useful volume.</p>
+<p>That's why my App Store listing has plain "Safety tips": start with low volume, connect speakers before turning on, increase volume gradually, keep the device away from speakers. They came straight from user reviews and support emails.</p>
+<h3 id="voice-processing" tabindex="-1"><a class="observablehq-header-anchor" href="#voice-processing">Voice processing</a></h3>
+<p><code>setVoiceProcessingEnabled(_:)</code> (on <code>AVAudioIONode</code>, iOS 13+) turns on Apple's voice processing I/O: echo cancellation, automatic gain control and noise suppression, the same family used for calls. <code>isVoiceProcessingAGCEnabled</code> on the input node lets you keep echo cancellation but drop automatic gain.</p>
+<ul>
+<li><strong>Change it while the engine is stopped.</strong> It reconfigures the I/O unit and the input format can change, which is why <code>LiveAudioEngine</code> rebuilds connections on every <code>start()</code>.</li>
+<li><strong>It changes the sound.</strong> Tuned for speech, it can make singing and instruments sound processed, so I make it a user choice.</li>
+<li><strong>It's not magic.</strong> It reduces the loop; at high enough volume on the built-in speaker you can still get feedback.</li>
+</ul>
+<h3 id="buffer-size-trade-offs" tabindex="-1"><a class="observablehq-header-anchor" href="#buffer-size-trade-offs">Buffer size trade-offs</a></h3>
+<p>Smaller buffers mean lower latency but less time for the audio thread before the next deadline; miss it and you get clicks and dropouts. Larger buffers are smoother, but you hear yourself later. My approach:</p>
+<ul>
+<li>Request a small buffer, then read back what you got.</li>
+<li>Keep the chain light. Apple's built-in EQ and reverb are fine; heavy custom DSP is where trouble starts.</li>
+<li>Never allocate, lock or do file I/O on the real-time thread. In a tap (level meter, recording), copy what you need and hand it off.</li>
+<li>Accept that Bluetooth and AirPlay add buffering you can't remove. I tell users plainly that wired gives the lowest delay.</li>
+</ul>
+<p>I'm deliberately not quoting millisecond numbers. Latency depends on device, iOS version, route and granted buffer size; the only honest number is the one you measure on your own devices.</p>
+<hr>
+<h2 id="6-interruptions-and-route-changes" tabindex="-1"><a class="observablehq-header-anchor" href="#6-interruptions-and-route-changes">6. Interruptions and route changes</a></h2>
+<p>This separates a demo from a shipped app. Real phones get calls, alarms, Siri, other apps taking over audio, and headphones unplugged mid-sentence.</p>
+<h3 id="interruptions" tabindex="-1"><a class="observablehq-header-anchor" href="#interruptions">Interruptions</a></h3>
+<p>When another session (say, a phone call) takes over, the system posts <code>AVAudioSession.interruptionNotification</code>. On <code>.began</code>, the system has already stopped your audio; update state and UI. On <code>.ended</code>, the options may include <code>.shouldResume</code>, a hint that resuming without user input is appropriate.</p>
+<p>What's new: Apple's latest docs mark <code>.shouldResume</code> deprecated as of iOS 27 in favour of a newer <code>resumptionRecommendationNotification</code>. It still works on the versions most apps support, so the sample uses it; on the newest SDK, see Apple's "Handling audio interruptions" article.</p>
+<p>For a live mic I'm conservative: auto-resume only if the user was live before <em>and</em> the system says resuming is fine. A mic that silently turns itself back on after a call is a privacy surprise.</p>
+<h3 id="route-changes" tabindex="-1"><a class="observablehq-header-anchor" href="#route-changes">Route changes</a></h3>
+<p><code>AVAudioSession.routeChangeNotification</code> carries a reason. The critical one is <strong><code>.oldDeviceUnavailable</code></strong>: headphones unplugged or Bluetooth disconnected. Apple's guidance for media apps is to pause; for a live mic it matters even more, because audio jumps to the loudspeaker and can instantly howl. Stop first, let the user decide. For <code>.newDeviceAvailable</code>, keep going but rebuild the graph, since the input format may have changed.</p>
+<h3 id="media-services-reset" tabindex="-1"><a class="observablehq-header-anchor" href="#media-services-reset">Media services reset</a></h3>
+<p>Rarely, the media server restarts and the system posts <code>AVAudioSession.mediaServicesWereResetNotification</code>. Every audio object is now invalid: recreate the engine and reconfigure the session. Separately, <code>AVAudioEngine</code> posts <code>.AVAudioEngineConfigurationChange</code> when the hardware I/O format changes; the engine stops, and you reconnect and restart.</p>
+<h3 id="putting-it-together-1" tabindex="-1"><a class="observablehq-header-anchor" href="#putting-it-together-1">Putting it together</a></h3>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> AVFoundation
+
+<span class="hljs-meta">@MainActor</span>
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">AudioEventsHandler</span> {
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> engine: <span class="hljs-type">LiveAudioEngine</span>
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> wasLiveBeforeInterruption <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> observers: [<span class="hljs-type">NSObjectProtocol</span>] <span class="hljs-operator">=</span> []
+    <span class="hljs-keyword">var</span> onStateChange: ((<span class="hljs-type">Bool</span>) -&gt; <span class="hljs-type">Void</span>)<span class="hljs-operator">?</span>
+
+    <span class="hljs-keyword">init</span>(<span class="hljs-params">engine</span>: <span class="hljs-type">LiveAudioEngine</span>) {
+        <span class="hljs-keyword">self</span>.engine <span class="hljs-operator">=</span> engine
+        observe()
+    }
+
+    <span class="hljs-keyword">deinit</span> {
+        observers.forEach { <span class="hljs-type">NotificationCenter</span>.default.removeObserver(<span class="hljs-variable">$0</span>) }
+    }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">observe</span>() {
+        <span class="hljs-keyword">let</span> center <span class="hljs-operator">=</span> <span class="hljs-type">NotificationCenter</span>.default
+        <span class="hljs-keyword">let</span> session <span class="hljs-operator">=</span> <span class="hljs-type">AVAudioSession</span>.sharedInstance()
+
+        observers.append(center.addObserver(
+            forName: <span class="hljs-type">AVAudioSession</span>.interruptionNotification,
+            object: session, queue: .main) { [<span class="hljs-keyword">weak</span> <span class="hljs-keyword">self</span>] note <span class="hljs-keyword">in</span>
+                <span class="hljs-type">MainActor</span>.assumeIsolated { <span class="hljs-keyword">self</span><span class="hljs-operator">?</span>.handleInterruption(note) }
+            })
+
+        observers.append(center.addObserver(
+            forName: <span class="hljs-type">AVAudioSession</span>.routeChangeNotification,
+            object: session, queue: .main) { [<span class="hljs-keyword">weak</span> <span class="hljs-keyword">self</span>] note <span class="hljs-keyword">in</span>
+                <span class="hljs-type">MainActor</span>.assumeIsolated { <span class="hljs-keyword">self</span><span class="hljs-operator">?</span>.handleRouteChange(note) }
+            })
+
+        observers.append(center.addObserver(
+            forName: <span class="hljs-type">AVAudioSession</span>.mediaServicesWereResetNotification,
+            object: session, queue: .main) { [<span class="hljs-keyword">weak</span> <span class="hljs-keyword">self</span>] <span class="hljs-keyword">_</span> <span class="hljs-keyword">in</span>
+                <span class="hljs-type">MainActor</span>.assumeIsolated { <span class="hljs-keyword">self</span><span class="hljs-operator">?</span>.handleMediaServicesReset() }
+            })
+
+        observers.append(center.addObserver(
+            forName: .<span class="hljs-type">AVAudioEngineConfigurationChange</span>,
+            object: engine.underlyingEngine, queue: .main) { [<span class="hljs-keyword">weak</span> <span class="hljs-keyword">self</span>] <span class="hljs-keyword">_</span> <span class="hljs-keyword">in</span>
+                <span class="hljs-type">MainActor</span>.assumeIsolated { <span class="hljs-keyword">self</span><span class="hljs-operator">?</span>.restartIfNeeded() }
+            })
+    }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">handleInterruption</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">note</span>: <span class="hljs-type">Notification</span>) {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> info <span class="hljs-operator">=</span> note.userInfo,
+              <span class="hljs-keyword">let</span> raw <span class="hljs-operator">=</span> info[<span class="hljs-type">AVAudioSessionInterruptionTypeKey</span>] <span class="hljs-keyword">as?</span> <span class="hljs-type">UInt</span>,
+              <span class="hljs-keyword">let</span> type <span class="hljs-operator">=</span> <span class="hljs-type">AVAudioSession</span>.<span class="hljs-type">InterruptionType</span>(rawValue: raw) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+
+        <span class="hljs-keyword">switch</span> type {
+        <span class="hljs-keyword">case</span> .began:
+            wasLiveBeforeInterruption <span class="hljs-operator">=</span> engine.isRunning
+            engine.stop()
+            onStateChange<span class="hljs-operator">?</span>(<span class="hljs-literal">false</span>)
+
+        <span class="hljs-keyword">case</span> .ended:
+            <span class="hljs-keyword">let</span> optionsRaw <span class="hljs-operator">=</span> info[<span class="hljs-type">AVAudioSessionInterruptionOptionKey</span>] <span class="hljs-keyword">as?</span> <span class="hljs-type">UInt</span> <span class="hljs-operator">??</span> <span class="hljs-number">0</span>
+            <span class="hljs-keyword">let</span> options <span class="hljs-operator">=</span> <span class="hljs-type">AVAudioSession</span>.<span class="hljs-type">InterruptionOptions</span>(rawValue: optionsRaw)
+            <span class="hljs-keyword">if</span> wasLiveBeforeInterruption <span class="hljs-operator">&amp;&amp;</span> options.contains(.shouldResume) {
+                <span class="hljs-keyword">do</span> {
+                    <span class="hljs-keyword">try</span> <span class="hljs-type">AVAudioSession</span>.sharedInstance().setActive(<span class="hljs-literal">true</span>)
+                    <span class="hljs-keyword">try</span> engine.start()
+                    onStateChange<span class="hljs-operator">?</span>(<span class="hljs-literal">true</span>)
+                } <span class="hljs-keyword">catch</span> {
+                    onStateChange<span class="hljs-operator">?</span>(<span class="hljs-literal">false</span>)
+                }
+            }
+            wasLiveBeforeInterruption <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>
+
+        <span class="hljs-keyword">@unknown</span> <span class="hljs-keyword">default</span>:
+            <span class="hljs-keyword">break</span>
+        }
+    }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">handleRouteChange</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">note</span>: <span class="hljs-type">Notification</span>) {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> info <span class="hljs-operator">=</span> note.userInfo,
+              <span class="hljs-keyword">let</span> raw <span class="hljs-operator">=</span> info[<span class="hljs-type">AVAudioSessionRouteChangeReasonKey</span>] <span class="hljs-keyword">as?</span> <span class="hljs-type">UInt</span>,
+              <span class="hljs-keyword">let</span> reason <span class="hljs-operator">=</span> <span class="hljs-type">AVAudioSession</span>.<span class="hljs-type">RouteChangeReason</span>(rawValue: raw) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+
+        <span class="hljs-keyword">switch</span> reason {
+        <span class="hljs-keyword">case</span> .oldDeviceUnavailable:
+            <span class="hljs-comment">// Headphones unplugged / Bluetooth gone: stop before we howl.</span>
+            engine.stop()
+            onStateChange<span class="hljs-operator">?</span>(<span class="hljs-literal">false</span>)
+        <span class="hljs-keyword">case</span> .newDeviceAvailable, .categoryChange, .override:
+            restartIfNeeded()
+        <span class="hljs-keyword">default</span>:
+            <span class="hljs-keyword">break</span>
+        }
+    }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">handleMediaServicesReset</span>() {
+        <span class="hljs-comment">// Every audio object is invalid now. Rebuild from scratch.</span>
+        engine.stop()
+        engine <span class="hljs-operator">=</span> <span class="hljs-type">LiveAudioEngine</span>()
+        <span class="hljs-keyword">try?</span> <span class="hljs-type">AudioSessionConfigurator</span>.configure()
+        onStateChange<span class="hljs-operator">?</span>(<span class="hljs-literal">false</span>) <span class="hljs-comment">// let the user start again</span>
+    }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">restartIfNeeded</span>() {
+        <span class="hljs-keyword">guard</span> engine.isRunning <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+        engine.stop()
+        <span class="hljs-keyword">do</span> {
+            <span class="hljs-keyword">try</span> engine.start()   <span class="hljs-comment">// reconnects with the new input format</span>
+        } <span class="hljs-keyword">catch</span> {
+            onStateChange<span class="hljs-operator">?</span>(<span class="hljs-literal">false</span>)
+        }
+    }
+}
+</code></pre>
+<p>In production you'd also re-register the configuration observer for the new engine after a reset and hand it back to its owner; I've kept the shape minimal.</p>
+<hr>
+<h2 id="7-background-audio-and-app-store-notes" tabindex="-1"><a class="observablehq-header-anchor" href="#7-background-audio-and-app-store-notes">7. Background audio and App Store notes</a></h2>
+<h3 id="background-audio" tabindex="-1"><a class="observablehq-header-anchor" href="#background-audio">Background audio</a></h3>
+<p>To keep the mic live with the screen locked, add <code>audio</code> to <code>UIBackgroundModes</code> (Xcode: Background Modes → "Audio, AirPlay, and Picture in Picture"). With an active <code>.playAndRecord</code> session and a running engine, iOS keeps the app alive and shows its microphone-in-use indicator, so users always know.</p>
+<p>The flip side: <strong>when the user stops, really stop.</strong> Stop the engine and deactivate with <code>.notifyOthersOnDeactivation</code> so paused music and podcasts can resume. Holding the session forever drains battery and blocks other audio.</p>
+<h3 id="app-store-review-considerations" tabindex="-1"><a class="observablehq-header-anchor" href="#app-store-review-considerations">App Store review considerations</a></h3>
+<ul>
+<li><strong>A specific purpose string</strong>, in the user's words.</li>
+<li><strong>Background audio must be real.</strong> Declaring the <code>audio</code> mode means actually producing audible content in the background; an idle app holding the session doesn't qualify.</li>
+<li><strong>An obvious "live" state</strong>: a big on/off control and a clear indicator.</li>
+<li><strong>Honest privacy.</strong> If you record sessions, say so and say where they're stored, and keep your App Privacy details consistent.</li>
+<li><strong>Don't over-promise.</strong> If the app can't act as a system-wide mic for a computer or other apps, don't imply it can.</li>
+</ul>
+<hr>
+<h2 id="8-real-world-example-virtual-mic-a-k-a-mic-to-speaker" tabindex="-1"><a class="observablehq-header-anchor" href="#8-real-world-example-virtual-mic-a-k-a-mic-to-speaker">8. Real-world example: Virtual Mic, a.k.a. Mic to Speaker</a></h2>
+<p>Everything above comes from building and maintaining my own apps. The main one is on the App Store as <strong><a href="https://apps.apple.com/us/app/mic-to-speaker-virtual-mic/id1514011963" target="_blank" rel="noopener noreferrer">Mic to Speaker – Virtual Mic</a></strong>.</p>
+<p><img src="https://bestlatestapps.com/assets/blog/building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine/virtual-mic-screenshot-1.jpg" alt="Virtual Mic App Store screenshot 1"></p>
+<p>At the time of writing, its public App Store listing shows:</p>
+<ul>
+<li><strong>Free</strong>, in the <strong>Music</strong> and <strong>Utilities</strong> categories</li>
+<li>First released in <strong>May 2020</strong></li>
+<li>About <strong>3,400 ratings</strong> in the US store, averaging around <strong>4.5 stars</strong></li>
+<li>Supports <strong>iOS 16.6 and later</strong>, on iPhone and iPad</li>
+</ul>
+<p>The listing describes the core idea simply: "Use your device as a live microphone! Connect to any speaker and your voice comes out loud and clear." Here's how the listing's features map to the techniques in this article:</p>
+<table>
+<thead>
+<tr>
+<th>What the listing says</th>
+<th>What makes it work</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Open the app and tap the screen. That's it!" / "One tap to turn on or off"</td>
+<td>Permission request on first tap (section 2), then session + engine start (sections 3–4)</td>
+</tr>
+<tr>
+<td>"Connect via Bluetooth, AirPlay, or cable"</td>
+<td><code>.playAndRecord</code> with <code>.defaultToSpeaker</code>, <code>.allowBluetoothA2DP</code>, <code>.allowAirPlay</code> (section 3)</td>
+</tr>
+<tr>
+<td>"Works in the background" / "Runs even when screen is locked"</td>
+<td><code>UIBackgroundModes</code> → <code>audio</code>, active session, running engine (section 7)</td>
+</tr>
+<tr>
+<td>"Add echo and reverb… Adjust bass and treble. Make your voice louder or softer. Everything updates in real-time"</td>
+<td><code>AVAudioUnitReverb</code>, <code>AVAudioUnitEQ</code> bands and gain, mixer volume, all live in the graph (section 4)</td>
+</tr>
+<tr>
+<td>"Every session is saved automatically… MP3, WAV, M4A"</td>
+<td>A tap on the graph feeding a file writer, off the real-time thread (section 5)</td>
+</tr>
+<tr>
+<td>"Safety tips: Start with low volume… Avoid feedback by keeping device away from speakers"</td>
+<td>The feedback realities in section 5, and starting at a low volume by default</td>
+</tr>
+</tbody>
+</table>
+<p><img src="https://bestlatestapps.com/assets/blog/building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine/virtual-mic-screenshot-2.jpg" alt="Virtual Mic App Store screenshot 2"></p>
+<p>The listing's use cases range from live streaming, karaoke and podcasts to announcements and hearing assistance: amplifying voices in meetings or classes. That last one shapes my defaults most. For someone using your app to hear better, a feedback squeal or surprise route change isn't a glitch; it hurts. Hence "start quiet" and "stop on <code>.oldDeviceUnavailable</code>". It's also why the app still supports iOS 16.6 and carries the pre-iOS 17 permission path from section 2.</p>
+<p><img src="https://bestlatestapps.com/assets/blog/building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine/virtual-mic-screenshot-3.jpg" alt="Virtual Mic App Store screenshot 3"></p>
+<h3 id="android-sidebar-virtual-mic-on-google-play" tabindex="-1"><a class="observablehq-header-anchor" href="#android-sidebar-virtual-mic-on-google-play">Android sidebar: Virtual Mic on Google Play</a></h3>
+<p>The same idea exists on Android as <strong><a href="https://play.google.com/store/apps/details?id=com.aryansbtloe.microphone.android" target="_blank" rel="noopener noreferrer">Virtual Mic on Google Play</a></strong> (10K+ downloads at the time of writing). Its listing highlights real-time noise reduction, echo cancellation, reverb and echo effects, an equaliser, input gain and output volume controls, and support for Bluetooth speakers and wired headphones.</p>
+<p>On Android the building blocks are <code>AudioRecord</code> (capture) and <code>AudioTrack</code> (playback), or Google's <strong>Oboe</strong> C++ library over AAudio/OpenSL ES for low-latency work. Same problems (latency, routing, feedback, audio focus instead of interruptions), very different APIs. That's my next article.</p>
+<hr>
+<h2 id="9-before-you-ship-live-audio-a-7-point-checklist" tabindex="-1"><a class="observablehq-header-anchor" href="#9-before-you-ship-live-audio-a-7-point-checklist">9. Before you ship live audio: a 7-point checklist</a></h2>
+<ol>
+<li><strong>Permission flow is complete.</strong> <code>NSMicrophoneUsageDescription</code> is specific; you ask at the moment of need; iOS 17+ uses <code>AVAudioApplication</code>, older versions fall back to <code>AVAudioSession</code>; denied users get an "Open Settings" path.</li>
+<li><strong>The session is configured on purpose.</strong> <code>.playAndRecord</code>, <code>.defaultToSpeaker</code>, the Bluetooth options you actually want (A2DP for quality, HFP only when needed), and you log the real sample rate and buffer duration you got.</li>
+<li><strong>Formats come from the hardware.</strong> You connect using the input node's format, check it's valid, and rebuild connections whenever the route or configuration changes.</li>
+<li><strong>Feedback has defaults.</strong> Start at low volume, recommend headphones or distance, offer voice processing as a user choice, and use echo-cancelled input only where <code>isEchoCancelledInputAvailable</code> says you can.</li>
+<li><strong>Interruptions and route changes are tested on a real device.</strong> Phone call, alarm, Siri, unplugging headphones, Bluetooth disconnecting, AirPlay switching: the app ends up in a sensible, visible state every time.</li>
+<li><strong>Background behaviour is honest.</strong> The <code>audio</code> background mode is declared only because you really play audio in the background, and you deactivate the session with <code>.notifyOthersOnDeactivation</code> when the user stops.</li>
+<li><strong>The real-time thread stays clean.</strong> No allocations, locks, logging or file I/O inside render callbacks or taps; heavy work is handed off.</li>
+</ol>
+<hr>
+<h2 id="wrapping-up" tabindex="-1"><a class="observablehq-header-anchor" href="#wrapping-up">Wrapping up</a></h2>
+<p>A mic-to-speaker app is a great way to learn iOS audio because there's nowhere to hide: latency is audible, routing mistakes are obvious, and a missed interruption leaves a silent app. <code>AVAudioSession</code> plus <code>AVAudioEngine</code> give you everything you need in a few hundred lines of Swift, as long as you respect the session, follow the hardware's formats and handle real-world events.</p>
+<p>If you want to see the result in action, try my apps:</p>
+<ul>
+<li><strong>Mic to Speaker – Virtual Mic (iOS):</strong> <a href="https://apps.apple.com/us/app/mic-to-speaker-virtual-mic/id1514011963" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/mic-to-speaker-virtual-mic/id1514011963</a></li>
+<li><strong>Virtual Mic (Android):</strong> <a href="https://play.google.com/store/apps/details?id=com.aryansbtloe.microphone.android" target="_blank" rel="noopener noreferrer">https://play.google.com/store/apps/details?id=com.aryansbtloe.microphone.android</a></li>
+<li><strong>All 24 of my free iOS apps:</strong> <a href="https://apps.apple.com/us/developer/alok-singh/id1508795536" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/developer/alok-singh/id1508795536</a></li>
+<li><strong>My portfolio:</strong> <a href="https://bestlatestapps.com/alok/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/alok/</a></li>
+</ul>
+<p>If you've shipped live audio on iOS and hit a problem I didn't cover, I'd love to hear about it in the comments. Follow me here on Medium for the Android version of this guide.</p>
+<p><em>— Alok Kumar Singh</em></p>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine/</a></em></p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./building-a-tap-to-match-marble-game-with-spritekit-and-swiftui"><span>Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI</span></a><a rel="next" href="./building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe"><span>Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioE</span></a></nav>
+<div>Articles by Alok Kumar Singh. Originals at <a href="https://bestlatestapps.com/blog/" target="_blank" rel="noopener noreferrer">bestlatestapps.com/blog</a>.</div>
+</footer>
+</div>
+</body>
+</html>

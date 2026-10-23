@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>Building an Offline eBook Reader for iOS: Downloads, Typography Settings, Reading Progress That Survives Font Changes, and Highlights in the iOS 26 Text APIs | Alok Singh, App Dev Notes</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="modulepreload" href="./_observablehq/client.097df403.js">
+<link rel="modulepreload" href="./_observablehq/runtime.fa9f71c0.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.60afab10.js">
+<link rel="canonical" href="https://bestlatestapps.com/blog/building-an-offline-ebook-reader-for-ios/"><meta name="description" content="Downloading and storing public-domain books, previewing before you download, a UITextView-based reader with font, line height, margin and theme settings,…">
+<script type="module">
+
+import "./_observablehq/client.097df403.js";
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Alok Singh, App Dev Notes</a></li>
+  </ol>
+  <div id="observablehq-search"><input type="search" placeholder="Search"></div>
+  <div id="observablehq-search-results"></div>
+  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.755d897f.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
+  <ol>
+    <li class="observablehq-link"><a href="./tic-tac-toe-in-swiftui-done-properly">Tic Tac Toe in SwiftUI, Done Properly</a></li>
+    <li class="observablehq-link"><a href="./the-sending-side-of-apns">The Sending Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./the-device-side-of-apns">The Device Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./text-plus-audio-fully-offline">Text Plus Audio, Fully Offline</a></li>
+    <li class="observablehq-link"><a href="./stop-hand-rolling-unit-conversions">Stop Hand-Rolling Unit Conversions</a></li>
+    <li class="observablehq-link"><a href="./shipping-a-4k-wallpaper-app-without-running-out-of-memory">Shipping a 4K Wallpaper App Without Running Out of Memory</a></li>
+    <li class="observablehq-link"><a href="./medication-reminders-that-actually-fire">Medication Reminders That Actually Fire</a></li>
+    <li class="observablehq-link"><a href="./from-barcode-to-pdf">From Barcode to PDF</a></li>
+    <li class="observablehq-link"><a href="./drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game">Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game,</a></li>
+    <li class="observablehq-link"><a href="./convert-as-you-type-currency-conversion-in-swift">Convert-As-You-Type Currency Conversion in Swift</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-first-bible-reader-on-ios">Building an Offline-First Bible Reader on iOS</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./building-an-offline-ebook-reader-for-ios">Building an Offline eBook Reader for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-quotes-app-in-swiftui">Building an Offline Quotes App in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-an-admob-earnings-dashboard-for-ios">Building an AdMob Earnings Dashboard for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-tap-to-match-marble-game-with-spritekit-and-swiftui">Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine">Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine</a></li>
+    <li class="observablehq-link"><a href="./building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe">Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioE</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-ios-component-catalogue">Building a Live iOS Component Catalogue</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-temple-darshan-app-for-ios">Building a Live Temple Darshan App for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-hashtag-copier-for-ios">Building a Hashtag Copier for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-chromatic-guitar-tuner-on-ios">Building a Chromatic Guitar Tuner on iOS</a></li>
+    <li class="observablehq-link"><a href="./animating-algorithms-in-swiftui">Animating Algorithms in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./a-practical-guide-to-ios-haptics">A Practical Guide to iOS Haptics</a></li>
+    <li class="observablehq-link"><a href="./a-document-scanner-in-an-afternoon">A Document Scanner in an Afternoon</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#1-the-library-model">1. The library model</a></li>
+<li class="observablehq-secondary-link"><a href="#2-downloading-books-and-keeping-them-out-of-i-cloud-backup">2. Downloading books, and keeping them out of iCloud backup</a></li>
+<li class="observablehq-secondary-link"><a href="#3-preview-before-downloading">3. Preview before downloading</a></li>
+<li class="observablehq-secondary-link"><a href="#4-a-reader-with-real-typography-settings">4. A reader with real typography settings</a></li>
+<li class="observablehq-secondary-link"><a href="#5-reading-progress-that-survives-font-changes">5. Reading progress that survives font changes</a></li>
+<li class="observablehq-secondary-link"><a href="#6-bookmarks-and-highlights-and-the-i-os-26-text-selection-change">6. Bookmarks and highlights, and the iOS 26 text-selection change</a></li>
+<li class="observablehq-secondary-link"><a href="#7-reading-statistics-without-surveillance">7. Reading statistics without surveillance</a></li>
+<li class="observablehq-secondary-link"><a href="#8-real-world-example-novels-club">8. Real-world example: Novels Club</a></li>
+<li class="observablehq-secondary-link"><a href="#9-before-you-ship-a-reading-app-a-checklist">9. Before you ship a reading app: a checklist</a></li>
+<li class="observablehq-secondary-link"><a href="#wrapping-up">Wrapping up</a></li>
+</ol>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="building-an-offline-e-book-reader-for-i-os-downloads-typography-settings-reading-progress-that-survives-font-changes-and-highlights-in-the-i-os-26-text-apis" tabindex="-1"><a class="observablehq-header-anchor" href="#building-an-offline-e-book-reader-for-i-os-downloads-typography-settings-reading-progress-that-survives-font-changes-and-highlights-in-the-i-os-26-text-apis">Building an Offline eBook Reader for iOS: Downloads, Typography Settings, Reading Progress That Survives Font Changes, and Highlights in the iOS 26 Text APIs</a></h1>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/building-an-offline-ebook-reader-for-ios/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/building-an-offline-ebook-reader-for-ios/</a></em></p>
+<p><em>Downloading and storing public-domain books, previewing before you download, a UITextView-based reader with font, line height, margin and theme settings, saving your place as a character offset instead of a page number, bookmarks and highlights (including iOS 26's multi-range selection), reading time estimates and reading statistics</em></p>
+<p><img src="https://bestlatestapps.com/assets/blog/building-an-offline-ebook-reader-for-ios/novels-club-icon-512.jpg" alt="Novels Club app icon"></p>
+<p>There's something special about reading a classic on your phone at night, when the book is more than a century old and the screen is the newest thing in the room. <strong>Novels Club</strong> is my app for that: thousands of public-domain classics, literature, poetry and philosophy, with recommendations, offline downloads, customisable reading settings, progress tracking, bookmarks, highlights and reading statistics.</p>
+<p>A reading app sounds like "show text in a scroll view". It isn't, and the interesting problems are subtle. Where does a downloaded book live, and should it go into the user's iCloud backup? How do you let someone preview a book without downloading all of it? And the one that catches everybody: <strong>how do you remember someone's place when they change the font size and every "page" moves?</strong></p>
+<p>This article walks through how I'd build each part. The APIs are checked against Apple's documentation, including two iOS 27 deprecations in <code>UITextView</code> that matter for highlighting.</p>
+<hr>
+<h2 id="1-the-library-model" tabindex="-1"><a class="observablehq-header-anchor" href="#1-the-library-model">1. The library model</a></h2>
+<p>A book has metadata you can browse before downloading, and an optional local file once it's downloaded. In SwiftData:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> SwiftData
+<span class="hljs-keyword">import</span> Foundation
+
+<span class="hljs-meta">@Model</span>
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Book</span> {
+    <span class="hljs-meta">@Attribute</span>(.unique) <span class="hljs-keyword">var</span> id: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">var</span> title: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">var</span> author: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">var</span> categories: [<span class="hljs-type">String</span>]
+    <span class="hljs-keyword">var</span> wordCount: <span class="hljs-type">Int</span>?
+    <span class="hljs-keyword">var</span> remoteURL: <span class="hljs-type">URL</span>
+    <span class="hljs-keyword">var</span> localFileName: <span class="hljs-type">String</span>?          <span class="hljs-comment">// set once downloaded</span>
+    <span class="hljs-keyword">var</span> progressOffset: <span class="hljs-type">Int</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>         <span class="hljs-comment">// UTF-16 offset of the first visible character</span>
+    <span class="hljs-keyword">var</span> lastOpened: <span class="hljs-type">Date</span>?
+    <span class="hljs-meta">@Relationship</span>(deleteRule: .cascade) <span class="hljs-keyword">var</span> marks: [<span class="hljs-type">Mark</span>] <span class="hljs-operator">=</span> []
+
+    <span class="hljs-keyword">init</span>(<span class="hljs-params">id</span>: <span class="hljs-type">String</span>, <span class="hljs-params">title</span>: <span class="hljs-type">String</span>, <span class="hljs-params">author</span>: <span class="hljs-type">String</span>, <span class="hljs-params">categories</span>: [<span class="hljs-type">String</span>], <span class="hljs-params">remoteURL</span>: <span class="hljs-type">URL</span>) {
+        <span class="hljs-keyword">self</span>.id <span class="hljs-operator">=</span> id; <span class="hljs-keyword">self</span>.title <span class="hljs-operator">=</span> title; <span class="hljs-keyword">self</span>.author <span class="hljs-operator">=</span> author
+        <span class="hljs-keyword">self</span>.categories <span class="hljs-operator">=</span> categories; <span class="hljs-keyword">self</span>.remoteURL <span class="hljs-operator">=</span> remoteURL
+    }
+
+    <span class="hljs-keyword">var</span> isDownloaded: <span class="hljs-type">Bool</span> { localFileName <span class="hljs-operator">!=</span> <span class="hljs-literal">nil</span> }
+
+    <span class="hljs-comment">/// "About 6 h 40 min" for a 100,000-word novel at 250 words per minute.</span>
+    <span class="hljs-keyword">var</span> readingTimeEstimate: <span class="hljs-type">Duration</span>? {
+        wordCount.map { .seconds(<span class="hljs-type">Double</span>(<span class="hljs-variable">$0</span>) <span class="hljs-operator">/</span> <span class="hljs-number">250</span> <span class="hljs-operator">*</span> <span class="hljs-number">60</span>) }
+    }
+}
+
+<span class="hljs-meta">@Model</span>
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Mark</span> {
+    <span class="hljs-keyword">enum</span> <span class="hljs-title class_">Kind</span>: <span class="hljs-title class_ inherited__">String</span>, <span class="hljs-title class_ inherited__">Codable</span> { <span class="hljs-keyword">case</span> bookmark, highlight }
+    <span class="hljs-keyword">var</span> kind: <span class="hljs-type">Kind</span>
+    <span class="hljs-keyword">var</span> location: <span class="hljs-type">Int</span>                   <span class="hljs-comment">// UTF-16 offset</span>
+    <span class="hljs-keyword">var</span> length: <span class="hljs-type">Int</span>                     <span class="hljs-comment">// 0 for bookmarks</span>
+    <span class="hljs-keyword">var</span> note: <span class="hljs-type">String</span>?
+    <span class="hljs-keyword">var</span> created: <span class="hljs-type">Date</span> <span class="hljs-operator">=</span> <span class="hljs-type">Date</span>.now
+    <span class="hljs-keyword">init</span>(<span class="hljs-params">kind</span>: <span class="hljs-type">Kind</span>, <span class="hljs-params">location</span>: <span class="hljs-type">Int</span>, <span class="hljs-params">length</span>: <span class="hljs-type">Int</span>) { <span class="hljs-keyword">self</span>.kind <span class="hljs-operator">=</span> kind; <span class="hljs-keyword">self</span>.location <span class="hljs-operator">=</span> location; <span class="hljs-keyword">self</span>.length <span class="hljs-operator">=</span> length }
+}
+</code></pre>
+<p>Two decisions shape everything later. <strong>Positions are character offsets, not page numbers</strong> (section 5). And <strong>marks cascade-delete with their book</strong>, so removing a book never leaves orphaned highlights behind.</p>
+<p>The reading-time estimate uses 250 words per minute, a common rule of thumb for adult silent reading. It's an estimate, and the UI should say "about".</p>
+<hr>
+<h2 id="2-downloading-books-and-keeping-them-out-of-i-cloud-backup" tabindex="-1"><a class="observablehq-header-anchor" href="#2-downloading-books-and-keeping-them-out-of-i-cloud-backup">2. Downloading books, and keeping them out of iCloud backup</a></h2>
+<p>"Download books for offline reading" with URLSession's async API (iOS 15+) is short. The details that matter are <em>where</em> the file goes and <em>whether it's backed up</em>:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> Foundation
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">BookStore</span> {
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">var</span> directory: <span class="hljs-type">URL</span> {
+        <span class="hljs-keyword">let</span> dir <span class="hljs-operator">=</span> <span class="hljs-type">URL</span>.applicationSupportDirectory.appending(path: <span class="hljs-string">"Books"</span>, directoryHint: .isDirectory)
+        <span class="hljs-keyword">try?</span> <span class="hljs-type">FileManager</span>.default.createDirectory(at: dir, withIntermediateDirectories: <span class="hljs-literal">true</span>)
+        <span class="hljs-keyword">return</span> dir
+    }
+
+    <span class="hljs-comment">/// Downloads a book, moves it into place and excludes it from iCloud backup.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">download</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">book</span>: <span class="hljs-type">Book</span>) <span class="hljs-keyword">async</span> <span class="hljs-keyword">throws</span> {
+        <span class="hljs-keyword">let</span> (tempURL, response) <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> <span class="hljs-type">URLSession</span>.shared.download(from: book.remoteURL)
+        <span class="hljs-keyword">guard</span> (response <span class="hljs-keyword">as?</span> <span class="hljs-type">HTTPURLResponse</span>)<span class="hljs-operator">?</span>.statusCode <span class="hljs-operator">==</span> <span class="hljs-number">200</span> <span class="hljs-keyword">else</span> { <span class="hljs-keyword">throw</span> <span class="hljs-type">URLError</span>(.badServerResponse) }
+
+        <span class="hljs-keyword">var</span> destination <span class="hljs-operator">=</span> directory.appending(path: <span class="hljs-string">"<span class="hljs-subst">\(book.id)</span>.txt"</span>)
+        <span class="hljs-keyword">try?</span> <span class="hljs-type">FileManager</span>.default.removeItem(at: destination)
+        <span class="hljs-keyword">try</span> <span class="hljs-type">FileManager</span>.default.moveItem(at: tempURL, to: destination)   <span class="hljs-comment">// the temp file is deleted on return</span>
+
+        <span class="hljs-keyword">var</span> values <span class="hljs-operator">=</span> <span class="hljs-type">URLResourceValues</span>()
+        values.isExcludedFromBackup <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>        <span class="hljs-comment">// re-downloadable content doesn't belong in backups</span>
+        <span class="hljs-keyword">try</span> destination.setResourceValues(values)
+
+        book.localFileName <span class="hljs-operator">=</span> destination.lastPathComponent
+    }
+}
+</code></pre>
+<ul>
+<li><strong>Application Support, not Caches.</strong> The system can purge Caches under storage pressure, and a book vanishing mid-read on a plane is exactly what "offline reading" promises won't happen.</li>
+<li><strong><code>isExcludedFromBackup</code>.</strong> The books can be downloaded again, so they shouldn't eat the user's iCloud quota. Apple's storage guidance asks for exactly this.</li>
+<li><strong>Move the temp file immediately.</strong> The async <code>download(from:)</code> gives you a temporary file that's deleted once you're done with it, so move it before doing anything else.</li>
+</ul>
+<p>For a progress bar, pass a <code>URLSessionTaskDelegate</code> to <code>download(from:delegate:)</code>, or use a <code>URLSessionDownloadTask</code> with a <code>URLSessionDownloadDelegate</code> (iOS 7+) and observe the task's <code>progress</code>.</p>
+<hr>
+<h2 id="3-preview-before-downloading" tabindex="-1"><a class="observablehq-header-anchor" href="#3-preview-before-downloading">3. Preview before downloading</a></h2>
+<p>"Preview books before downloading" doesn't need a separate preview file. If the server supports range requests, ask for just the first few kilobytes:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">extension</span> <span class="hljs-title class_">BookStore</span> {
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">preview</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">book</span>: <span class="hljs-type">Book</span>, <span class="hljs-params">bytes</span>: <span class="hljs-type">Int</span> <span class="hljs-operator">=</span> <span class="hljs-number">16_384</span>) <span class="hljs-keyword">async</span> <span class="hljs-keyword">throws</span> -&gt; <span class="hljs-type">String</span> {
+        <span class="hljs-keyword">var</span> request <span class="hljs-operator">=</span> <span class="hljs-type">URLRequest</span>(url: book.remoteURL)
+        request.setValue(<span class="hljs-string">"bytes=0-<span class="hljs-subst">\(bytes <span class="hljs-operator">-</span> <span class="hljs-number">1</span>)</span>"</span>, forHTTPHeaderField: <span class="hljs-string">"Range"</span>)
+        <span class="hljs-keyword">let</span> (data, response) <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> <span class="hljs-type">URLSession</span>.shared.data(for: request)
+
+        <span class="hljs-comment">// 206 = Partial Content. A 200 means the server ignored Range and sent everything,</span>
+        <span class="hljs-comment">// so keep only the opening part either way.</span>
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> http <span class="hljs-operator">=</span> response <span class="hljs-keyword">as?</span> <span class="hljs-type">HTTPURLResponse</span>, [<span class="hljs-number">200</span>, <span class="hljs-number">206</span>].contains(http.statusCode) <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">throw</span> <span class="hljs-type">URLError</span>(.badServerResponse)
+        }
+        <span class="hljs-keyword">let</span> slice <span class="hljs-operator">=</span> data.prefix(bytes)
+        <span class="hljs-comment">// A byte cut can split a multi-byte character; trim back to valid UTF-8.</span>
+        <span class="hljs-keyword">for</span> trim <span class="hljs-keyword">in</span> <span class="hljs-number">0</span><span class="hljs-operator">..&lt;</span><span class="hljs-number">4</span> {
+            <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> text <span class="hljs-operator">=</span> <span class="hljs-type">String</span>(data: slice.dropLast(trim), encoding: .utf8) { <span class="hljs-keyword">return</span> text }
+        }
+        <span class="hljs-keyword">return</span> <span class="hljs-string">""</span>
+    }
+}
+</code></pre>
+<p>That last loop is easy to forget. A byte range can end in the middle of a multi-byte UTF-8 character, such as an accented letter in a French novel, and then <code>String(data:encoding:)</code> returns nil for the whole preview.</p>
+<hr>
+<h2 id="4-a-reader-with-real-typography-settings" tabindex="-1"><a class="observablehq-header-anchor" href="#4-a-reader-with-real-typography-settings">4. A reader with real typography settings</a></h2>
+<p>The listing promises "font size, font family, line height, margins" and "light, dark, and custom color schemes". <code>UITextView</code> (read-only) gives you excellent text layout, selection and accessibility for free. Since iOS 16 it can be created explicitly with TextKit 2 via <code>init(usingTextLayoutManager:)</code>:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> SwiftUI
+<span class="hljs-keyword">import</span> UIKit
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">ReaderSettings</span>: <span class="hljs-title class_ inherited__">Equatable</span> {
+    <span class="hljs-keyword">var</span> fontName <span class="hljs-operator">=</span> <span class="hljs-string">"Georgia"</span>
+    <span class="hljs-keyword">var</span> fontSize: <span class="hljs-type">CGFloat</span> <span class="hljs-operator">=</span> <span class="hljs-number">19</span>
+    <span class="hljs-keyword">var</span> lineHeight: <span class="hljs-type">CGFloat</span> <span class="hljs-operator">=</span> <span class="hljs-number">1.45</span>       <span class="hljs-comment">// multiple of the font's natural line height</span>
+    <span class="hljs-keyword">var</span> margin: <span class="hljs-type">CGFloat</span> <span class="hljs-operator">=</span> <span class="hljs-number">24</span>
+    <span class="hljs-keyword">var</span> theme <span class="hljs-operator">=</span> <span class="hljs-type">ReaderTheme</span>.sepia
+}
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">ReaderTheme</span>: <span class="hljs-title class_ inherited__">Equatable</span> {
+    <span class="hljs-keyword">var</span> background: <span class="hljs-type">UIColor</span>, text: <span class="hljs-type">UIColor</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> light <span class="hljs-operator">=</span> <span class="hljs-type">ReaderTheme</span>(background: .white, text: .black)
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> sepia <span class="hljs-operator">=</span> <span class="hljs-type">ReaderTheme</span>(background: <span class="hljs-type">UIColor</span>(red: <span class="hljs-number">0.98</span>, green: <span class="hljs-number">0.95</span>, blue: <span class="hljs-number">0.88</span>, alpha: <span class="hljs-number">1</span>),
+                                   text: <span class="hljs-type">UIColor</span>(red: <span class="hljs-number">0.26</span>, green: <span class="hljs-number">0.20</span>, blue: <span class="hljs-number">0.14</span>, alpha: <span class="hljs-number">1</span>))
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> dark  <span class="hljs-operator">=</span> <span class="hljs-type">ReaderTheme</span>(background: <span class="hljs-type">UIColor</span>(white: <span class="hljs-number">0.08</span>, alpha: <span class="hljs-number">1</span>), text: <span class="hljs-type">UIColor</span>(white: <span class="hljs-number">0.85</span>, alpha: <span class="hljs-number">1</span>))
+}
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">ReaderView</span>: <span class="hljs-title class_ inherited__">UIViewRepresentable</span> {
+    <span class="hljs-keyword">let</span> text: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">let</span> settings: <span class="hljs-type">ReaderSettings</span>
+    <span class="hljs-meta">@Binding</span> <span class="hljs-keyword">var</span> offset: <span class="hljs-type">Int</span>             <span class="hljs-comment">// reading position, see section 5</span>
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">makeUIView</span>(<span class="hljs-params">context</span>: <span class="hljs-type">Context</span>) -&gt; <span class="hljs-type">UITextView</span> {
+        <span class="hljs-keyword">let</span> view <span class="hljs-operator">=</span> <span class="hljs-type">UITextView</span>(usingTextLayoutManager: <span class="hljs-literal">true</span>)   <span class="hljs-comment">// TextKit 2 (iOS 16+)</span>
+        view.isEditable <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>
+        view.isSelectable <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>                              <span class="hljs-comment">// needed for highlights</span>
+        view.delegate <span class="hljs-operator">=</span> context.coordinator
+        <span class="hljs-keyword">return</span> view
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">updateUIView</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">view</span>: <span class="hljs-type">UITextView</span>, <span class="hljs-params">context</span>: <span class="hljs-type">Context</span>) {
+        <span class="hljs-keyword">guard</span> context.coordinator.applied <span class="hljs-operator">!=</span> settings <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+        context.coordinator.applied <span class="hljs-operator">=</span> settings
+
+        <span class="hljs-keyword">let</span> font <span class="hljs-operator">=</span> <span class="hljs-type">UIFont</span>(name: settings.fontName, size: settings.fontSize)
+            <span class="hljs-operator">??</span> .systemFont(ofSize: settings.fontSize)
+        <span class="hljs-keyword">let</span> paragraph <span class="hljs-operator">=</span> <span class="hljs-type">NSMutableParagraphStyle</span>()
+        paragraph.lineHeightMultiple <span class="hljs-operator">=</span> settings.lineHeight
+        paragraph.paragraphSpacing <span class="hljs-operator">=</span> settings.fontSize <span class="hljs-operator">*</span> <span class="hljs-number">0.6</span>
+
+        view.attributedText <span class="hljs-operator">=</span> <span class="hljs-type">NSAttributedString</span>(string: text, attributes: [
+            .font: <span class="hljs-type">UIFontMetrics</span>(forTextStyle: .body).scaledFont(for: font),   <span class="hljs-comment">// respects Dynamic Type</span>
+            .foregroundColor: settings.theme.text,
+            .paragraphStyle: paragraph
+        ])
+        view.backgroundColor <span class="hljs-operator">=</span> settings.theme.background
+        view.textContainerInset <span class="hljs-operator">=</span> <span class="hljs-type">UIEdgeInsets</span>(top: <span class="hljs-number">32</span>, left: settings.margin, bottom: <span class="hljs-number">48</span>, right: settings.margin)
+
+        context.coordinator.restore(offset, in: view)          <span class="hljs-comment">// keep the reader's place after re-layout</span>
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">makeCoordinator</span>() -&gt; <span class="hljs-type">Coordinator</span> { <span class="hljs-type">Coordinator</span>(offset: <span class="hljs-variable">$offset</span>) }
+}
+</code></pre>
+<p>The <code>applied != settings</code> guard matters. Rebuilding the attributed string for a 150,000-word novel is expensive, so do it only when a setting actually changes, not on every SwiftUI update. For very long books, the approach I'd use is to split by chapter and load one chapter at a time.</p>
+<hr>
+<h2 id="5-reading-progress-that-survives-font-changes" tabindex="-1"><a class="observablehq-header-anchor" href="#5-reading-progress-that-survives-font-changes">5. Reading progress that survives font changes</a></h2>
+<p>Here's the trap. If you save "page 143", or a scroll offset of 18,400 points, then the moment someone bumps the font from 17 to 21 point, page 143 is a different passage. The fix is to save <strong>the character the reader is looking at</strong>, a UTF-16 offset into the text, which no layout change can move:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Coordinator</span>: <span class="hljs-title class_ inherited__">NSObject</span>, <span class="hljs-title class_ inherited__">UITextViewDelegate</span> {
+    <span class="hljs-keyword">var</span> offset: <span class="hljs-type">Binding</span>&lt;<span class="hljs-type">Int</span>&gt;
+    <span class="hljs-keyword">var</span> applied: <span class="hljs-type">ReaderSettings</span>?
+    <span class="hljs-keyword">var</span> onHighlight: (([<span class="hljs-type">NSRange</span>]) -&gt; <span class="hljs-type">Void</span>)<span class="hljs-operator">?</span>      <span class="hljs-comment">// set by the reader screen to save Marks</span>
+    <span class="hljs-keyword">init</span>(<span class="hljs-params">offset</span>: <span class="hljs-type">Binding</span>&lt;<span class="hljs-type">Int</span>&gt;) { <span class="hljs-keyword">self</span>.offset <span class="hljs-operator">=</span> offset }
+
+    <span class="hljs-comment">/// The first character at the top-left of the visible area.</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">currentOffset</span>(<span class="hljs-params">in</span> <span class="hljs-params">view</span>: <span class="hljs-type">UITextView</span>) -&gt; <span class="hljs-type">Int</span> {
+        <span class="hljs-keyword">let</span> topLeft <span class="hljs-operator">=</span> <span class="hljs-type">CGPoint</span>(x: view.textContainerInset.left <span class="hljs-operator">+</span> <span class="hljs-number">1</span>,
+                              y: view.contentOffset.y <span class="hljs-operator">+</span> view.textContainerInset.top <span class="hljs-operator">+</span> <span class="hljs-number">1</span>)
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> position <span class="hljs-operator">=</span> view.closestPosition(to: topLeft) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-number">0</span> }
+        <span class="hljs-keyword">return</span> view.offset(from: view.beginningOfDocument, to: position)    <span class="hljs-comment">// UTF-16 units</span>
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">scrollViewDidEndDecelerating</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">scrollView</span>: <span class="hljs-type">UIScrollView</span>) { save(scrollView) }
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">scrollViewDidEndDragging</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">scrollView</span>: <span class="hljs-type">UIScrollView</span>, <span class="hljs-params">willDecelerate</span>: <span class="hljs-type">Bool</span>) {
+        <span class="hljs-keyword">if</span> <span class="hljs-operator">!</span>willDecelerate { save(scrollView) }
+    }
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">save</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">scrollView</span>: <span class="hljs-type">UIScrollView</span>) {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> view <span class="hljs-operator">=</span> scrollView <span class="hljs-keyword">as?</span> <span class="hljs-type">UITextView</span> <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+        offset.wrappedValue <span class="hljs-operator">=</span> currentOffset(in: view)
+    }
+
+    <span class="hljs-comment">/// After re-layout, bring that character back to the top.</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">restore</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">offset</span>: <span class="hljs-type">Int</span>, <span class="hljs-params">in</span> <span class="hljs-params">view</span>: <span class="hljs-type">UITextView</span>) {
+        <span class="hljs-type">DispatchQueue</span>.main.async {                                  <span class="hljs-comment">// after layout has happened</span>
+            <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> start <span class="hljs-operator">=</span> view.position(from: view.beginningOfDocument, offset: offset),
+                  <span class="hljs-keyword">let</span> end <span class="hljs-operator">=</span> view.position(from: start, offset: <span class="hljs-number">1</span>),
+                  <span class="hljs-keyword">let</span> range <span class="hljs-operator">=</span> view.textRange(from: start, to: end) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+            <span class="hljs-keyword">let</span> rect <span class="hljs-operator">=</span> view.firstRect(for: range)
+            view.setContentOffset(<span class="hljs-type">CGPoint</span>(x: <span class="hljs-number">0</span>, y: <span class="hljs-built_in">max</span>(<span class="hljs-number">0</span>, rect.minY <span class="hljs-operator">-</span> view.textContainerInset.top)), animated: <span class="hljs-literal">false</span>)
+        }
+    }
+}
+</code></pre>
+<p><code>closestPosition(to:)</code> and <code>offset(from:to:)</code> come from <code>UITextInput</code> (iOS 3.2+), which <code>UITextView</code> adopts. They do exactly what we need: convert between points on screen and positions in the text. With this:</p>
+<ul>
+<li><strong>Changing the font, line height or margins</strong> keeps the same sentence at the top of the screen.</li>
+<li><strong>"Continue reading where you left off"</strong> is just opening the book and restoring <code>progressOffset</code>.</li>
+<li><strong>Percentage progress</strong> is <code>offset / text.utf16.count</code>, which is meaningful whatever the layout.</li>
+</ul>
+<p>Save on scroll <em>end</em>, not on every scroll event. Writing to SwiftData 60 times a second while flicking through a chapter is wasted work.</p>
+<hr>
+<h2 id="6-bookmarks-and-highlights-and-the-i-os-26-text-selection-change" tabindex="-1"><a class="observablehq-header-anchor" href="#6-bookmarks-and-highlights-and-the-i-os-26-text-selection-change">6. Bookmarks and highlights, and the iOS 26 text-selection change</a></h2>
+<p>Since positions are character offsets, a highlight is just <code>(location, length)</code> and a bookmark is <code>(location, 0)</code>. Both are stable because a public-domain text never changes. Rendering highlights is an attribute pass:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">func</span> <span class="hljs-title function_">applyHighlights</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">marks</span>: [<span class="hljs-type">Mark</span>], <span class="hljs-params">to</span> <span class="hljs-params">storage</span>: <span class="hljs-type">NSMutableAttributedString</span>, <span class="hljs-params">color</span>: <span class="hljs-type">UIColor</span>) {
+    <span class="hljs-keyword">for</span> mark <span class="hljs-keyword">in</span> marks <span class="hljs-keyword">where</span> mark.kind <span class="hljs-operator">==</span> .highlight {
+        <span class="hljs-keyword">let</span> range <span class="hljs-operator">=</span> <span class="hljs-type">NSRange</span>(location: mark.location, length: mark.length)
+        <span class="hljs-keyword">guard</span> <span class="hljs-type">NSMaxRange</span>(range) <span class="hljs-operator">&lt;=</span> storage.length <span class="hljs-keyword">else</span> { <span class="hljs-keyword">continue</span> }
+        storage.addAttribute(.backgroundColor, value: color.withAlphaComponent(<span class="hljs-number">0.35</span>), range: range)
+    }
+}
+</code></pre>
+<p>To <em>create</em> highlights, add an item to the text view's edit menu. This is where the APIs are changing:</p>
+<ul>
+<li><strong>iOS 16</strong> introduced <code>textView(_:editMenuForTextIn:suggestedActions:)</code>, which gives you a single <code>NSRange</code>. Apple's documentation now marks it <strong>deprecated in iOS 27</strong>.</li>
+<li><strong>iOS 26</strong> added <code>textView(_:editMenuForTextInRanges:suggestedActions:)</code>, which gives you an <em>array</em> of ranges. Apple's documentation explains that a selection can be several discontiguous ranges, for example when bidirectional text is selected. Correspondingly, <code>UITextView.selectedRange</code> is marked <strong>deprecated in iOS 27</strong>, alongside the newer <code>selectedRanges</code>.</li>
+</ul>
+<p>Since the app supports iOS 16.6 and later, I'd implement both and funnel them into one function:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">extension</span> <span class="hljs-title class_">Coordinator</span> {
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">highlightAction</span>(<span class="hljs-params">for</span> <span class="hljs-params">ranges</span>: [<span class="hljs-type">NSRange</span>]) -&gt; <span class="hljs-type">UIAction</span> {
+        <span class="hljs-type">UIAction</span>(title: <span class="hljs-string">"Highlight"</span>, image: <span class="hljs-type">UIImage</span>(systemName: <span class="hljs-string">"highlighter"</span>)) { [<span class="hljs-keyword">weak</span> <span class="hljs-keyword">self</span>] <span class="hljs-keyword">_</span> <span class="hljs-keyword">in</span>
+            <span class="hljs-keyword">self</span><span class="hljs-operator">?</span>.onHighlight<span class="hljs-operator">?</span>(ranges.filter { <span class="hljs-variable">$0</span>.length <span class="hljs-operator">&gt;</span> <span class="hljs-number">0</span> })
+        }
+    }
+
+    <span class="hljs-comment">// iOS 26+: one or more selected ranges.</span>
+    <span class="hljs-keyword">@available</span>(<span class="hljs-keyword">iOS</span> <span class="hljs-number">26</span>, <span class="hljs-operator">*</span>)
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">textView</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">textView</span>: <span class="hljs-type">UITextView</span>, <span class="hljs-params">editMenuForTextInRanges</span> <span class="hljs-params">ranges</span>: [<span class="hljs-type">NSValue</span>],
+                  <span class="hljs-params">suggestedActions</span>: [<span class="hljs-type">UIMenuElement</span>]) -&gt; <span class="hljs-type">UIMenu</span>? {
+        <span class="hljs-type">UIMenu</span>(children: [highlightAction(for: ranges.map(\.rangeValue))] <span class="hljs-operator">+</span> suggestedActions)
+    }
+
+    <span class="hljs-comment">// iOS 16–25: a single range (deprecated in iOS 27).</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">textView</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">textView</span>: <span class="hljs-type">UITextView</span>, <span class="hljs-params">editMenuForTextIn</span> <span class="hljs-params">range</span>: <span class="hljs-type">NSRange</span>,
+                  <span class="hljs-params">suggestedActions</span>: [<span class="hljs-type">UIMenuElement</span>]) -&gt; <span class="hljs-type">UIMenu</span>? {
+        <span class="hljs-type">UIMenu</span>(children: [highlightAction(for: [range])] <span class="hljs-operator">+</span> suggestedActions)
+    }
+}
+</code></pre>
+<p>The iOS 26 method's <code>[NSValue]</code> parameter type is taken from Apple's published declaration. Each value wraps an <code>NSRange</code>.</p>
+<hr>
+<h2 id="7-reading-statistics-without-surveillance" tabindex="-1"><a class="observablehq-header-anchor" href="#7-reading-statistics-without-surveillance">7. Reading statistics without surveillance</a></h2>
+<p>"Track your reading statistics: books read, pages read, reading time" and "reading streaks". The honest way to measure reading time is to <strong>count only while the reader is on screen and the app is active</strong>:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">ReadingClock</span> {
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> startedAt: <span class="hljs-type">Date</span>?
+    <span class="hljs-keyword">private(set)</span> <span class="hljs-keyword">var</span> total: <span class="hljs-type">TimeInterval</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>
+
+    <span class="hljs-keyword">mutating</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">resume</span>() { <span class="hljs-keyword">if</span> startedAt <span class="hljs-operator">==</span> <span class="hljs-literal">nil</span> { startedAt <span class="hljs-operator">=</span> .now } }
+    <span class="hljs-keyword">mutating</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">pause</span>() {
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> start <span class="hljs-operator">=</span> startedAt { total <span class="hljs-operator">+=</span> <span class="hljs-built_in">min</span>(<span class="hljs-type">Date</span>.now.timeIntervalSince(start), <span class="hljs-number">30</span> <span class="hljs-operator">*</span> <span class="hljs-number">60</span>) }  <span class="hljs-comment">// cap idle sessions</span>
+        startedAt <span class="hljs-operator">=</span> <span class="hljs-literal">nil</span>
+    }
+}
+<span class="hljs-comment">// In the reader: resume() on appear and when scenePhase becomes .active;</span>
+<span class="hljs-comment">// pause() on disappear and when it leaves .active.</span>
+</code></pre>
+<p>The 30-minute cap per session stops a phone left open on the nightstand from claiming you read for eight hours. "Pages read" can be derived from the change in character offset divided by a nominal page size (say 1,800 characters), which gives consistent numbers whatever font you use. Streaks follow the calendar-day approach I described in my Facts and Quotes article.</p>
+<hr>
+<h2 id="8-real-world-example-novels-club" tabindex="-1"><a class="observablehq-header-anchor" href="#8-real-world-example-novels-club">8. Real-world example: Novels Club</a></h2>
+<p>Everything here comes from building <strong><a href="https://apps.apple.com/us/app/novels-club/id6755921578" target="_blank" rel="noopener noreferrer">Novels Club</a></strong>. The code is the approach I'd use, written for this article, not the shipped source.</p>
+<p><img src="https://bestlatestapps.com/assets/blog/building-an-offline-ebook-reader-for-ios/novels-club-screenshot-1.jpg" alt="Novels Club App Store screenshot 1"></p>
+<p>At the time of writing, its App Store listing shows:</p>
+<ul>
+<li><strong>Free</strong>, in <strong>Magazines &amp; Newspapers</strong> and <strong>Entertainment</strong></li>
+<li>First released in <strong>December 2025</strong></li>
+<li>No ratings yet in the US store</li>
+<li>Supports <strong>iOS 16.6 and later</strong></li>
+</ul>
+<p>How the listing maps to this article:</p>
+<table>
+<thead>
+<tr>
+<th>What the listing says</th>
+<th>Where it's covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"All books are in the public domain, so you can read them completely"</td>
+<td>Why offsets and highlights can be stable (sections 1 and 6)</td>
+</tr>
+<tr>
+<td>"Download books for offline reading" / "All your downloaded books are stored locally"</td>
+<td>Downloads in Application Support, excluded from backup (section 2)</td>
+</tr>
+<tr>
+<td>"Preview books before downloading"</td>
+<td>Range-request previews (section 3)</td>
+</tr>
+<tr>
+<td>"Customizable reading settings: font size, font family, line height, margins" / "light, dark, and custom color schemes"</td>
+<td>The TextKit 2 reader (section 4)</td>
+</tr>
+<tr>
+<td>"Reading progress tracking" / "Continue reading where you left off"</td>
+<td>Character-offset progress (section 5)</td>
+</tr>
+<tr>
+<td>"Bookmarks and highlights for your favorite passages"</td>
+<td>Marks and the edit menu (section 6)</td>
+</tr>
+<tr>
+<td>"See book ratings, reading time estimates, and difficulty levels"</td>
+<td>Reading-time estimates (section 1)</td>
+</tr>
+<tr>
+<td>"Track your reading statistics…" / "View reading streaks"</td>
+<td>Honest reading time (section 7)</td>
+</tr>
+</tbody>
+</table>
+<p><img src="https://bestlatestapps.com/assets/blog/building-an-offline-ebook-reader-for-ios/novels-club-screenshot-2.jpg" alt="Novels Club App Store screenshot 2"></p>
+<p>With no ratings yet, the app is at the stage where every piece of feedback shapes it. If you read classics on your phone, I'd love to hear what your current reader gets wrong.</p>
+<hr>
+<h2 id="9-before-you-ship-a-reading-app-a-checklist" tabindex="-1"><a class="observablehq-header-anchor" href="#9-before-you-ship-a-reading-app-a-checklist">9. Before you ship a reading app: a checklist</a></h2>
+<ol>
+<li><strong>Books live in Application Support</strong>, excluded from iCloud backup.</li>
+<li><strong>Previews handle partial UTF-8</strong> and servers that ignore <code>Range</code>.</li>
+<li><strong>Re-layout happens only when settings change</strong>; long books load by chapter.</li>
+<li><strong>Progress is stored as a character offset</strong> and restored after every settings change.</li>
+<li><strong>Progress is saved on scroll end</strong>, not continuously.</li>
+<li><strong>Highlights are offset ranges</strong>, with both edit-menu delegate methods (iOS 16 and iOS 26+).</li>
+<li><strong>Dynamic Type works</strong>, and the custom font size is a multiplier on top of it.</li>
+<li><strong>Reading time only counts while the reader is active</strong>, with an idle cap.</li>
+<li><strong>Themes are tested in a dark room.</strong> Pure white on black is harsh; slightly grey text reads better.</li>
+<li><strong>Copyright is respected.</strong> Check the public-domain status of every title for the regions you distribute in, because it varies by country.</li>
+</ol>
+<hr>
+<h2 id="wrapping-up" tabindex="-1"><a class="observablehq-header-anchor" href="#wrapping-up">Wrapping up</a></h2>
+<p>A good reader disappears. You open the book, you're exactly where you left off, the text looks the way you like, and nothing reminds you it's an app. Getting there means a few unglamorous decisions: store characters instead of pages, keep books out of backups, re-lay out only when you must, and adopt the new multi-range text APIs while keeping the old ones for older systems.</p>
+<p>Try the app, or explore my other work:</p>
+<ul>
+<li><strong>Novels Club (iOS):</strong> <a href="https://apps.apple.com/us/app/novels-club/id6755921578" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/novels-club/id6755921578</a></li>
+<li><strong>All of my free iOS apps:</strong> <a href="https://apps.apple.com/us/developer/alok-singh/id1508795536" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/developer/alok-singh/id1508795536</a></li>
+<li><strong>My portfolio:</strong> <a href="https://bestlatestapps.com/alok/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/alok/</a></li>
+</ul>
+<p>Which classic should everyone read at least once? Tell me in the comments.</p>
+<p><em>— Alok Kumar Singh</em></p>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/building-an-offline-ebook-reader-for-ios/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/building-an-offline-ebook-reader-for-ios/</a></em></p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./building-an-offline-first-bible-reader-on-ios"><span>Building an Offline-First Bible Reader on iOS</span></a><a rel="next" href="./building-an-offline-quotes-app-in-swiftui"><span>Building an Offline Quotes App in SwiftUI</span></a></nav>
+<div>Articles by Alok Kumar Singh. Originals at <a href="https://bestlatestapps.com/blog/" target="_blank" rel="noopener noreferrer">bestlatestapps.com/blog</a>.</div>
+</footer>
+</div>
+</body>
+</html>

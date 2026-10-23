@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>Shipping a 4K Wallpaper App Without Running Out of Memory: ImageIO Downsampling, Core Image Blur and Add-Only Photos Access | Alok Singh, App Dev Notes</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="modulepreload" href="./_observablehq/client.097df403.js">
+<link rel="modulepreload" href="./_observablehq/runtime.fa9f71c0.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.60afab10.js">
+<link rel="canonical" href="https://bestlatestapps.com/blog/shipping-a-4k-wallpaper-app-without-running-out-of-memory/"><meta name="description" content="Decoded-image maths, thumbnails that don't decode the full file, a blur editor that keeps edges clean, saving with the minimum permission, and why your app…">
+<script type="module">
+
+import "./_observablehq/client.097df403.js";
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Alok Singh, App Dev Notes</a></li>
+  </ol>
+  <div id="observablehq-search"><input type="search" placeholder="Search"></div>
+  <div id="observablehq-search-results"></div>
+  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.755d897f.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
+  <ol>
+    <li class="observablehq-link"><a href="./tic-tac-toe-in-swiftui-done-properly">Tic Tac Toe in SwiftUI, Done Properly</a></li>
+    <li class="observablehq-link"><a href="./the-sending-side-of-apns">The Sending Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./the-device-side-of-apns">The Device Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./text-plus-audio-fully-offline">Text Plus Audio, Fully Offline</a></li>
+    <li class="observablehq-link"><a href="./stop-hand-rolling-unit-conversions">Stop Hand-Rolling Unit Conversions</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./shipping-a-4k-wallpaper-app-without-running-out-of-memory">Shipping a 4K Wallpaper App Without Running Out of Memory</a></li>
+    <li class="observablehq-link"><a href="./medication-reminders-that-actually-fire">Medication Reminders That Actually Fire</a></li>
+    <li class="observablehq-link"><a href="./from-barcode-to-pdf">From Barcode to PDF</a></li>
+    <li class="observablehq-link"><a href="./drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game">Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game,</a></li>
+    <li class="observablehq-link"><a href="./convert-as-you-type-currency-conversion-in-swift">Convert-As-You-Type Currency Conversion in Swift</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-first-bible-reader-on-ios">Building an Offline-First Bible Reader on iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-ebook-reader-for-ios">Building an Offline eBook Reader for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-quotes-app-in-swiftui">Building an Offline Quotes App in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-an-admob-earnings-dashboard-for-ios">Building an AdMob Earnings Dashboard for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-tap-to-match-marble-game-with-spritekit-and-swiftui">Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine">Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine</a></li>
+    <li class="observablehq-link"><a href="./building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe">Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioE</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-ios-component-catalogue">Building a Live iOS Component Catalogue</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-temple-darshan-app-for-ios">Building a Live Temple Darshan App for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-hashtag-copier-for-ios">Building a Hashtag Copier for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-chromatic-guitar-tuner-on-ios">Building a Chromatic Guitar Tuner on iOS</a></li>
+    <li class="observablehq-link"><a href="./animating-algorithms-in-swiftui">Animating Algorithms in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./a-practical-guide-to-ios-haptics">A Practical Guide to iOS Haptics</a></li>
+    <li class="observablehq-link"><a href="./a-document-scanner-in-an-afternoon">A Document Scanner in an Afternoon</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#1-the-memory-maths-everyone-forgets">1. The memory maths everyone forgets</a></li>
+<li class="observablehq-secondary-link"><a href="#2-downsampling-with-image-io">2. Downsampling with ImageIO</a></li>
+<li class="observablehq-secondary-link"><a href="#3-a-grid-that-stays-smooth">3. A grid that stays smooth</a></li>
+<li class="observablehq-secondary-link"><a href="#4-the-detail-screen-full-resolution-exactly-once">4. The detail screen: full resolution, exactly once</a></li>
+<li class="observablehq-secondary-link"><a href="#5-create-mode-blur-that-keeps-clean-edges">5. Create mode: blur that keeps clean edges</a></li>
+<li class="observablehq-secondary-link"><a href="#6-saving-with-the-minimum-permission">6. Saving with the minimum permission</a></li>
+<li class="observablehq-secondary-link"><a href="#7-the-honest-part-you-cant-set-the-wallpaper-for-the-user">7. The honest part: you can&#x27;t set the wallpaper for the user</a></li>
+<li class="observablehq-secondary-link"><a href="#8-real-world-example-wallpapers-hd-exotic-4-k">8. Real-world example: Wallpapers HD: Exotic 4K</a></li>
+<li class="observablehq-secondary-link"><a href="#9-before-you-ship-an-image-heavy-app-a-checklist">9. Before you ship an image-heavy app: a checklist</a></li>
+<li class="observablehq-secondary-link"><a href="#wrapping-up">Wrapping up</a></li>
+</ol>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="shipping-a-4-k-wallpaper-app-without-running-out-of-memory-image-io-downsampling-core-image-blur-and-add-only-photos-access" tabindex="-1"><a class="observablehq-header-anchor" href="#shipping-a-4-k-wallpaper-app-without-running-out-of-memory-image-io-downsampling-core-image-blur-and-add-only-photos-access">Shipping a 4K Wallpaper App Without Running Out of Memory: ImageIO Downsampling, Core Image Blur and Add-Only Photos Access</a></h1>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/shipping-a-4k-wallpaper-app-without-running-out-of-memory/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/shipping-a-4k-wallpaper-app-without-running-out-of-memory/</a></em></p>
+<p><em>Decoded-image maths, thumbnails that don't decode the full file, a blur editor that keeps edges clean, saving with the minimum permission, and why your app can't set the wallpaper itself</em></p>
+<p><img src="https://bestlatestapps.com/assets/blog/shipping-a-4k-wallpaper-app-without-running-out-of-memory/wallpapers-hd-icon-512.jpg" alt="Wallpapers HD: Exotic 4K app icon"></p>
+<p>A wallpaper app looks like the simplest kind of app there is: a grid of pictures, tap one, save it. Then you load forty 4K images into a scrolling grid on an older iPhone, and the system terminates your app for using too much memory.</p>
+<p>My app <strong>Wallpapers HD: Exotic 4K</strong> lists "fresh 4K HD wallpapers", "parallax-ready backgrounds that look sharp on every iPhone display", a Create mode to "edit photos and add blur effects", categories from Nature and Anime to Space and Minimalism, search, and saving so you can set an image as your Lock Screen or Home Screen. It's been on the App Store since December 2022.</p>
+<p>Every one of those features runs into the same physical fact: <strong>a decoded image costs width × height × 4 bytes, no matter how small the file is.</strong> This article covers how I'd build a wallpaper app around that fact. That means downsampled thumbnails with ImageIO, full-resolution images only when needed, a Core Image blur editor, saving with add-only Photos access, and an honest explanation of the "set as wallpaper" step. API names and availability are checked against Apple's documentation, and this is the approach I'd use rather than the app's exact source.</p>
+<hr>
+<h2 id="1-the-memory-maths-everyone-forgets" tabindex="-1"><a class="observablehq-header-anchor" href="#1-the-memory-maths-everyone-forgets">1. The memory maths everyone forgets</a></h2>
+<p>A 4K image (3840 × 2160) might be a 2 MB JPEG on disk. Decoded for display, it's:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-number">3840</span> <span class="hljs-operator">×</span> <span class="hljs-number">2160</span> pixels <span class="hljs-operator">×</span> <span class="hljs-number">4</span> bytes (<span class="hljs-type">RGBA</span>) <span class="hljs-operator">≈</span> <span class="hljs-number">33</span> <span class="hljs-type">MB</span>
+</code></pre>
+<p>A grid showing 12 of those at once is around 400 MB of bitmap memory before you've scrolled anywhere. Yet a grid cell might be 120 × 260 points, about 360 × 780 pixels on a 3× display, which needs roughly <strong>1.1 MB</strong> decoded.</p>
+<p>So the rule is: <strong>never decode a bigger image than you're going to display.</strong> <code>UIImage(data:)</code> decodes at full size. ImageIO can decode straight to the size you need.</p>
+<hr>
+<h2 id="2-downsampling-with-image-io" tabindex="-1"><a class="observablehq-header-anchor" href="#2-downsampling-with-image-io">2. Downsampling with ImageIO</a></h2>
+<p><code>CGImageSourceCreateThumbnailAtIndex</code> (iOS 4+) creates a smaller image directly from the compressed data, without ever holding the full-size bitmap in memory:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> ImageIO
+<span class="hljs-keyword">import</span> UIKit
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">Downsampler</span> {
+    <span class="hljs-comment">/// Decodes `data` at most `maxPixelSize` on its longest side.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">image</span>(<span class="hljs-params">from</span> <span class="hljs-params">data</span>: <span class="hljs-type">Data</span>, <span class="hljs-params">maxPixelSize</span>: <span class="hljs-type">CGFloat</span>, <span class="hljs-params">scale</span>: <span class="hljs-type">CGFloat</span>) -&gt; <span class="hljs-type">UIImage</span>? {
+        <span class="hljs-keyword">let</span> sourceOptions <span class="hljs-operator">=</span> [kCGImageSourceShouldCache: <span class="hljs-literal">false</span>] <span class="hljs-keyword">as</span> <span class="hljs-type">CFDictionary</span>
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> source <span class="hljs-operator">=</span> <span class="hljs-type">CGImageSourceCreateWithData</span>(data <span class="hljs-keyword">as</span> <span class="hljs-type">CFData</span>, sourceOptions) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span> }
+
+        <span class="hljs-keyword">let</span> options <span class="hljs-operator">=</span> [
+            kCGImageSourceCreateThumbnailFromImageAlways: <span class="hljs-literal">true</span>,
+            kCGImageSourceShouldCacheImmediately: <span class="hljs-literal">true</span>,      <span class="hljs-comment">// decode now, off the main thread</span>
+            kCGImageSourceCreateThumbnailWithTransform: <span class="hljs-literal">true</span>, <span class="hljs-comment">// respect EXIF orientation</span>
+            kCGImageSourceThumbnailMaxPixelSize: maxPixelSize
+        ] <span class="hljs-keyword">as</span> <span class="hljs-type">CFDictionary</span>
+
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> cg <span class="hljs-operator">=</span> <span class="hljs-type">CGImageSourceCreateThumbnailAtIndex</span>(source, <span class="hljs-number">0</span>, options) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span> }
+        <span class="hljs-keyword">return</span> <span class="hljs-type">UIImage</span>(cgImage: cg, scale: scale, orientation: .up)
+    }
+
+    <span class="hljs-comment">/// Same, from a file URL: avoids loading the whole file into memory first.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">image</span>(<span class="hljs-params">at</span> <span class="hljs-params">url</span>: <span class="hljs-type">URL</span>, <span class="hljs-params">maxPixelSize</span>: <span class="hljs-type">CGFloat</span>, <span class="hljs-params">scale</span>: <span class="hljs-type">CGFloat</span>) -&gt; <span class="hljs-type">UIImage</span>? {
+        <span class="hljs-keyword">let</span> sourceOptions <span class="hljs-operator">=</span> [kCGImageSourceShouldCache: <span class="hljs-literal">false</span>] <span class="hljs-keyword">as</span> <span class="hljs-type">CFDictionary</span>
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> source <span class="hljs-operator">=</span> <span class="hljs-type">CGImageSourceCreateWithURL</span>(url <span class="hljs-keyword">as</span> <span class="hljs-type">CFURL</span>, sourceOptions) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span> }
+        <span class="hljs-keyword">let</span> options <span class="hljs-operator">=</span> [
+            kCGImageSourceCreateThumbnailFromImageAlways: <span class="hljs-literal">true</span>,
+            kCGImageSourceShouldCacheImmediately: <span class="hljs-literal">true</span>,
+            kCGImageSourceCreateThumbnailWithTransform: <span class="hljs-literal">true</span>,
+            kCGImageSourceThumbnailMaxPixelSize: maxPixelSize
+        ] <span class="hljs-keyword">as</span> <span class="hljs-type">CFDictionary</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-type">CGImageSourceCreateThumbnailAtIndex</span>(source, <span class="hljs-number">0</span>, options)
+            .map { <span class="hljs-type">UIImage</span>(cgImage: <span class="hljs-variable">$0</span>, scale: scale, orientation: .up) }
+    }
+}
+</code></pre>
+<p>Two options do the important work:</p>
+<ul>
+<li><strong><code>kCGImageSourceShouldCache: false</code> on the source</strong> stops ImageIO from caching a full-size decode as a side effect.</li>
+<li><strong><code>kCGImageSourceShouldCacheImmediately: true</code> on the thumbnail</strong> forces decoding <em>now</em>, which you'll do on a background task, instead of lazily on the main thread during the first draw, where it causes scroll hitches.</li>
+</ul>
+<p>On iOS 15+, <code>UIImage.preparingThumbnail(of:)</code> is a convenient alternative when you already have a <code>UIImage</code>. But a <code>UIImage</code> made from data hasn't necessarily been decoded yet, and ImageIO gives you the most control.</p>
+<hr>
+<h2 id="3-a-grid-that-stays-smooth" tabindex="-1"><a class="observablehq-header-anchor" href="#3-a-grid-that-stays-smooth">3. A grid that stays smooth</a></h2>
+<p>Better still: <strong>don't download 4K images for the grid at all.</strong> Have your image host serve a small rendition for browsing and the full file only for the detail screen. Then downsample whatever arrives to the cell's pixel size anyway, because servers change.</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> SwiftUI
+
+<span class="hljs-keyword">actor</span> <span class="hljs-title class_">ThumbnailCache</span> {
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> shared <span class="hljs-operator">=</span> <span class="hljs-type">ThumbnailCache</span>()
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> cache <span class="hljs-operator">=</span> <span class="hljs-type">NSCache</span>&lt;<span class="hljs-type">NSURL</span>, <span class="hljs-type">UIImage</span>&gt;()
+    <span class="hljs-keyword">init</span>() { cache.totalCostLimit <span class="hljs-operator">=</span> <span class="hljs-number">80</span> <span class="hljs-operator">*</span> <span class="hljs-number">1024</span> <span class="hljs-operator">*</span> <span class="hljs-number">1024</span> }    <span class="hljs-comment">// ~80 MB of decoded thumbnails</span>
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">image</span>(<span class="hljs-params">for</span> <span class="hljs-params">url</span>: <span class="hljs-type">URL</span>, <span class="hljs-params">pixelSize</span>: <span class="hljs-type">CGFloat</span>, <span class="hljs-params">scale</span>: <span class="hljs-type">CGFloat</span>) <span class="hljs-keyword">async</span> -&gt; <span class="hljs-type">UIImage</span>? {
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> hit <span class="hljs-operator">=</span> cache.object(forKey: url <span class="hljs-keyword">as</span> <span class="hljs-type">NSURL</span>) { <span class="hljs-keyword">return</span> hit }
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> (data, <span class="hljs-keyword">_</span>) <span class="hljs-operator">=</span> <span class="hljs-keyword">try?</span> <span class="hljs-keyword">await</span> <span class="hljs-type">URLSession</span>.shared.data(from: url),
+              <span class="hljs-keyword">let</span> image <span class="hljs-operator">=</span> <span class="hljs-type">Downsampler</span>.image(from: data, maxPixelSize: pixelSize, scale: scale)
+        <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span> }
+        <span class="hljs-keyword">let</span> cost <span class="hljs-operator">=</span> <span class="hljs-type">Int</span>(image.size.width <span class="hljs-operator">*</span> image.scale <span class="hljs-operator">*</span> image.size.height <span class="hljs-operator">*</span> image.scale <span class="hljs-operator">*</span> <span class="hljs-number">4</span>)
+        cache.setObject(image, forKey: url <span class="hljs-keyword">as</span> <span class="hljs-type">NSURL</span>, cost: cost)
+        <span class="hljs-keyword">return</span> image
+    }
+}
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">WallpaperCell</span>: <span class="hljs-title class_ inherited__">View</span> {
+    <span class="hljs-keyword">let</span> thumbnailURL: <span class="hljs-type">URL</span>
+    <span class="hljs-meta">@Environment</span>(\.displayScale) <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> scale
+    <span class="hljs-meta">@State</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> image: <span class="hljs-type">UIImage</span>?
+
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">View</span> {
+        <span class="hljs-type">GeometryReader</span> { geo <span class="hljs-keyword">in</span>
+            <span class="hljs-type">ZStack</span> {
+                <span class="hljs-type">Color</span>(.secondarySystemBackground)
+                <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> image { <span class="hljs-type">Image</span>(uiImage: image).resizable().scaledToFill() }
+            }
+            .frame(width: geo.size.width, height: geo.size.height)
+            .clipped()
+            .task(id: thumbnailURL) {
+                <span class="hljs-keyword">let</span> px <span class="hljs-operator">=</span> <span class="hljs-built_in">max</span>(geo.size.width, geo.size.height) <span class="hljs-operator">*</span> scale
+                image <span class="hljs-operator">=</span> <span class="hljs-keyword">await</span> <span class="hljs-type">ThumbnailCache</span>.shared.image(for: thumbnailURL, pixelSize: px, scale: scale)
+            }
+        }
+        .aspectRatio(<span class="hljs-number">9.0</span> <span class="hljs-operator">/</span> <span class="hljs-number">19.5</span>, contentMode: .fit)
+        .clipShape(<span class="hljs-type">RoundedRectangle</span>(cornerRadius: <span class="hljs-number">12</span>))
+    }
+}
+</code></pre>
+<p>The details that matter:</p>
+<ul>
+<li><strong><code>NSCache</code> with a cost limit</strong> sized in <em>decoded bytes</em>, not image count, so the system can also evict under memory pressure.</li>
+<li><strong><code>.task(id:)</code></strong> cancels the load when a cell scrolls off-screen before finishing.</li>
+<li><strong><code>@Environment(\.displayScale)</code></strong>, not <code>UIScreen.main.scale</code>. Apple's docs now mark <code>UIScreen.main</code> as deprecated in iOS 26. Read the scale and screen size from the view's environment or window scene instead.</li>
+</ul>
+<p>Why not just <code>AsyncImage</code> (iOS 15+)? It's fine for small images, but it decodes whatever it downloads at full size and has no memory-cost cache. For a wallpaper grid, owning the pipeline pays off.</p>
+<hr>
+<h2 id="4-the-detail-screen-full-resolution-exactly-once" tabindex="-1"><a class="observablehq-header-anchor" href="#4-the-detail-screen-full-resolution-exactly-once">4. The detail screen: full resolution, exactly once</a></h2>
+<p>When the user opens a wallpaper, they deserve every pixel, but only one full-size image should be alive at a time. Download to a file (it streams to disk instead of RAM) and decode to the <strong>device's native screen size</strong> rather than the source's 4K:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> UIKit
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">FullImageLoader</span> {
+    <span class="hljs-comment">/// Downloads to a temporary file, then decodes at the screen's native pixel size.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">load</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">url</span>: <span class="hljs-type">URL</span>, <span class="hljs-params">nativeScreenSize</span>: <span class="hljs-type">CGSize</span>, <span class="hljs-params">scale</span>: <span class="hljs-type">CGFloat</span>) <span class="hljs-keyword">async</span> <span class="hljs-keyword">throws</span> -&gt; (<span class="hljs-type">UIImage</span>, <span class="hljs-type">URL</span>) {
+        <span class="hljs-keyword">let</span> (tempURL, <span class="hljs-keyword">_</span>) <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> <span class="hljs-type">URLSession</span>.shared.download(from: url)
+        <span class="hljs-comment">// Move out of the system's temporary location before it's cleaned up.</span>
+        <span class="hljs-keyword">let</span> kept <span class="hljs-operator">=</span> <span class="hljs-type">FileManager</span>.default.temporaryDirectory.appendingPathComponent(url.lastPathComponent)
+        <span class="hljs-keyword">try?</span> <span class="hljs-type">FileManager</span>.default.removeItem(at: kept)
+        <span class="hljs-keyword">try</span> <span class="hljs-type">FileManager</span>.default.moveItem(at: tempURL, to: kept)
+
+        <span class="hljs-keyword">let</span> longest <span class="hljs-operator">=</span> <span class="hljs-built_in">max</span>(nativeScreenSize.width, nativeScreenSize.height)
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> image <span class="hljs-operator">=</span> <span class="hljs-type">Downsampler</span>.image(at: kept, maxPixelSize: longest, scale: scale) <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">throw</span> <span class="hljs-type">CocoaError</span>(.fileReadCorruptFile)
+        }
+        <span class="hljs-keyword">return</span> (image, kept)    <span class="hljs-comment">// keep the file: saving uses the original bytes</span>
+    }
+}
+</code></pre>
+<p><code>UIScreen.nativeBounds</code> (iOS 8+) gives the screen's size in physical pixels. Get the screen from the current window scene (<code>view.window?.windowScene?.screen</code>) rather than <code>UIScreen.main</code>.</p>
+<p><strong>What about "parallax-ready"?</strong> iOS can apply motion and depth effects to wallpapers, and the system crops and zooms to fit the device. The practical rule: supply images at <em>least</em> as large as the native screen, in portrait, with the subject away from the edges, so the system has room to crop and move. That's why a 4K source is useful even though you decode the preview smaller. You <em>save</em> the original, not the preview.</p>
+<hr>
+<h2 id="5-create-mode-blur-that-keeps-clean-edges" tabindex="-1"><a class="observablehq-header-anchor" href="#5-create-mode-blur-that-keeps-clean-edges">5. Create mode: blur that keeps clean edges</a></h2>
+<p>"Create your own wallpapers — edit photos and add blur effects." Core Image's Gaussian blur is the right tool, with one classic gotcha: blurring pulls in transparent pixels from outside the image, which gives you a dark, soft border. Clamp the image to its extent first, then crop back:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> CoreImage
+<span class="hljs-keyword">import</span> CoreImage.CIFilterBuiltins
+<span class="hljs-keyword">import</span> UIKit
+
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">BlurEditor</span> {
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> context <span class="hljs-operator">=</span> <span class="hljs-type">CIContext</span>(options: [.useSoftwareRenderer: <span class="hljs-literal">false</span>])
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> source: <span class="hljs-type">CIImage</span>
+
+    <span class="hljs-keyword">init?</span>(<span class="hljs-params">image</span>: <span class="hljs-type">UIImage</span>) {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> ci <span class="hljs-operator">=</span> <span class="hljs-type">CIImage</span>(image: image) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span> }
+        source <span class="hljs-operator">=</span> ci
+    }
+
+    <span class="hljs-comment">/// radius in pixels of the *output*; scale it if you preview at a smaller size.</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">render</span>(<span class="hljs-params">radius</span>: <span class="hljs-type">Double</span>, <span class="hljs-params">dim</span>: <span class="hljs-type">Double</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>) -&gt; <span class="hljs-type">UIImage</span>? {
+        <span class="hljs-keyword">let</span> blur <span class="hljs-operator">=</span> <span class="hljs-type">CIFilter</span>.gaussianBlur()
+        blur.inputImage <span class="hljs-operator">=</span> source.clampedToExtent()     <span class="hljs-comment">// no dark edges</span>
+        blur.radius <span class="hljs-operator">=</span> <span class="hljs-type">Float</span>(radius)
+        <span class="hljs-keyword">var</span> output <span class="hljs-operator">=</span> blur.outputImage<span class="hljs-operator">?</span>.cropped(to: source.extent) <span class="hljs-operator">??</span> source
+
+        <span class="hljs-keyword">if</span> dim <span class="hljs-operator">&gt;</span> <span class="hljs-number">0</span> {                                   <span class="hljs-comment">// darken for legible clock and widgets</span>
+            <span class="hljs-keyword">let</span> controls <span class="hljs-operator">=</span> <span class="hljs-type">CIFilter</span>.colorControls()
+            controls.inputImage <span class="hljs-operator">=</span> output
+            controls.brightness <span class="hljs-operator">=</span> <span class="hljs-type">Float</span>(<span class="hljs-operator">-</span>dim)
+            output <span class="hljs-operator">=</span> controls.outputImage <span class="hljs-operator">??</span> output
+        }
+
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> cg <span class="hljs-operator">=</span> context.createCGImage(output, from: source.extent) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span> }
+        <span class="hljs-keyword">return</span> <span class="hljs-type">UIImage</span>(cgImage: cg)
+    }
+}
+</code></pre>
+<p>Performance tips for a live slider:</p>
+<ul>
+<li><strong>Preview on the downsampled image</strong> and render the full-resolution output only when the user taps Save. Blur cost grows with the pixel count <em>and</em> the radius.</li>
+<li><strong>Scale the radius</strong> between preview and export. A 20-pixel blur on a 1,290-pixel-wide preview is about a 60-pixel blur on a 3,840-pixel export.</li>
+<li><strong>Reuse one <code>CIContext</code>.</strong> Creating a context per slider tick is the slowest possible way to use Core Image.</li>
+</ul>
+<p>The optional <code>dim</code> parameter is a small design touch: a slightly darker, blurred background keeps the Lock Screen clock and widgets readable.</p>
+<hr>
+<h2 id="6-saving-with-the-minimum-permission" tabindex="-1"><a class="observablehq-header-anchor" href="#6-saving-with-the-minimum-permission">6. Saving with the minimum permission</a></h2>
+<p>Saving an image to Photos doesn't require read access to the user's library. iOS has an <strong>add-only</strong> access level for exactly this:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> Photos
+<span class="hljs-keyword">import</span> UIKit
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">PhotoSaver</span> {
+    <span class="hljs-keyword">enum</span> <span class="hljs-title class_">SaveError</span>: <span class="hljs-title class_ inherited__">Error</span> { <span class="hljs-keyword">case</span> denied }
+
+    <span class="hljs-comment">/// Saves the original file bytes (not a re-encoded UIImage) to Photos.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">saveOriginal</span>(<span class="hljs-params">fileURL</span>: <span class="hljs-type">URL</span>) <span class="hljs-keyword">async</span> <span class="hljs-keyword">throws</span> {
+        <span class="hljs-keyword">let</span> status <span class="hljs-operator">=</span> <span class="hljs-keyword">await</span> <span class="hljs-type">PHPhotoLibrary</span>.requestAuthorization(for: .addOnly)   <span class="hljs-comment">// iOS 14+</span>
+        <span class="hljs-keyword">guard</span> status <span class="hljs-operator">==</span> .authorized <span class="hljs-operator">||</span> status <span class="hljs-operator">==</span> .limited <span class="hljs-keyword">else</span> { <span class="hljs-keyword">throw</span> <span class="hljs-type">SaveError</span>.denied }
+
+        <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> <span class="hljs-type">PHPhotoLibrary</span>.shared().performChanges {
+            <span class="hljs-keyword">let</span> request <span class="hljs-operator">=</span> <span class="hljs-type">PHAssetCreationRequest</span>.forAsset()
+            request.addResource(with: .photo, fileURL: fileURL, options: <span class="hljs-literal">nil</span>)
+        }
+    }
+
+    <span class="hljs-comment">/// For edited images from Create mode.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">save</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">image</span>: <span class="hljs-type">UIImage</span>) <span class="hljs-keyword">async</span> <span class="hljs-keyword">throws</span> {
+        <span class="hljs-keyword">let</span> status <span class="hljs-operator">=</span> <span class="hljs-keyword">await</span> <span class="hljs-type">PHPhotoLibrary</span>.requestAuthorization(for: .addOnly)
+        <span class="hljs-keyword">guard</span> status <span class="hljs-operator">==</span> .authorized <span class="hljs-operator">||</span> status <span class="hljs-operator">==</span> .limited <span class="hljs-keyword">else</span> { <span class="hljs-keyword">throw</span> <span class="hljs-type">SaveError</span>.denied }
+        <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> <span class="hljs-type">PHPhotoLibrary</span>.shared().performChanges {
+            <span class="hljs-type">PHAssetChangeRequest</span>.creationRequestForAsset(from: image)
+        }
+    }
+}
+</code></pre>
+<ul>
+<li><strong>Declare <code>NSPhotoLibraryAddUsageDescription</code></strong> (iOS 11+), not the full-library key. For example: "Save wallpapers you choose to your photo library."</li>
+<li><strong><code>requestAuthorization(for: .addOnly)</code></strong> (iOS 14+) asks only for what you need. Users are far more likely to allow it, and you never see their photos.</li>
+<li><strong>Save the original file</strong> with <code>PHAssetCreationRequest.addResource(with:fileURL:options:)</code> (iOS 9+). Re-encoding a <code>UIImage</code> can cost quality and strip metadata.</li>
+</ul>
+<hr>
+<h2 id="7-the-honest-part-you-cant-set-the-wallpaper-for-the-user" tabindex="-1"><a class="observablehq-header-anchor" href="#7-the-honest-part-you-cant-set-the-wallpaper-for-the-user">7. The honest part: you can't set the wallpaper for the user</a></h2>
+<p>There's no public iOS API that lets an app set the Lock Screen or Home Screen wallpaper. A wallpaper app's job ends at "saved to Photos", and the user sets it from the Photos app or from Settings → Wallpaper.</p>
+<p>So make that last step effortless:</p>
+<ul>
+<li>After saving, show a short, illustrated guide: <strong>Photos → open the image → Share → Use as Wallpaper</strong>.</li>
+<li>Offer a button that opens Photos. Don't promise a one-tap "Set" button you can't deliver; App Review and users both dislike that.</li>
+<li>Mention that the system lets you pinch and position the image, and that depth and motion options depend on the device and iOS version.</li>
+</ul>
+<p>The listing's own wording handles this well: "Save the image… Set it as your Lock Screen or Home Screen wallpaper". It's a user step, described as one.</p>
+<hr>
+<h2 id="8-real-world-example-wallpapers-hd-exotic-4-k" tabindex="-1"><a class="observablehq-header-anchor" href="#8-real-world-example-wallpapers-hd-exotic-4-k">8. Real-world example: Wallpapers HD: Exotic 4K</a></h2>
+<p>These are the techniques I'd use, and recommend, for <strong><a href="https://apps.apple.com/us/app/wallpapers-hd-exotic-4k/id6443850234" target="_blank" rel="noopener noreferrer">Wallpapers HD: Exotic 4K</a></strong>.</p>
+<p><img src="https://bestlatestapps.com/assets/blog/shipping-a-4k-wallpaper-app-without-running-out-of-memory/wallpapers-hd-screenshot-1.jpg" alt="Wallpapers HD App Store screenshot 1"></p>
+<p>At the time of writing, its App Store listing shows:</p>
+<ul>
+<li><strong>Free</strong> with an optional Premium tier, in <strong>Photo &amp; Video</strong> and <strong>Graphics &amp; Design</strong></li>
+<li>First released in <strong>December 2022</strong></li>
+<li><strong>6 ratings</strong> in the US store, all <strong>5 stars</strong></li>
+<li>Supports <strong>iOS 16.0 and later</strong></li>
+</ul>
+<p>How the listing maps to this article:</p>
+<table>
+<thead>
+<tr>
+<th>What the listing says</th>
+<th>Where it's covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Fresh 4K HD wallpapers added regularly" / "Browse by category… Quick search"</td>
+<td>A small rendition for the grid, downsampled and cost-cached (sections 2–3)</td>
+</tr>
+<tr>
+<td>"Parallax-ready backgrounds that look sharp on every iPhone display"</td>
+<td>Native-size preview, original saved, room for system cropping (section 4)</td>
+</tr>
+<tr>
+<td>"Create your own wallpapers — edit photos and add blur effects"</td>
+<td>Clamped Gaussian blur with optional dimming (section 5)</td>
+</tr>
+<tr>
+<td>"Save the image… Set it as your Lock Screen or Home Screen wallpaper"</td>
+<td>Add-only Photos saving, then a guided user step (sections 6–7)</td>
+</tr>
+<tr>
+<td>"Free: Browse and download HD wallpapers with ads / Premium: … advanced blur effects… ad-free"</td>
+<td>Gate the content and editor features by entitlement; the pipeline is the same</td>
+</tr>
+</tbody>
+</table>
+<p><img src="https://bestlatestapps.com/assets/blog/shipping-a-4k-wallpaper-app-without-running-out-of-memory/wallpapers-hd-screenshot-2.jpg" alt="Wallpapers HD App Store screenshot 2"></p>
+<hr>
+<h2 id="9-before-you-ship-an-image-heavy-app-a-checklist" tabindex="-1"><a class="observablehq-header-anchor" href="#9-before-you-ship-an-image-heavy-app-a-checklist">9. Before you ship an image-heavy app: a checklist</a></h2>
+<ol>
+<li><strong>Nothing is decoded larger than it's displayed.</strong> Grid cells use downsampled thumbnails sized in pixels.</li>
+<li><strong>The cache is costed in decoded bytes</strong> with a sensible limit, and it responds to memory pressure.</li>
+<li><strong>Scrolling is profiled on your oldest supported device</strong> with Instruments' Allocations and Animation Hitches tools.</li>
+<li><strong>Full-resolution images are downloaded to disk</strong>, previewed at screen size, and saved as original bytes.</li>
+<li><strong>Blur previews run on the small image</strong> and export at full size with a scaled radius.</li>
+<li><strong>Photos access is add-only</strong>, with <code>NSPhotoLibraryAddUsageDescription</code> and graceful handling of denial.</li>
+<li><strong>You don't promise "set wallpaper" automation.</strong> Guide the user through Photos instead.</li>
+<li><strong><code>UIScreen.main</code> is gone from new code.</strong> Use the environment's <code>displayScale</code> and the window scene's screen.</li>
+<li><strong>Image licensing is clear</strong> for every image you serve.</li>
+</ol>
+<hr>
+<h2 id="wrapping-up" tabindex="-1"><a class="observablehq-header-anchor" href="#wrapping-up">Wrapping up</a></h2>
+<p>A wallpaper app is really a memory-management app with nice pictures. Downsample with ImageIO, cache by decoded cost, keep exactly one full-size image alive, preview edits small and export big, save with the narrowest permission, and be straight with users about the last step only they can take.</p>
+<p>Try it, or explore my other apps:</p>
+<ul>
+<li><strong>Wallpapers HD: Exotic 4K (iOS):</strong> <a href="https://apps.apple.com/us/app/wallpapers-hd-exotic-4k/id6443850234" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/wallpapers-hd-exotic-4k/id6443850234</a></li>
+<li><strong>All of my free iOS apps:</strong> <a href="https://apps.apple.com/us/developer/alok-singh/id1508795536" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/developer/alok-singh/id1508795536</a></li>
+<li><strong>My portfolio:</strong> <a href="https://bestlatestapps.com/alok/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/alok/</a></li>
+</ul>
+<p>What's the largest memory spike an image grid has ever given you? Tell me in the comments.</p>
+<p><em>— Alok Kumar Singh</em></p>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/shipping-a-4k-wallpaper-app-without-running-out-of-memory/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/shipping-a-4k-wallpaper-app-without-running-out-of-memory/</a></em></p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./stop-hand-rolling-unit-conversions"><span>Stop Hand-Rolling Unit Conversions</span></a><a rel="next" href="./medication-reminders-that-actually-fire"><span>Medication Reminders That Actually Fire</span></a></nav>
+<div>Articles by Alok Kumar Singh. Originals at <a href="https://bestlatestapps.com/blog/" target="_blank" rel="noopener noreferrer">bestlatestapps.com/blog</a>.</div>
+</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioEngine | Alok Singh, App Dev Notes</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="modulepreload" href="./_observablehq/client.097df403.js">
+<link rel="modulepreload" href="./_observablehq/runtime.fa9f71c0.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.60afab10.js">
+<link rel="canonical" href="https://bestlatestapps.com/blog/building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe/"><meta name="description" content="Samplers for pitched instruments, a player-node pool for drums, a multi-touch keyboard that handles chords and glissandos, and note names for beginners">
+<script type="module">
+
+import "./_observablehq/client.097df403.js";
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Alok Singh, App Dev Notes</a></li>
+  </ol>
+  <div id="observablehq-search"><input type="search" placeholder="Search"></div>
+  <div id="observablehq-search-results"></div>
+  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.755d897f.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
+  <ol>
+    <li class="observablehq-link"><a href="./tic-tac-toe-in-swiftui-done-properly">Tic Tac Toe in SwiftUI, Done Properly</a></li>
+    <li class="observablehq-link"><a href="./the-sending-side-of-apns">The Sending Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./the-device-side-of-apns">The Device Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./text-plus-audio-fully-offline">Text Plus Audio, Fully Offline</a></li>
+    <li class="observablehq-link"><a href="./stop-hand-rolling-unit-conversions">Stop Hand-Rolling Unit Conversions</a></li>
+    <li class="observablehq-link"><a href="./shipping-a-4k-wallpaper-app-without-running-out-of-memory">Shipping a 4K Wallpaper App Without Running Out of Memory</a></li>
+    <li class="observablehq-link"><a href="./medication-reminders-that-actually-fire">Medication Reminders That Actually Fire</a></li>
+    <li class="observablehq-link"><a href="./from-barcode-to-pdf">From Barcode to PDF</a></li>
+    <li class="observablehq-link"><a href="./drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game">Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game,</a></li>
+    <li class="observablehq-link"><a href="./convert-as-you-type-currency-conversion-in-swift">Convert-As-You-Type Currency Conversion in Swift</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-first-bible-reader-on-ios">Building an Offline-First Bible Reader on iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-ebook-reader-for-ios">Building an Offline eBook Reader for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-quotes-app-in-swiftui">Building an Offline Quotes App in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-an-admob-earnings-dashboard-for-ios">Building an AdMob Earnings Dashboard for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-tap-to-match-marble-game-with-spritekit-and-swiftui">Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine">Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe">Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioE</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-ios-component-catalogue">Building a Live iOS Component Catalogue</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-temple-darshan-app-for-ios">Building a Live Temple Darshan App for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-hashtag-copier-for-ios">Building a Hashtag Copier for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-chromatic-guitar-tuner-on-ios">Building a Chromatic Guitar Tuner on iOS</a></li>
+    <li class="observablehq-link"><a href="./animating-algorithms-in-swiftui">Animating Algorithms in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./a-practical-guide-to-ios-haptics">A Practical Guide to iOS Haptics</a></li>
+    <li class="observablehq-link"><a href="./a-document-scanner-in-an-afternoon">A Document Scanner in an Afternoon</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#1-the-three-things-a-virtual-instrument-must-get-right">1. The three things a virtual instrument must get right</a></li>
+<li class="observablehq-secondary-link"><a href="#2-session-setup-for-an-instrument">2. Session setup for an instrument</a></li>
+<li class="observablehq-secondary-link"><a href="#3-pitched-instruments-av-audio-unit-sampler">3. Pitched instruments: AVAudioUnitSampler</a></li>
+<li class="observablehq-secondary-link"><a href="#4-drums-preloaded-buffers-and-a-player-node-pool">4. Drums: preloaded buffers and a player-node pool</a></li>
+<li class="observablehq-secondary-link"><a href="#5-a-multi-touch-keyboard-that-feels-like-a-keyboard">5. A multi-touch keyboard that feels like a keyboard</a></li>
+<li class="observablehq-secondary-link"><a href="#6-teaching-note-names-and-positions">6. Teaching note names and positions</a></li>
+<li class="observablehq-secondary-link"><a href="#7-real-world-example-drums-n-piano">7. Real-world example: Drums n Piano</a></li>
+<li class="observablehq-secondary-link"><a href="#8-before-you-ship-a-virtual-instrument-a-checklist">8. Before you ship a virtual instrument: a checklist</a></li>
+<li class="observablehq-secondary-link"><a href="#wrapping-up">Wrapping up</a></li>
+</ol>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="building-a-low-latency-virtual-piano-and-drum-kit-on-i-os-with-av-audio-engine" tabindex="-1"><a class="observablehq-header-anchor" href="#building-a-low-latency-virtual-piano-and-drum-kit-on-i-os-with-av-audio-engine">Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioEngine</a></h1>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe/</a></em></p>
+<p><em>Samplers for pitched instruments, a player-node pool for drums, a multi-touch keyboard that handles chords and glissandos, and note names for beginners</em></p>
+<p><img src="https://bestlatestapps.com/assets/blog/building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe/drums-n-piano-icon-512.jpg" alt="Drums n Piano app icon"></p>
+<p>The test for a virtual instrument is brutal and immediate: tap a key, and the sound has to arrive <em>with</em> your finger, not after it. Play a chord and you expect three notes, not one. Drag your finger along the keyboard and you expect a glissando, not silence. Hit the snare four times quickly and you expect four hits, not one hit cut off three times.</p>
+<p>My app <strong>Drums n Piano</strong> puts a piano, a drum kit and a xylophone on your phone. The listing promises an instrument that "sounds real, just like the original instrument!", and it's also meant for learning: it teaches beginners "the names &amp; positions of notes on the piano".</p>
+<p>This article covers how I'd build the audio and touch parts of an app like that on iOS. That means configuring the session for low latency, using <code>AVAudioUnitSampler</code> for pitched instruments, a pool of <code>AVAudioPlayerNode</code>s for one-shot drum samples, a custom multi-touch keyboard view, and labelling notes for learners. The app supports iOS 12 and later, so the touch layer is UIKit, and I'll explain why that's the right call even today. API names and availability are checked against Apple's documentation, and this is the approach I'd use rather than a tour of the app's source.</p>
+<hr>
+<h2 id="1-the-three-things-a-virtual-instrument-must-get-right" tabindex="-1"><a class="observablehq-header-anchor" href="#1-the-three-things-a-virtual-instrument-must-get-right">1. The three things a virtual instrument must get right</a></h2>
+<ol>
+<li><strong>Latency.</strong> The gap between touch and sound. Part of it is the audio buffer, and part is your own code: loading a file on tap, or allocating while the user is playing.</li>
+<li><strong>Polyphony.</strong> Several sounds at once: chords on the piano, overlapping cymbal and kick, a fast roll on the snare.</li>
+<li><strong>Touch handling.</strong> Many fingers at once, sliding between keys, and no gesture delays.</li>
+</ol>
+<p>None of these are hard individually. They get hard when the first prototype plays a sound file with <code>AVAudioPlayer</code> on each tap. That loads, decodes and allocates on the main thread, can't overlap itself, and has noticeably more delay than the engine-based approaches below.</p>
+<hr>
+<h2 id="2-session-setup-for-an-instrument" tabindex="-1"><a class="observablehq-header-anchor" href="#2-session-setup-for-an-instrument">2. Session setup for an instrument</a></h2>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> AVFoundation
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">InstrumentSession</span> {
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">activate</span>() <span class="hljs-keyword">throws</span> {
+        <span class="hljs-keyword">let</span> session <span class="hljs-operator">=</span> <span class="hljs-type">AVAudioSession</span>.sharedInstance()
+        <span class="hljs-comment">// .playback: the instrument IS the app, so play even with the Silent switch on.</span>
+        <span class="hljs-comment">// .mixWithOthers: let people play along with music from another app.</span>
+        <span class="hljs-keyword">try</span> session.setCategory(.playback, mode: .default, options: [.mixWithOthers])
+        <span class="hljs-keyword">try</span> session.setPreferredIOBufferDuration(<span class="hljs-number">0.005</span>)   <span class="hljs-comment">// ask for ~5 ms; the system decides</span>
+        <span class="hljs-keyword">try</span> session.setActive(<span class="hljs-literal">true</span>)
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">"IO buffer: <span class="hljs-subst">\(session.ioBufferDuration <span class="hljs-operator">*</span> <span class="hljs-number">1000</span>)</span> ms, rate: <span class="hljs-subst">\(session.sampleRate)</span> Hz"</span>)
+    }
+}
+</code></pre>
+<p>Two decisions here deserve a sentence each:</p>
+<ul>
+<li><strong><code>.playback</code> vs <code>.ambient</code>.</strong> <code>.ambient</code> respects the Silent switch, which suits a game's background music. For an instrument, silence when the switch is on looks like a broken app, so I use <code>.playback</code>.</li>
+<li><strong>A small preferred buffer</strong> reduces output latency. It's a <em>preference</em>: read back <code>ioBufferDuration</code> to see what you actually got, and expect Bluetooth headphones to add delay you can't remove. Wired headphones or the built-in speaker are best for playing in time.</li>
+</ul>
+<hr>
+<h2 id="3-pitched-instruments-av-audio-unit-sampler" tabindex="-1"><a class="observablehq-header-anchor" href="#3-pitched-instruments-av-audio-unit-sampler">3. Pitched instruments: AVAudioUnitSampler</a></h2>
+<p>For piano and xylophone, you don't want one audio file per tap. You want a <strong>sampler</strong>: an instrument that receives MIDI-style "note on/off" messages and plays the right sample, pitch-shifting between recorded notes if needed. <code>AVAudioUnitSampler</code> (iOS 8+) is Apple's sampler, wrapped as an engine node.</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> AVFoundation
+
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">PitchedInstrument</span> {
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> engine: <span class="hljs-type">AVAudioEngine</span>
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> sampler <span class="hljs-operator">=</span> <span class="hljs-type">AVAudioUnitSampler</span>()
+
+    <span class="hljs-keyword">init</span>(<span class="hljs-params">engine</span>: <span class="hljs-type">AVAudioEngine</span>) {
+        <span class="hljs-keyword">self</span>.engine <span class="hljs-operator">=</span> engine
+        engine.attach(sampler)
+        engine.connect(sampler, to: engine.mainMixerNode, format: <span class="hljs-literal">nil</span>)
+    }
+
+    <span class="hljs-comment">/// Load a SoundFont (.sf2) or DLS bank shipped in the bundle.</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">loadSoundBank</span>(<span class="hljs-params">named</span> <span class="hljs-params">name</span>: <span class="hljs-type">String</span>, <span class="hljs-params">program</span>: <span class="hljs-type">UInt8</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>) <span class="hljs-keyword">throws</span> {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> url <span class="hljs-operator">=</span> <span class="hljs-type">Bundle</span>.main.url(forResource: name, withExtension: <span class="hljs-string">"sf2"</span>) <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">throw</span> <span class="hljs-type">CocoaError</span>(.fileNoSuchFile)
+        }
+        <span class="hljs-keyword">try</span> sampler.loadSoundBankInstrument(
+            at: url, program: program,
+            bankMSB: <span class="hljs-type">UInt8</span>(kAUSampler_DefaultMelodicBankMSB),
+            bankLSB: <span class="hljs-type">UInt8</span>(kAUSampler_DefaultBankLSB))
+    }
+
+    <span class="hljs-comment">/// Or: load individual samples (e.g. one recording every few semitones).</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">loadSamples</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">urls</span>: [<span class="hljs-type">URL</span>]) <span class="hljs-keyword">throws</span> {
+        <span class="hljs-keyword">try</span> sampler.loadAudioFiles(at: urls)
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">noteOn</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">midi</span>: <span class="hljs-type">UInt8</span>, <span class="hljs-params">velocity</span>: <span class="hljs-type">UInt8</span> <span class="hljs-operator">=</span> <span class="hljs-number">100</span>) {
+        sampler.startNote(midi, withVelocity: velocity, onChannel: <span class="hljs-number">0</span>)
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">noteOff</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">midi</span>: <span class="hljs-type">UInt8</span>) {
+        sampler.stopNote(midi, onChannel: <span class="hljs-number">0</span>)
+    }
+}
+</code></pre>
+<p>Why this is the right tool:</p>
+<ul>
+<li><strong>Polyphony is built in.</strong> Ten fingers, ten notes. The sampler manages voices for you.</li>
+<li><strong>Note-off is real.</strong> Releasing a key triggers the sample's release, as on a real piano, rather than a hard cut.</li>
+<li><strong>Loading happens once</strong>, at launch or when the user switches instrument, never on the tap.</li>
+</ul>
+<p>Where do the sounds come from? Either a SoundFont you have the rights to ship, or your own recordings, with one sample every few semitones loaded via <code>loadAudioFiles(at:)</code>. Sample quality is the single biggest factor in "sounds real", and it's a licensing question as much as a technical one: check the licence of any sound bank before you bundle it.</p>
+<hr>
+<h2 id="4-drums-preloaded-buffers-and-a-player-node-pool" tabindex="-1"><a class="observablehq-header-anchor" href="#4-drums-preloaded-buffers-and-a-player-node-pool">4. Drums: preloaded buffers and a player-node pool</a></h2>
+<p>Drums are different. There's no pitch, every hit is a one-shot, and the same pad is hit repeatedly and fast. You <em>could</em> map drums onto a sampler (General MIDI percussion is exactly that), but a simple, very controllable approach is:</p>
+<ol>
+<li>Decode each drum sample into an <code>AVAudioPCMBuffer</code> <strong>once</strong>, at launch.</li>
+<li>Keep a small <strong>pool</strong> of <code>AVAudioPlayerNode</code>s per pad.</li>
+<li>On each hit, schedule the buffer on the next node in the pool, round-robin.</li>
+</ol>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> AVFoundation
+
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DrumKit</span> {
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> engine: <span class="hljs-type">AVAudioEngine</span>
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> buffers: [<span class="hljs-type">String</span>: <span class="hljs-type">AVAudioPCMBuffer</span>] <span class="hljs-operator">=</span> [:]
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> pools: [<span class="hljs-type">String</span>: [<span class="hljs-type">AVAudioPlayerNode</span>]] <span class="hljs-operator">=</span> [:]
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> nextIndex: [<span class="hljs-type">String</span>: <span class="hljs-type">Int</span>] <span class="hljs-operator">=</span> [:]
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> voicesPerPad <span class="hljs-operator">=</span> <span class="hljs-number">4</span>     <span class="hljs-comment">// how many overlapping hits per pad</span>
+
+    <span class="hljs-keyword">init</span>(<span class="hljs-params">engine</span>: <span class="hljs-type">AVAudioEngine</span>) { <span class="hljs-keyword">self</span>.engine <span class="hljs-operator">=</span> engine }
+
+    <span class="hljs-comment">/// Call once, before starting the engine.</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">load</span>(<span class="hljs-params">pads</span>: [<span class="hljs-type">String</span>]) <span class="hljs-keyword">throws</span> {
+        <span class="hljs-keyword">for</span> pad <span class="hljs-keyword">in</span> pads {
+            <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> url <span class="hljs-operator">=</span> <span class="hljs-type">Bundle</span>.main.url(forResource: pad, withExtension: <span class="hljs-string">"caf"</span>) <span class="hljs-keyword">else</span> {
+                <span class="hljs-keyword">throw</span> <span class="hljs-type">CocoaError</span>(.fileNoSuchFile)
+            }
+            <span class="hljs-keyword">let</span> file <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> <span class="hljs-type">AVAudioFile</span>(forReading: url)
+            <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> buffer <span class="hljs-operator">=</span> <span class="hljs-type">AVAudioPCMBuffer</span>(pcmFormat: file.processingFormat,
+                                                frameCapacity: <span class="hljs-type">AVAudioFrameCount</span>(file.length)) <span class="hljs-keyword">else</span> {
+                <span class="hljs-keyword">throw</span> <span class="hljs-type">CocoaError</span>(.fileReadCorruptFile)
+            }
+            <span class="hljs-keyword">try</span> file.read(into: buffer)
+            buffers[pad] <span class="hljs-operator">=</span> buffer
+
+            pools[pad] <span class="hljs-operator">=</span> (<span class="hljs-number">0</span><span class="hljs-operator">..&lt;</span>voicesPerPad).map { <span class="hljs-keyword">_</span> <span class="hljs-keyword">in</span>
+                <span class="hljs-keyword">let</span> node <span class="hljs-operator">=</span> <span class="hljs-type">AVAudioPlayerNode</span>()
+                engine.attach(node)
+                engine.connect(node, to: engine.mainMixerNode, format: buffer.format)
+                <span class="hljs-keyword">return</span> node
+            }
+            nextIndex[pad] <span class="hljs-operator">=</span> <span class="hljs-number">0</span>
+        }
+    }
+
+    <span class="hljs-comment">/// Call after engine.start().</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">startNodes</span>() {
+        pools.values.flatMap { <span class="hljs-variable">$0</span> }.forEach { <span class="hljs-variable">$0</span>.play() }
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">hit</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">pad</span>: <span class="hljs-type">String</span>, <span class="hljs-params">velocity</span>: <span class="hljs-type">Float</span> <span class="hljs-operator">=</span> <span class="hljs-number">1.0</span>) {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> buffer <span class="hljs-operator">=</span> buffers[pad], <span class="hljs-keyword">let</span> pool <span class="hljs-operator">=</span> pools[pad], <span class="hljs-keyword">let</span> i <span class="hljs-operator">=</span> nextIndex[pad] <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+        <span class="hljs-keyword">let</span> node <span class="hljs-operator">=</span> pool[i]
+        nextIndex[pad] <span class="hljs-operator">=</span> (i <span class="hljs-operator">+</span> <span class="hljs-number">1</span>) <span class="hljs-operator">%</span> pool.count
+        node.volume <span class="hljs-operator">=</span> velocity
+        <span class="hljs-comment">// .interrupts: if this voice is still ringing from 4 hits ago, restart it cleanly.</span>
+        node.scheduleBuffer(buffer, at: <span class="hljs-literal">nil</span>, options: .interrupts, completionHandler: <span class="hljs-literal">nil</span>)
+    }
+}
+</code></pre>
+<p>The whole setup:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">let</span> engine <span class="hljs-operator">=</span> <span class="hljs-type">AVAudioEngine</span>()
+<span class="hljs-keyword">let</span> piano <span class="hljs-operator">=</span> <span class="hljs-type">PitchedInstrument</span>(engine: engine)
+<span class="hljs-keyword">let</span> drums <span class="hljs-operator">=</span> <span class="hljs-type">DrumKit</span>(engine: engine)
+
+<span class="hljs-keyword">try</span> <span class="hljs-type">InstrumentSession</span>.activate()
+<span class="hljs-keyword">try</span> piano.loadSoundBank(named: <span class="hljs-string">"Piano"</span>)
+<span class="hljs-keyword">try</span> drums.load(pads: [<span class="hljs-string">"kick"</span>, <span class="hljs-string">"snare"</span>, <span class="hljs-string">"hihat-closed"</span>, <span class="hljs-string">"hihat-open"</span>, <span class="hljs-string">"crash"</span>, <span class="hljs-string">"tom-high"</span>, <span class="hljs-string">"tom-low"</span>])
+engine.prepare()
+<span class="hljs-keyword">try</span> engine.start()
+drums.startNodes()
+</code></pre>
+<p>Why a pool? A single player node plays one schedule queue. Scheduling a new hit with <code>.interrupts</code> on a <em>single</em> node cuts the previous hit off, and that's audible on cymbals. With four voices per pad, four overlapping hits all ring naturally, and only the fifth recycles the oldest voice. Ship samples as uncompressed <code>.caf</code> or <code>.wav</code> so decoding at launch is quick and exact. They're short, so the size cost is small.</p>
+<hr>
+<h2 id="5-a-multi-touch-keyboard-that-feels-like-a-keyboard" tabindex="-1"><a class="observablehq-header-anchor" href="#5-a-multi-touch-keyboard-that-feels-like-a-keyboard">5. A multi-touch keyboard that feels like a keyboard</a></h2>
+<p>This is where many SwiftUI prototypes fall short. A <code>Button</code> per key fires on touch-<em>up</em>, which is far too late for an instrument. A <code>DragGesture</code> per key doesn't hand off to the next key when the finger slides. And coordinating several simultaneous fingers through SwiftUI gestures is awkward.</p>
+<p>The direct approach is one UIKit view for the whole keyboard that tracks every <code>UITouch</code> itself:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> UIKit
+
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">KeyboardView</span>: <span class="hljs-title class_ inherited__">UIView</span> {
+    <span class="hljs-keyword">var</span> firstMidi: <span class="hljs-type">UInt8</span> <span class="hljs-operator">=</span> <span class="hljs-number">60</span>           <span class="hljs-comment">// C4</span>
+    <span class="hljs-keyword">var</span> octaves <span class="hljs-operator">=</span> <span class="hljs-number">2</span>
+    <span class="hljs-keyword">var</span> onNoteOn: ((<span class="hljs-type">UInt8</span>) -&gt; <span class="hljs-type">Void</span>)<span class="hljs-operator">?</span>
+    <span class="hljs-keyword">var</span> onNoteOff: ((<span class="hljs-type">UInt8</span>) -&gt; <span class="hljs-type">Void</span>)<span class="hljs-operator">?</span>
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> touchNotes: [<span class="hljs-type">ObjectIdentifier</span>: <span class="hljs-type">UInt8</span>] <span class="hljs-operator">=</span> [:]   <span class="hljs-comment">// which finger holds which note</span>
+
+    <span class="hljs-keyword">override</span> <span class="hljs-keyword">init</span>(<span class="hljs-params">frame</span>: <span class="hljs-type">CGRect</span>) {
+        <span class="hljs-keyword">super</span>.<span class="hljs-keyword">init</span>(frame: frame)
+        isMultipleTouchEnabled <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>      <span class="hljs-comment">// essential: off by default</span>
+    }
+    <span class="hljs-keyword">required</span> <span class="hljs-keyword">init?</span>(<span class="hljs-params">coder</span>: <span class="hljs-type">NSCoder</span>) { <span class="hljs-built_in">fatalError</span>(<span class="hljs-string">"init(coder:) is not supported"</span>) }
+
+    <span class="hljs-comment">// MARK: Touch tracking</span>
+
+    <span class="hljs-keyword">override</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">touchesBegan</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">touches</span>: <span class="hljs-type">Set</span>&lt;<span class="hljs-type">UITouch</span>&gt;, <span class="hljs-params">with</span> <span class="hljs-params">event</span>: <span class="hljs-type">UIEvent</span>?) {
+        <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> touches { press(t) }
+    }
+
+    <span class="hljs-keyword">override</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">touchesMoved</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">touches</span>: <span class="hljs-type">Set</span>&lt;<span class="hljs-type">UITouch</span>&gt;, <span class="hljs-params">with</span> <span class="hljs-params">event</span>: <span class="hljs-type">UIEvent</span>?) {
+        <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> touches {
+            <span class="hljs-keyword">let</span> id <span class="hljs-operator">=</span> <span class="hljs-type">ObjectIdentifier</span>(t)
+            <span class="hljs-keyword">let</span> newNote <span class="hljs-operator">=</span> note(at: t.location(in: <span class="hljs-keyword">self</span>))
+            <span class="hljs-keyword">guard</span> newNote <span class="hljs-operator">!=</span> touchNotes[id] <span class="hljs-keyword">else</span> { <span class="hljs-keyword">continue</span> }    <span class="hljs-comment">// still on the same key</span>
+            <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> old <span class="hljs-operator">=</span> touchNotes[id] { onNoteOff<span class="hljs-operator">?</span>(old) }       <span class="hljs-comment">// glissando: release old…</span>
+            touchNotes[id] <span class="hljs-operator">=</span> newNote
+            <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> n <span class="hljs-operator">=</span> newNote { onNoteOn<span class="hljs-operator">?</span>(n) }                   <span class="hljs-comment">// …and press new</span>
+            setNeedsDisplay()
+        }
+    }
+
+    <span class="hljs-keyword">override</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">touchesEnded</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">touches</span>: <span class="hljs-type">Set</span>&lt;<span class="hljs-type">UITouch</span>&gt;, <span class="hljs-params">with</span> <span class="hljs-params">event</span>: <span class="hljs-type">UIEvent</span>?) {
+        <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> touches { release(t) }
+    }
+
+    <span class="hljs-keyword">override</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">touchesCancelled</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">touches</span>: <span class="hljs-type">Set</span>&lt;<span class="hljs-type">UITouch</span>&gt;, <span class="hljs-params">with</span> <span class="hljs-params">event</span>: <span class="hljs-type">UIEvent</span>?) {
+        <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> touches { release(t) }     <span class="hljs-comment">// never leave a note stuck on</span>
+    }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">press</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">t</span>: <span class="hljs-type">UITouch</span>) {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> n <span class="hljs-operator">=</span> note(at: t.location(in: <span class="hljs-keyword">self</span>)) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+        touchNotes[<span class="hljs-type">ObjectIdentifier</span>(t)] <span class="hljs-operator">=</span> n
+        onNoteOn<span class="hljs-operator">?</span>(n)
+        setNeedsDisplay()
+    }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">release</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">t</span>: <span class="hljs-type">UITouch</span>) {
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> n <span class="hljs-operator">=</span> touchNotes.removeValue(forKey: <span class="hljs-type">ObjectIdentifier</span>(t)) { onNoteOff<span class="hljs-operator">?</span>(n) }
+        setNeedsDisplay()
+    }
+
+    <span class="hljs-comment">// MARK: Geometry</span>
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> whiteOffsets: [<span class="hljs-type">UInt8</span>] <span class="hljs-operator">=</span> [<span class="hljs-number">0</span>, <span class="hljs-number">2</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">7</span>, <span class="hljs-number">9</span>, <span class="hljs-number">11</span>]          <span class="hljs-comment">// C D E F G A B</span>
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> blackOffsets: [(after: <span class="hljs-type">Int</span>, semitone: <span class="hljs-type">UInt8</span>)] <span class="hljs-operator">=</span>
+        [(<span class="hljs-number">0</span>, <span class="hljs-number">1</span>), (<span class="hljs-number">1</span>, <span class="hljs-number">3</span>), (<span class="hljs-number">3</span>, <span class="hljs-number">6</span>), (<span class="hljs-number">4</span>, <span class="hljs-number">8</span>), (<span class="hljs-number">5</span>, <span class="hljs-number">10</span>)]                               <span class="hljs-comment">// C# D# F# G# A#</span>
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> whiteKeyWidth: <span class="hljs-type">CGFloat</span> { bounds.width <span class="hljs-operator">/</span> <span class="hljs-type">CGFloat</span>(<span class="hljs-number">7</span> <span class="hljs-operator">*</span> octaves) }
+
+    <span class="hljs-comment">/// Black keys sit on top, so test them first.</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">note</span>(<span class="hljs-params">at</span> <span class="hljs-params">p</span>: <span class="hljs-type">CGPoint</span>) -&gt; <span class="hljs-type">UInt8</span>? {
+        <span class="hljs-keyword">guard</span> bounds.contains(p) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span> }
+        <span class="hljs-keyword">let</span> w <span class="hljs-operator">=</span> whiteKeyWidth
+        <span class="hljs-keyword">if</span> p.y <span class="hljs-operator">&lt;</span> bounds.height <span class="hljs-operator">*</span> <span class="hljs-number">0.6</span> {
+            <span class="hljs-keyword">for</span> octave <span class="hljs-keyword">in</span> <span class="hljs-number">0</span><span class="hljs-operator">..&lt;</span>octaves {
+                <span class="hljs-keyword">for</span> (after, semitone) <span class="hljs-keyword">in</span> <span class="hljs-keyword">Self</span>.blackOffsets {
+                    <span class="hljs-keyword">let</span> x <span class="hljs-operator">=</span> <span class="hljs-type">CGFloat</span>(octave <span class="hljs-operator">*</span> <span class="hljs-number">7</span> <span class="hljs-operator">+</span> after <span class="hljs-operator">+</span> <span class="hljs-number">1</span>) <span class="hljs-operator">*</span> w <span class="hljs-operator">-</span> w <span class="hljs-operator">*</span> <span class="hljs-number">0.3</span>
+                    <span class="hljs-keyword">if</span> <span class="hljs-type">CGRect</span>(x: x, y: <span class="hljs-number">0</span>, width: w <span class="hljs-operator">*</span> <span class="hljs-number">0.6</span>, height: bounds.height <span class="hljs-operator">*</span> <span class="hljs-number">0.6</span>).contains(p) {
+                        <span class="hljs-keyword">return</span> firstMidi <span class="hljs-operator">+</span> <span class="hljs-type">UInt8</span>(octave <span class="hljs-operator">*</span> <span class="hljs-number">12</span>) <span class="hljs-operator">+</span> semitone
+                    }
+                }
+            }
+        }
+        <span class="hljs-keyword">let</span> index <span class="hljs-operator">=</span> <span class="hljs-type">Int</span>(p.x <span class="hljs-operator">/</span> w)
+        <span class="hljs-keyword">let</span> octave <span class="hljs-operator">=</span> index <span class="hljs-operator">/</span> <span class="hljs-number">7</span>, step <span class="hljs-operator">=</span> index <span class="hljs-operator">%</span> <span class="hljs-number">7</span>
+        <span class="hljs-keyword">return</span> firstMidi <span class="hljs-operator">+</span> <span class="hljs-type">UInt8</span>(octave <span class="hljs-operator">*</span> <span class="hljs-number">12</span>) <span class="hljs-operator">+</span> <span class="hljs-keyword">Self</span>.whiteOffsets[step]
+    }
+}
+</code></pre>
+<p>The essential details:</p>
+<ul>
+<li><strong><code>isMultipleTouchEnabled = true</code>.</strong> It's <code>false</code> by default, and without it you'll only ever get one finger.</li>
+<li><strong>Track notes per touch</strong> with <code>ObjectIdentifier(touch)</code>. Each finger owns its note, so chords and glissandos work independently.</li>
+<li><strong>Handle <code>touchesCancelled</code>.</strong> A system gesture or an incoming call can cancel touches. If you don't release notes there, you get stuck notes.</li>
+<li><strong>Black keys are hit-tested first</strong>, because they're drawn on top.</li>
+</ul>
+<p>On iOS 12 this is the only option, since SwiftUI needs iOS 13. Even on a SwiftUI app today, I'd wrap this view in a <code>UIViewRepresentable</code>. Touch handling for an instrument is one of the places where UIKit is still simply the better tool.</p>
+<p>Drum pads follow the same idea in simpler form: a grid of rectangles, <code>touchesBegan</code> triggers <code>hit(_:)</code>, and there's no note-off.</p>
+<hr>
+<h2 id="6-teaching-note-names-and-positions" tabindex="-1"><a class="observablehq-header-anchor" href="#6-teaching-note-names-and-positions">6. Teaching note names and positions</a></h2>
+<p>The listing describes the app as "teaching beginners the names &amp; positions of notes on the piano". On the keyboard view, that's two small things: draw a label on each key, and let learners switch between naming systems.</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">enum</span> <span class="hljs-title class_">NoteNaming</span>: <span class="hljs-title class_ inherited__">String</span>, <span class="hljs-title class_ inherited__">CaseIterable</span> {
+    <span class="hljs-keyword">case</span> letters      <span class="hljs-comment">// C D E F G A B</span>
+    <span class="hljs-keyword">case</span> solfege      <span class="hljs-comment">// Do Re Mi Fa Sol La Si</span>
+
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> letterNames <span class="hljs-operator">=</span> [<span class="hljs-string">"C"</span>, <span class="hljs-string">"C♯"</span>, <span class="hljs-string">"D"</span>, <span class="hljs-string">"D♯"</span>, <span class="hljs-string">"E"</span>, <span class="hljs-string">"F"</span>, <span class="hljs-string">"F♯"</span>, <span class="hljs-string">"G"</span>, <span class="hljs-string">"G♯"</span>, <span class="hljs-string">"A"</span>, <span class="hljs-string">"A♯"</span>, <span class="hljs-string">"B"</span>]
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> solfegeNames <span class="hljs-operator">=</span> [<span class="hljs-string">"Do"</span>, <span class="hljs-string">"Do♯"</span>, <span class="hljs-string">"Re"</span>, <span class="hljs-string">"Re♯"</span>, <span class="hljs-string">"Mi"</span>, <span class="hljs-string">"Fa"</span>, <span class="hljs-string">"Fa♯"</span>, <span class="hljs-string">"Sol"</span>, <span class="hljs-string">"Sol♯"</span>, <span class="hljs-string">"La"</span>, <span class="hljs-string">"La♯"</span>, <span class="hljs-string">"Si"</span>]
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">name</span>(<span class="hljs-params">for</span> <span class="hljs-params">midi</span>: <span class="hljs-type">UInt8</span>, <span class="hljs-params">withOctave</span>: <span class="hljs-type">Bool</span> <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>) -&gt; <span class="hljs-type">String</span> {
+        <span class="hljs-keyword">let</span> pitchClass <span class="hljs-operator">=</span> <span class="hljs-type">Int</span>(midi) <span class="hljs-operator">%</span> <span class="hljs-number">12</span>
+        <span class="hljs-keyword">let</span> base <span class="hljs-operator">=</span> <span class="hljs-keyword">self</span> <span class="hljs-operator">==</span> .letters <span class="hljs-operator">?</span> <span class="hljs-keyword">Self</span>.letterNames[pitchClass] : <span class="hljs-keyword">Self</span>.solfegeNames[pitchClass]
+        <span class="hljs-keyword">return</span> withOctave <span class="hljs-operator">?</span> <span class="hljs-string">"<span class="hljs-subst">\(base)</span><span class="hljs-subst">\(Int(midi) <span class="hljs-operator">/</span> <span class="hljs-number">12</span> <span class="hljs-operator">-</span> <span class="hljs-number">1</span>)</span>"</span> : base      <span class="hljs-comment">// MIDI 60 = C4</span>
+    }
+}
+
+<span class="hljs-comment">// NoteNaming.letters.name(for: 60) == "C4"; NoteNaming.solfege.name(for: 64) == "Mi4"</span>
+</code></pre>
+<p>In <code>draw(_:)</code>, draw white-key labels near the bottom of each key and black-key labels only when a "show sharps" toggle is on; for beginners, too many labels is noise. Highlighting the pressed key matters more than any label. The immediate visual "this is the key you just played" is how position is learned.</p>
+<hr>
+<h2 id="7-real-world-example-drums-n-piano" tabindex="-1"><a class="observablehq-header-anchor" href="#7-real-world-example-drums-n-piano">7. Real-world example: Drums n Piano</a></h2>
+<p>This is the approach I'd use, and recommend, for <strong><a href="https://apps.apple.com/us/app/drums-n-piano/id1642061667" target="_blank" rel="noopener noreferrer">Drums n Piano</a></strong>.</p>
+<p><img src="https://bestlatestapps.com/assets/blog/building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe/drums-n-piano-screenshot-1.jpg" alt="Drums n Piano App Store screenshot 1"></p>
+<p>At the time of writing, its App Store listing shows:</p>
+<ul>
+<li><strong>Free</strong>, in <strong>Music</strong> and <strong>Entertainment</strong></li>
+<li>First released in <strong>September 2022</strong></li>
+<li><strong>9 ratings</strong> in the US store, averaging about <strong>4.4 stars</strong></li>
+<li>Supports <strong>iOS 12.0 and later</strong></li>
+</ul>
+<p>How the listing maps to this article:</p>
+<table>
+<thead>
+<tr>
+<th>What the listing says</th>
+<th>Where it's covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Simply play and learn the piano, drums or xylophone wherever you are"</td>
+<td>A sampler per pitched instrument; a player-node pool for drums (sections 3–4)</td>
+</tr>
+<tr>
+<td>"This virtual app sounds real, just like the original instrument!" / "Premium sound quality"</td>
+<td>Real samples loaded once, a low-latency session, natural note-off releases (sections 2–3)</td>
+</tr>
+<tr>
+<td>"Teaching beginners the names &amp; positions of notes on the piano"</td>
+<td>Note labels and pressed-key highlighting (section 6)</td>
+</tr>
+<tr>
+<td>"Play or learn your music chords"</td>
+<td>Per-touch tracking with multi-touch enabled (section 5)</td>
+</tr>
+</tbody>
+</table>
+<p><img src="https://bestlatestapps.com/assets/blog/building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe/drums-n-piano-screenshot-2.jpg" alt="Drums n Piano App Store screenshot 2"></p>
+<p>The listing's audience is broad: "a music teacher, singer, songwriter, or beginner or joyful kid". That's a good reminder that kids mash several keys with their whole hand. A multi-touch view that never leaves a stuck note is worth more than any feature.</p>
+<hr>
+<h2 id="8-before-you-ship-a-virtual-instrument-a-checklist" tabindex="-1"><a class="observablehq-header-anchor" href="#8-before-you-ship-a-virtual-instrument-a-checklist">8. Before you ship a virtual instrument: a checklist</a></h2>
+<ol>
+<li><strong>Nothing loads on tap.</strong> Samples and sound banks load at launch or on instrument switch; taps only trigger notes.</li>
+<li><strong>The session is <code>.playback</code></strong> (or a deliberate <code>.ambient</code>), with a small preferred buffer, and you've logged what you actually got.</li>
+<li><strong>Polyphony is tested.</strong> Ten-finger chords on the piano; rapid repeated hits on every drum pad.</li>
+<li><strong>There are no stuck notes.</strong> Test cancelled touches, a phone call mid-chord, backgrounding mid-note and Control Center swipes.</li>
+<li><strong><code>isMultipleTouchEnabled</code> is on</strong>, and each touch owns its note.</li>
+<li><strong>Glissando works</strong>: sliding across keys releases and presses notes as you go.</li>
+<li><strong>Sample licences are cleared</strong> for everything you bundle.</li>
+<li><strong>You've tested on real hardware with wired and Bluetooth audio</strong>, and the app tells users that wired is tighter.</li>
+</ol>
+<hr>
+<h2 id="wrapping-up" tabindex="-1"><a class="observablehq-header-anchor" href="#wrapping-up">Wrapping up</a></h2>
+<p>A virtual instrument is mostly preparation: decode everything up front, pick the right player for the job (a sampler for pitched instruments, a node pool for one-shots), keep the audio buffer small, and track every finger yourself. Get those right, and the sound arrives with the touch, which is all a player really asks for.</p>
+<p>Play it, or explore my other apps:</p>
+<ul>
+<li><strong>Drums n Piano (iOS):</strong> <a href="https://apps.apple.com/us/app/drums-n-piano/id1642061667" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/drums-n-piano/id1642061667</a></li>
+<li><strong>All of my free iOS apps:</strong> <a href="https://apps.apple.com/us/developer/alok-singh/id1508795536" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/developer/alok-singh/id1508795536</a></li>
+<li><strong>My portfolio:</strong> <a href="https://bestlatestapps.com/alok/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/alok/</a></li>
+</ul>
+<p>If you've built an instrument app and found a better way to handle touches or voices, tell me about it in the comments. I'm especially curious about anyone doing velocity from touch force or radius.</p>
+<p><em>— Alok Kumar Singh</em></p>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe/</a></em></p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine"><span>Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine</span></a><a rel="next" href="./building-a-live-ios-component-catalogue"><span>Building a Live iOS Component Catalogue</span></a></nav>
+<div>Articles by Alok Kumar Singh. Originals at <a href="https://bestlatestapps.com/blog/" target="_blank" rel="noopener noreferrer">bestlatestapps.com/blog</a>.</div>
+</footer>
+</div>
+</body>
+</html>

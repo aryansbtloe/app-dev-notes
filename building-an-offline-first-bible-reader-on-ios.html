@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>Building an Offline-First Bible Reader on iOS: Bundled SQLite, Full-Text Search and iCloud-Synced Notes | Alok Singh, App Dev Notes</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="modulepreload" href="./_observablehq/client.097df403.js">
+<link rel="modulepreload" href="./_observablehq/runtime.fa9f71c0.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.60afab10.js">
+<link rel="canonical" href="https://bestlatestapps.com/blog/building-an-offline-first-bible-reader-on-ios/"><meta name="description" content="How I'd structure a scripture app that works on a plane: a read-only text database, fast search, user data that follows you between devices, read-aloud and…">
+<script type="module">
+
+import "./_observablehq/client.097df403.js";
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Alok Singh, App Dev Notes</a></li>
+  </ol>
+  <div id="observablehq-search"><input type="search" placeholder="Search"></div>
+  <div id="observablehq-search-results"></div>
+  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.755d897f.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
+  <ol>
+    <li class="observablehq-link"><a href="./tic-tac-toe-in-swiftui-done-properly">Tic Tac Toe in SwiftUI, Done Properly</a></li>
+    <li class="observablehq-link"><a href="./the-sending-side-of-apns">The Sending Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./the-device-side-of-apns">The Device Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./text-plus-audio-fully-offline">Text Plus Audio, Fully Offline</a></li>
+    <li class="observablehq-link"><a href="./stop-hand-rolling-unit-conversions">Stop Hand-Rolling Unit Conversions</a></li>
+    <li class="observablehq-link"><a href="./shipping-a-4k-wallpaper-app-without-running-out-of-memory">Shipping a 4K Wallpaper App Without Running Out of Memory</a></li>
+    <li class="observablehq-link"><a href="./medication-reminders-that-actually-fire">Medication Reminders That Actually Fire</a></li>
+    <li class="observablehq-link"><a href="./from-barcode-to-pdf">From Barcode to PDF</a></li>
+    <li class="observablehq-link"><a href="./drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game">Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game,</a></li>
+    <li class="observablehq-link"><a href="./convert-as-you-type-currency-conversion-in-swift">Convert-As-You-Type Currency Conversion in Swift</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./building-an-offline-first-bible-reader-on-ios">Building an Offline-First Bible Reader on iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-ebook-reader-for-ios">Building an Offline eBook Reader for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-quotes-app-in-swiftui">Building an Offline Quotes App in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-an-admob-earnings-dashboard-for-ios">Building an AdMob Earnings Dashboard for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-tap-to-match-marble-game-with-spritekit-and-swiftui">Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine">Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine</a></li>
+    <li class="observablehq-link"><a href="./building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe">Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioE</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-ios-component-catalogue">Building a Live iOS Component Catalogue</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-temple-darshan-app-for-ios">Building a Live Temple Darshan App for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-hashtag-copier-for-ios">Building a Hashtag Copier for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-chromatic-guitar-tuner-on-ios">Building a Chromatic Guitar Tuner on iOS</a></li>
+    <li class="observablehq-link"><a href="./animating-algorithms-in-swiftui">Animating Algorithms in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./a-practical-guide-to-ios-haptics">A Practical Guide to iOS Haptics</a></li>
+    <li class="observablehq-link"><a href="./a-document-scanner-in-an-afternoon">A Document Scanner in an Afternoon</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#1-the-problem-two-kinds-of-data-with-opposite-needs">1. The problem: two kinds of data with opposite needs</a></li>
+<li class="observablehq-secondary-link"><a href="#2-a-verse-id-that-will-never-change">2. A verse ID that will never change</a></li>
+<li class="observablehq-secondary-link"><a href="#3-shipping-the-text-as-a-bundled-read-only-sq-lite-database">3. Shipping the text as a bundled, read-only SQLite database</a></li>
+<li class="observablehq-secondary-link"><a href="#4-search-that-feels-instant">4. Search that feels instant</a></li>
+<li class="observablehq-secondary-link"><a href="#5-user-data-core-data-with-cloud-kit-mirroring">5. User data: Core Data with CloudKit mirroring</a></li>
+<li class="observablehq-secondary-link"><a href="#6-listen-mode-with-av-speech-synthesizer">6. Listen mode with AVSpeechSynthesizer</a></li>
+<li class="observablehq-secondary-link"><a href="#7-verse-of-the-day-on-the-home-screen-with-widget-kit">7. Verse of the Day on the Home Screen with WidgetKit</a></li>
+<li class="observablehq-secondary-link"><a href="#8-real-world-example-bible-study-ai-read-offline">8. Real-world example: Bible Study AI – Read Offline</a></li>
+<li class="observablehq-secondary-link"><a href="#9-before-you-ship-an-offline-first-reader-a-checklist">9. Before you ship an offline-first reader: a checklist</a></li>
+<li class="observablehq-secondary-link"><a href="#wrapping-up">Wrapping up</a></li>
+</ol>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="building-an-offline-first-bible-reader-on-i-os-bundled-sq-lite-full-text-search-and-i-cloud-synced-notes" tabindex="-1"><a class="observablehq-header-anchor" href="#building-an-offline-first-bible-reader-on-i-os-bundled-sq-lite-full-text-search-and-i-cloud-synced-notes">Building an Offline-First Bible Reader on iOS: Bundled SQLite, Full-Text Search and iCloud-Synced Notes</a></h1>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/building-an-offline-first-bible-reader-on-ios/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/building-an-offline-first-bible-reader-on-ios/</a></em></p>
+<p><em>How I'd structure a scripture app that works on a plane: a read-only text database, fast search, user data that follows you between devices, read-aloud and a verse-of-the-day widget</em></p>
+<p><img src="https://bestlatestapps.com/assets/blog/building-an-offline-first-bible-reader-on-ios/bible-study-ai-icon-512.jpg" alt="Bible Study AI app icon"></p>
+<p>The first app I ever published under my App Store developer name was a Bible reader. It went live on 20 April 2020, a day ahead of the next few apps I shipped that month, and today it's called <strong>Bible Study AI – Read Offline</strong>. It has grown a lot since then: reading plans, devotionals, a prayer journal, widgets and an AI study assistant. But the promise in the name has never changed. <em>It works offline.</em></p>
+<p>"Offline" sounds like a feature you tick off. It isn't. It's an architectural decision, and it shapes everything: where the text lives, how search works, where highlights and notes are saved, how sync behaves when the network comes back, and what you do on a device that has never been online since the app was installed.</p>
+<p>This article walks through the architecture I'd recommend for this kind of app: a large, read-only text corpus plus a small amount of precious user data. Scripture is the example, but the same shape fits dictionaries, manuals, legal codes, recipe books and course material. All the code is Swift, and I've checked API names and availability against Apple's developer documentation. Where I'm describing <em>the approach I'd use</em> rather than the app's exact internals, I say so.</p>
+<hr>
+<h2 id="1-the-problem-two-kinds-of-data-with-opposite-needs" tabindex="-1"><a class="observablehq-header-anchor" href="#1-the-problem-two-kinds-of-data-with-opposite-needs">1. The problem: two kinds of data with opposite needs</a></h2>
+<p>A Bible app holds two very different kinds of data.</p>
+<p><strong>The text itself.</strong> All 66 books, in several translations; the app's listing mentions KJV, ASV, Webster and World English. That's tens of thousands of verses per translation. It's large, it never changes on the device, and it must be searchable in milliseconds. It belongs to <em>you</em>, the developer, not the user.</p>
+<p><strong>What the user creates.</strong> Highlights in different colours, notes on verses and chapters, bookmarks, reading-plan progress, prayer journal entries. It's small, it changes all the time, and it's the only data the user would be upset to lose. It belongs to <em>them</em>, and they expect it on their iPad as well as their iPhone.</p>
+<p>The mistake I see most often is putting both in one store. Then every app update that fixes a typo in the text has to migrate a database full of user notes, and every sync pushes megabytes of scripture to iCloud for no reason.</p>
+<p>So split them:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-type">App</span> bundle (read<span class="hljs-operator">-</span>only)                 <span class="hljs-type">User</span> store (read<span class="hljs-operator">-</span>write, synced)
+<span class="hljs-operator">┌──────────────────────────┐</span>           <span class="hljs-operator">┌──────────────────────────────┐</span>
+<span class="hljs-operator">│</span> bible.sqlite             <span class="hljs-operator">│</span>           <span class="hljs-operator">│</span> <span class="hljs-type">Core</span> <span class="hljs-type">Data</span> <span class="hljs-operator">+</span> <span class="hljs-type">CloudKit</span>         <span class="hljs-operator">│</span>
+<span class="hljs-operator">│</span>  translations, books,    <span class="hljs-operator">│</span>  verse    <span class="hljs-operator">│</span>  <span class="hljs-type">Highlight</span>, <span class="hljs-type">Note</span>, <span class="hljs-type">Bookmark</span>,  <span class="hljs-operator">│</span>
+<span class="hljs-operator">│</span>  chapters, verses        <span class="hljs-operator">│◀─</span> id <span class="hljs-operator">────▶│</span>  <span class="hljs-type">PlanProgress</span>, <span class="hljs-type">Prayer</span>        <span class="hljs-operator">│</span>
+<span class="hljs-operator">│</span>  verses_fts (<span class="hljs-type">FTS5</span>)       <span class="hljs-operator">│</span>           <span class="hljs-operator">│</span>                              <span class="hljs-operator">│</span>
+<span class="hljs-operator">└──────────────────────────┘</span>           <span class="hljs-operator">└──────────────────────────────┘</span>
+</code></pre>
+<p>The only thing that links them is a stable <strong>verse identifier</strong>. Get that right first.</p>
+<hr>
+<h2 id="2-a-verse-id-that-will-never-change" tabindex="-1"><a class="observablehq-header-anchor" href="#2-a-verse-id-that-will-never-change">2. A verse ID that will never change</a></h2>
+<p>A verse needs an identifier that's identical across translations, app versions and devices. I use a simple integer: <code>book * 1_000_000 + chapter * 1_000 + verse</code>. John 3:16 is book 43, so its ID is <code>43_003_016</code>.</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">VerseRef</span>: <span class="hljs-title class_ inherited__">Hashable</span>, <span class="hljs-title class_ inherited__">Codable</span>, <span class="hljs-title class_ inherited__">Comparable</span> {
+    <span class="hljs-keyword">let</span> book: <span class="hljs-type">Int</span>      <span class="hljs-comment">// 1...66, canonical order</span>
+    <span class="hljs-keyword">let</span> chapter: <span class="hljs-type">Int</span>
+    <span class="hljs-keyword">let</span> verse: <span class="hljs-type">Int</span>
+
+    <span class="hljs-keyword">var</span> id: <span class="hljs-type">Int</span> { book <span class="hljs-operator">*</span> <span class="hljs-number">1_000_000</span> <span class="hljs-operator">+</span> chapter <span class="hljs-operator">*</span> <span class="hljs-number">1_000</span> <span class="hljs-operator">+</span> verse }
+
+    <span class="hljs-keyword">init</span>(<span class="hljs-params">book</span>: <span class="hljs-type">Int</span>, <span class="hljs-params">chapter</span>: <span class="hljs-type">Int</span>, <span class="hljs-params">verse</span>: <span class="hljs-type">Int</span>) {
+        <span class="hljs-keyword">self</span>.book <span class="hljs-operator">=</span> book; <span class="hljs-keyword">self</span>.chapter <span class="hljs-operator">=</span> chapter; <span class="hljs-keyword">self</span>.verse <span class="hljs-operator">=</span> verse
+    }
+
+    <span class="hljs-keyword">init</span>(<span class="hljs-params">id</span>: <span class="hljs-type">Int</span>) {
+        book <span class="hljs-operator">=</span> id <span class="hljs-operator">/</span> <span class="hljs-number">1_000_000</span>
+        chapter <span class="hljs-operator">=</span> (id <span class="hljs-operator">/</span> <span class="hljs-number">1_000</span>) <span class="hljs-operator">%</span> <span class="hljs-number">1_000</span>
+        verse <span class="hljs-operator">=</span> id <span class="hljs-operator">%</span> <span class="hljs-number">1_000</span>
+    }
+
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">&lt;</span> (<span class="hljs-params">lhs</span>: <span class="hljs-type">VerseRef</span>, <span class="hljs-params">rhs</span>: <span class="hljs-type">VerseRef</span>) -&gt; <span class="hljs-type">Bool</span> { lhs.id <span class="hljs-operator">&lt;</span> rhs.id }
+}
+</code></pre>
+<p>Why an integer and not a string like <code>"JHN.3.16"</code>? It sorts correctly, ranges are cheap (<code>BETWEEN 43003001 AND 43003999</code> is "all of John 3"), and it's a compact key in both SQLite and Core Data. A highlight saved against <code>43003016</code> shows up in KJV and in World English alike, because the ID describes the <em>position</em>, not the wording.</p>
+<p>One caveat from experience: versification isn't identical in every tradition. A few translations number some verses differently. If you add a translation that disagrees, map it onto your canonical scheme when you <em>build</em> the database, never at runtime.</p>
+<hr>
+<h2 id="3-shipping-the-text-as-a-bundled-read-only-sq-lite-database" tabindex="-1"><a class="observablehq-header-anchor" href="#3-shipping-the-text-as-a-bundled-read-only-sq-lite-database">3. Shipping the text as a bundled, read-only SQLite database</a></h2>
+<p>I build the text database offline with a script, add <code>bible.sqlite</code> to the app target and open it <strong>read-only straight from the bundle</strong>. No copying to Documents, no migrations, no risk of corruption.</p>
+<p>The schema is tiny:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-type">CREATE</span> <span class="hljs-type">TABLE</span> verses (
+  translation <span class="hljs-type">TEXT</span> <span class="hljs-type">NOT</span> <span class="hljs-type">NULL</span>,   <span class="hljs-operator">--</span> '<span class="hljs-type">KJV</span>', '<span class="hljs-type">ASV</span>', '<span class="hljs-type">WEB</span>', <span class="hljs-operator">...</span>
+  id          <span class="hljs-type">INTEGER</span> <span class="hljs-type">NOT</span> <span class="hljs-type">NULL</span>, <span class="hljs-operator">--</span> <span class="hljs-type">VerseRef</span>.id
+  text        <span class="hljs-type">TEXT</span> <span class="hljs-type">NOT</span> <span class="hljs-type">NULL</span>,
+  <span class="hljs-type">PRIMARY</span> <span class="hljs-type">KEY</span> (translation, id)
+) <span class="hljs-type">WITHOUT</span> <span class="hljs-type">ROWID</span>;
+
+<span class="hljs-operator">--</span> <span class="hljs-type">Full</span><span class="hljs-operator">-</span>text index (built by the script, shipped <span class="hljs-keyword">in</span> the file)
+<span class="hljs-type">CREATE</span> <span class="hljs-type">VIRTUAL</span> <span class="hljs-type">TABLE</span> verses_fts <span class="hljs-type">USING</span> fts5(
+  text, translation <span class="hljs-type">UNINDEXED</span>, id <span class="hljs-type">UNINDEXED</span>,
+  tokenize <span class="hljs-operator">=</span> 'unicode61 remove_diacritics <span class="hljs-number">2</span>'
+);
+</code></pre>
+<p>Opening it from Swift with the system SQLite library:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> Foundation
+<span class="hljs-keyword">import</span> SQLite3
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">TextStoreError</span>: <span class="hljs-title class_ inherited__">Error</span> { <span class="hljs-keyword">case</span> openFailed(<span class="hljs-type">String</span>), queryFailed(<span class="hljs-type">String</span>) }
+
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">BibleTextStore</span> {
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> db: <span class="hljs-type">OpaquePointer</span>?
+
+    <span class="hljs-keyword">init</span>() <span class="hljs-keyword">throws</span> {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> url <span class="hljs-operator">=</span> <span class="hljs-type">Bundle</span>.main.url(forResource: <span class="hljs-string">"bible"</span>, withExtension: <span class="hljs-string">"sqlite"</span>) <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">throw</span> <span class="hljs-type">TextStoreError</span>.openFailed(<span class="hljs-string">"bible.sqlite missing from bundle"</span>)
+        }
+        <span class="hljs-comment">// immutable=1 tells SQLite the file can never change, so it skips locking.</span>
+        <span class="hljs-keyword">let</span> uri <span class="hljs-operator">=</span> <span class="hljs-string">"file:<span class="hljs-subst">\(url.path)</span>?immutable=1"</span>
+        <span class="hljs-keyword">let</span> flags <span class="hljs-operator">=</span> <span class="hljs-type">SQLITE_OPEN_READONLY</span> <span class="hljs-operator">|</span> <span class="hljs-type">SQLITE_OPEN_URI</span>
+        <span class="hljs-keyword">guard</span> sqlite3_open_v2(uri, <span class="hljs-operator">&amp;</span>db, flags, <span class="hljs-literal">nil</span>) <span class="hljs-operator">==</span> <span class="hljs-type">SQLITE_OK</span> <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">throw</span> <span class="hljs-type">TextStoreError</span>.openFailed(<span class="hljs-type">String</span>(cString: sqlite3_errmsg(db)))
+        }
+    }
+
+    <span class="hljs-keyword">deinit</span> { sqlite3_close(db) }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">chapter</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">book</span>: <span class="hljs-type">Int</span>, <span class="hljs-keyword">_</span> <span class="hljs-params">chapter</span>: <span class="hljs-type">Int</span>, <span class="hljs-params">translation</span>: <span class="hljs-type">String</span>) <span class="hljs-keyword">throws</span> -&gt; [(<span class="hljs-type">VerseRef</span>, <span class="hljs-type">String</span>)] {
+        <span class="hljs-keyword">let</span> sql <span class="hljs-operator">=</span> <span class="hljs-string">"SELECT id, text FROM verses WHERE translation = ? AND id BETWEEN ? AND ? ORDER BY id"</span>
+        <span class="hljs-keyword">var</span> stmt: <span class="hljs-type">OpaquePointer</span>?
+        <span class="hljs-keyword">guard</span> sqlite3_prepare_v2(db, sql, <span class="hljs-operator">-</span><span class="hljs-number">1</span>, <span class="hljs-operator">&amp;</span>stmt, <span class="hljs-literal">nil</span>) <span class="hljs-operator">==</span> <span class="hljs-type">SQLITE_OK</span> <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">throw</span> <span class="hljs-type">TextStoreError</span>.queryFailed(<span class="hljs-type">String</span>(cString: sqlite3_errmsg(db)))
+        }
+        <span class="hljs-keyword">defer</span> { sqlite3_finalize(stmt) }
+
+        <span class="hljs-keyword">let</span> start <span class="hljs-operator">=</span> <span class="hljs-type">VerseRef</span>(book: book, chapter: chapter, verse: <span class="hljs-number">0</span>).id
+        sqlite3_bind_text(stmt, <span class="hljs-number">1</span>, translation, <span class="hljs-operator">-</span><span class="hljs-number">1</span>, <span class="hljs-type">SQLITE_TRANSIENT</span>)
+        sqlite3_bind_int64(stmt, <span class="hljs-number">2</span>, <span class="hljs-type">Int64</span>(start))
+        sqlite3_bind_int64(stmt, <span class="hljs-number">3</span>, <span class="hljs-type">Int64</span>(start <span class="hljs-operator">+</span> <span class="hljs-number">999</span>))
+
+        <span class="hljs-keyword">var</span> rows: [(<span class="hljs-type">VerseRef</span>, <span class="hljs-type">String</span>)] <span class="hljs-operator">=</span> []
+        <span class="hljs-keyword">while</span> sqlite3_step(stmt) <span class="hljs-operator">==</span> <span class="hljs-type">SQLITE_ROW</span> {
+            <span class="hljs-keyword">let</span> id <span class="hljs-operator">=</span> <span class="hljs-type">Int</span>(sqlite3_column_int64(stmt, <span class="hljs-number">0</span>))
+            <span class="hljs-keyword">let</span> text <span class="hljs-operator">=</span> <span class="hljs-type">String</span>(cString: sqlite3_column_text(stmt, <span class="hljs-number">1</span>))
+            rows.append((<span class="hljs-type">VerseRef</span>(id: id), text))
+        }
+        <span class="hljs-keyword">return</span> rows
+    }
+}
+
+<span class="hljs-comment">// The C macro SQLITE_TRANSIENT doesn't import into Swift; this is the usual stand-in.</span>
+<span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> <span class="hljs-type">SQLITE_TRANSIENT</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">unsafeBitCast</span>(<span class="hljs-operator">-</span><span class="hljs-number">1</span>, to: sqlite3_destructor_type.<span class="hljs-keyword">self</span>)
+</code></pre>
+<p>Why raw SQLite and not Core Data for the text? Core Data is great for object graphs you edit. A read-only corpus with a full-text index is a different job, and SQLite's FTS5 does that job directly. You can wrap this in GRDB or another library if you prefer; the shape doesn't change.</p>
+<hr>
+<h2 id="4-search-that-feels-instant" tabindex="-1"><a class="observablehq-header-anchor" href="#4-search-that-feels-instant">4. Search that feels instant</a></h2>
+<p>The listing promises "Search across all books, chapters, and verses" and "Advanced search with history". With an FTS5 index shipped in the file, the query is one statement:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">extension</span> <span class="hljs-title class_">BibleTextStore</span> {
+    <span class="hljs-keyword">struct</span> <span class="hljs-title class_">Hit</span> { <span class="hljs-keyword">let</span> ref: <span class="hljs-type">VerseRef</span>; <span class="hljs-keyword">let</span> snippet: <span class="hljs-type">String</span> }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">search</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">query</span>: <span class="hljs-type">String</span>, <span class="hljs-params">translation</span>: <span class="hljs-type">String</span>, <span class="hljs-params">limit</span>: <span class="hljs-type">Int</span> <span class="hljs-operator">=</span> <span class="hljs-number">100</span>) <span class="hljs-keyword">throws</span> -&gt; [<span class="hljs-type">Hit</span>] {
+        <span class="hljs-comment">// Turn "love one another" into "love* one* another*": prefix match on every word.</span>
+        <span class="hljs-keyword">let</span> terms <span class="hljs-operator">=</span> query
+            .split(whereSeparator: { <span class="hljs-operator">!</span><span class="hljs-variable">$0</span>.isLetter <span class="hljs-operator">&amp;&amp;</span> <span class="hljs-operator">!</span><span class="hljs-variable">$0</span>.isNumber })
+            .map { <span class="hljs-string">"<span class="hljs-subst">\(<span class="hljs-variable">$0</span>)</span>*"</span> }
+            .joined(separator: <span class="hljs-string">" "</span>)
+        <span class="hljs-keyword">guard</span> <span class="hljs-operator">!</span>terms.isEmpty <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> [] }
+
+        <span class="hljs-keyword">let</span> sql <span class="hljs-operator">=</span> <span class="hljs-string">"""
+        SELECT id, snippet(verses_fts, 0, '[', ']', '…', 12)
+        FROM verses_fts
+        WHERE verses_fts MATCH ? AND translation = ?
+        ORDER BY rank LIMIT ?
+        """</span>
+        <span class="hljs-keyword">var</span> stmt: <span class="hljs-type">OpaquePointer</span>?
+        <span class="hljs-keyword">guard</span> sqlite3_prepare_v2(db, sql, <span class="hljs-operator">-</span><span class="hljs-number">1</span>, <span class="hljs-operator">&amp;</span>stmt, <span class="hljs-literal">nil</span>) <span class="hljs-operator">==</span> <span class="hljs-type">SQLITE_OK</span> <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">throw</span> <span class="hljs-type">TextStoreError</span>.queryFailed(<span class="hljs-type">String</span>(cString: sqlite3_errmsg(db)))
+        }
+        <span class="hljs-keyword">defer</span> { sqlite3_finalize(stmt) }
+        sqlite3_bind_text(stmt, <span class="hljs-number">1</span>, terms, <span class="hljs-operator">-</span><span class="hljs-number">1</span>, <span class="hljs-type">SQLITE_TRANSIENT</span>)
+        sqlite3_bind_text(stmt, <span class="hljs-number">2</span>, translation, <span class="hljs-operator">-</span><span class="hljs-number">1</span>, <span class="hljs-type">SQLITE_TRANSIENT</span>)
+        sqlite3_bind_int(stmt, <span class="hljs-number">3</span>, <span class="hljs-type">Int32</span>(limit))
+
+        <span class="hljs-keyword">var</span> hits: [<span class="hljs-type">Hit</span>] <span class="hljs-operator">=</span> []
+        <span class="hljs-keyword">while</span> sqlite3_step(stmt) <span class="hljs-operator">==</span> <span class="hljs-type">SQLITE_ROW</span> {
+            hits.append(<span class="hljs-type">Hit</span>(ref: <span class="hljs-type">VerseRef</span>(id: <span class="hljs-type">Int</span>(sqlite3_column_int64(stmt, <span class="hljs-number">0</span>))),
+                            snippet: <span class="hljs-type">String</span>(cString: sqlite3_column_text(stmt, <span class="hljs-number">1</span>))))
+        }
+        <span class="hljs-keyword">return</span> hits
+    }
+}
+</code></pre>
+<p>A few things that matter more than the SQL:</p>
+<ul>
+<li><strong>Sanitise the query.</strong> FTS5 has its own query syntax; a stray quote or hyphen from the user can cause a syntax error. Splitting on non-alphanumerics and rebuilding the string, as above, avoids that.</li>
+<li><strong>Debounce in the UI.</strong> Search on every keystroke, but cancel the previous task. A <code>.task(id: query)</code> modifier in SwiftUI with a short <code>Task.sleep</code> at the top gives you that for free.</li>
+<li><strong>Run it off the main thread.</strong> It's fast, but "fast" on an older iPhone in Low Power Mode isn't the same as on your desk.</li>
+<li><strong>Search history is user data</strong>, so it goes in the user store (next section), not the read-only file.</li>
+</ul>
+<hr>
+<h2 id="5-user-data-core-data-with-cloud-kit-mirroring" tabindex="-1"><a class="observablehq-header-anchor" href="#5-user-data-core-data-with-cloud-kit-mirroring">5. User data: Core Data with CloudKit mirroring</a></h2>
+<p>The listing says "iCloud sync across all your devices… Access your highlights, notes, and bookmarks anywhere". The app supports iOS 16.0 and later, which rules out SwiftData (iOS 17+). The natural fit is <strong><code>NSPersistentCloudKitContainer</code></strong> (iOS 13+), which keeps a normal local Core Data store and mirrors it to the user's private CloudKit database in the background.</p>
+<p>That's exactly the offline-first behaviour you want: every write goes to the local store first and works with no network; sync catches up later.</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> CoreData
+
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UserStore</span> {
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> shared <span class="hljs-operator">=</span> <span class="hljs-type">UserStore</span>()
+    <span class="hljs-keyword">let</span> container: <span class="hljs-type">NSPersistentCloudKitContainer</span>
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">init</span>() {
+        container <span class="hljs-operator">=</span> <span class="hljs-type">NSPersistentCloudKitContainer</span>(name: <span class="hljs-string">"UserData"</span>) <span class="hljs-comment">// UserData.xcdatamodeld</span>
+
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> description <span class="hljs-operator">=</span> container.persistentStoreDescriptions.first <span class="hljs-keyword">else</span> {
+            <span class="hljs-built_in">fatalError</span>(<span class="hljs-string">"No store description"</span>)
+        }
+        description.cloudKitContainerOptions <span class="hljs-operator">=</span>
+            <span class="hljs-type">NSPersistentCloudKitContainerOptions</span>(containerIdentifier: <span class="hljs-string">"iCloud.com.example.bible"</span>)
+        <span class="hljs-comment">// Needed so the app can react to changes that arrive from other devices.</span>
+        description.setOption(<span class="hljs-literal">true</span> <span class="hljs-keyword">as</span> <span class="hljs-type">NSNumber</span>, forKey: <span class="hljs-type">NSPersistentHistoryTrackingKey</span>)
+        description.setOption(<span class="hljs-literal">true</span> <span class="hljs-keyword">as</span> <span class="hljs-type">NSNumber</span>,
+                              forKey: <span class="hljs-type">NSPersistentStoreRemoteChangeNotificationPostOptionKey</span>)
+
+        container.loadPersistentStores { <span class="hljs-keyword">_</span>, error <span class="hljs-keyword">in</span>
+            <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> error { <span class="hljs-built_in">print</span>(<span class="hljs-string">"Store failed to load: <span class="hljs-subst">\(error)</span>"</span>) }
+        }
+        container.viewContext.automaticallyMergesChangesFromParent <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>
+        container.viewContext.mergePolicy <span class="hljs-operator">=</span> <span class="hljs-type">NSMergeByPropertyObjectTrumpMergePolicy</span>
+    }
+}
+</code></pre>
+<p>The <code>Highlight</code> entity is deliberately boring: <code>verseID</code> (Integer 64), <code>translation</code> (String, optional), <code>colorName</code> (String), <code>createdAt</code> (Date) and a UUID <code>id</code>. A few CloudKit rules shape that model, and they catch everyone once:</p>
+<ul>
+<li><strong>Every attribute must be optional or have a default value.</strong> CloudKit can deliver records in any order and partially.</li>
+<li><strong>No unique constraints.</strong> CloudKit mirroring doesn't support them. If the user highlights the same verse on two offline devices, you'll get two rows; de-duplicate in code (keep the newest per <code>verseID</code>).</li>
+<li><strong>Relationships must be optional</strong> and need inverses.</li>
+<li><strong>Enable the capabilities:</strong> iCloud with CloudKit and your container, plus Background Modes → Remote notifications, so pushes from CloudKit can wake the app to sync.</li>
+<li><strong>Deploy the schema to production</strong> in the CloudKit Console before you ship. A development schema works on your device and silently fails for users. During development, <code>initializeCloudKitSchema(options:)</code> can create the schema from your model for you.</li>
+</ul>
+<p>Saving a highlight is then plain Core Data:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">extension</span> <span class="hljs-title class_">UserStore</span> {
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">toggleHighlight</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">ref</span>: <span class="hljs-type">VerseRef</span>, <span class="hljs-params">color</span>: <span class="hljs-type">String</span>) <span class="hljs-keyword">throws</span> {
+        <span class="hljs-keyword">let</span> context <span class="hljs-operator">=</span> container.viewContext
+        <span class="hljs-keyword">let</span> request <span class="hljs-operator">=</span> <span class="hljs-type">NSFetchRequest</span>&lt;<span class="hljs-type">NSManagedObject</span>&gt;(entityName: <span class="hljs-string">"Highlight"</span>)
+        request.predicate <span class="hljs-operator">=</span> <span class="hljs-type">NSPredicate</span>(format: <span class="hljs-string">"verseID == %lld"</span>, <span class="hljs-type">Int64</span>(ref.id))
+
+        <span class="hljs-keyword">let</span> existing <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> context.fetch(request)
+        <span class="hljs-keyword">if</span> existing.isEmpty {
+            <span class="hljs-keyword">let</span> h <span class="hljs-operator">=</span> <span class="hljs-type">NSEntityDescription</span>.insertNewObject(forEntityName: <span class="hljs-string">"Highlight"</span>, into: context)
+            h.setValue(<span class="hljs-type">UUID</span>(), forKey: <span class="hljs-string">"id"</span>)
+            h.setValue(<span class="hljs-type">Int64</span>(ref.id), forKey: <span class="hljs-string">"verseID"</span>)
+            h.setValue(color, forKey: <span class="hljs-string">"colorName"</span>)
+            h.setValue(<span class="hljs-type">Date</span>(), forKey: <span class="hljs-string">"createdAt"</span>)
+        } <span class="hljs-keyword">else</span> {
+            existing.forEach(context.delete) <span class="hljs-comment">// also cleans up offline duplicates</span>
+        }
+        <span class="hljs-keyword">try</span> context.save()
+    }
+}
+</code></pre>
+<p>On the reading screen, fetch highlights for the chapter's ID range and merge them with the verse rows from SQLite in a view model. The two stores never need to know about each other.</p>
+<hr>
+<h2 id="6-listen-mode-with-av-speech-synthesizer" tabindex="-1"><a class="observablehq-header-anchor" href="#6-listen-mode-with-av-speech-synthesizer">6. Listen mode with AVSpeechSynthesizer</a></h2>
+<p>The listing's "Listen &amp; Read" section mentions text-to-speech and auto-scroll. On iOS that's <code>AVSpeechSynthesizer</code> (iOS 7+), and its delegate tells you which range of text is about to be spoken, which is all you need to highlight and scroll along.</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> AVFoundation
+
+<span class="hljs-meta">@MainActor</span>
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ReadAloud</span>: <span class="hljs-title class_ inherited__">NSObject</span>, <span class="hljs-title class_ inherited__">ObservableObject</span>, <span class="hljs-title class_ inherited__">AVSpeechSynthesizerDelegate</span> {
+    <span class="hljs-meta">@Published</span> <span class="hljs-keyword">var</span> currentVerse: <span class="hljs-type">VerseRef</span>?
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> synth <span class="hljs-operator">=</span> <span class="hljs-type">AVSpeechSynthesizer</span>()
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> refs: [<span class="hljs-type">ObjectIdentifier</span>: <span class="hljs-type">VerseRef</span>] <span class="hljs-operator">=</span> [:]
+
+    <span class="hljs-keyword">override</span> <span class="hljs-keyword">init</span>() {
+        <span class="hljs-keyword">super</span>.<span class="hljs-keyword">init</span>()
+        synth.delegate <span class="hljs-operator">=</span> <span class="hljs-keyword">self</span>
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">speak</span>(<span class="hljs-params">chapter</span> <span class="hljs-params">verses</span>: [(<span class="hljs-type">VerseRef</span>, <span class="hljs-type">String</span>)], <span class="hljs-params">language</span>: <span class="hljs-type">String</span> <span class="hljs-operator">=</span> <span class="hljs-string">"en-US"</span>) {
+        synth.stopSpeaking(at: .immediate)
+        refs <span class="hljs-operator">=</span> [:]
+        <span class="hljs-keyword">for</span> (ref, text) <span class="hljs-keyword">in</span> verses {
+            <span class="hljs-keyword">let</span> u <span class="hljs-operator">=</span> <span class="hljs-type">AVSpeechUtterance</span>(string: text)
+            u.voice <span class="hljs-operator">=</span> <span class="hljs-type">AVSpeechSynthesisVoice</span>(language: language)
+            u.rate <span class="hljs-operator">=</span> <span class="hljs-type">AVSpeechUtteranceDefaultSpeechRate</span>
+            u.postUtteranceDelay <span class="hljs-operator">=</span> <span class="hljs-number">0.15</span>        <span class="hljs-comment">// a breath between verses</span>
+            refs[<span class="hljs-type">ObjectIdentifier</span>(u)] <span class="hljs-operator">=</span> ref
+            synth.speak(u)                     <span class="hljs-comment">// utterances are queued in order</span>
+        }
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">pause</span>() { synth.pauseSpeaking(at: .word) }
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">resume</span>() { synth.continueSpeaking() }
+
+    <span class="hljs-keyword">nonisolated</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">speechSynthesizer</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">s</span>: <span class="hljs-type">AVSpeechSynthesizer</span>,
+                                       <span class="hljs-params">didStart</span> <span class="hljs-params">utterance</span>: <span class="hljs-type">AVSpeechUtterance</span>) {
+        <span class="hljs-keyword">let</span> key <span class="hljs-operator">=</span> <span class="hljs-type">ObjectIdentifier</span>(utterance)
+        <span class="hljs-type">Task</span> { <span class="hljs-meta">@MainActor</span> <span class="hljs-keyword">in</span>
+            <span class="hljs-keyword">self</span>.currentVerse <span class="hljs-operator">=</span> <span class="hljs-keyword">self</span>.refs[key]
+        }
+    }
+}
+</code></pre>
+<p>The view observes <code>currentVerse</code> and calls <code>ScrollViewReader.scrollTo(_:anchor:)</code> with the verse ID. For word-level highlighting, implement <code>speechSynthesizer(_:willSpeakRangeOfSpeechString:utterance:)</code> as well.</p>
+<p>Two practical notes. If you want speech to continue with the screen locked ("perfect for listening while commuting"), set the audio session category to <code>.playback</code> and add the <code>audio</code> background mode, and only while speech is actually running. And the voices available vary by device and by what the user has downloaded in Settings, so let them pick, and fall back gracefully when <code>AVSpeechSynthesisVoice(language:)</code> returns <code>nil</code>.</p>
+<hr>
+<h2 id="7-verse-of-the-day-on-the-home-screen-with-widget-kit" tabindex="-1"><a class="observablehq-header-anchor" href="#7-verse-of-the-day-on-the-home-screen-with-widget-kit">7. Verse of the Day on the Home Screen with WidgetKit</a></h2>
+<p>The listing has "Home screen widgets: quick access to verse of the day". A widget runs in its own extension process, so it can't reach into the app's memory. Two things make this simple with the architecture above:</p>
+<ol>
+<li><strong>The text database is read-only and in the bundle</strong>, so the widget extension can ship its own copy (or you can share it through an App Group container). No sync needed.</li>
+<li><strong>The verse of the day is a deterministic function of the date.</strong> Every device shows the same verse without a server.</li>
+</ol>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> WidgetKit
+<span class="hljs-keyword">import</span> SwiftUI
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">VerseEntry</span>: <span class="hljs-title class_ inherited__">TimelineEntry</span> {
+    <span class="hljs-keyword">let</span> date: <span class="hljs-type">Date</span>
+    <span class="hljs-keyword">let</span> reference: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">let</span> text: <span class="hljs-type">String</span>
+}
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">VerseProvider</span>: <span class="hljs-title class_ inherited__">TimelineProvider</span> {
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">placeholder</span>(<span class="hljs-params">in</span> <span class="hljs-params">context</span>: <span class="hljs-type">Context</span>) -&gt; <span class="hljs-type">VerseEntry</span> {
+        <span class="hljs-type">VerseEntry</span>(date: .now, reference: <span class="hljs-string">"John 3:16"</span>, text: <span class="hljs-string">"For God so loved the world…"</span>)
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">getSnapshot</span>(<span class="hljs-params">in</span> <span class="hljs-params">context</span>: <span class="hljs-type">Context</span>, <span class="hljs-params">completion</span>: <span class="hljs-keyword">@escaping</span> (<span class="hljs-type">VerseEntry</span>) -&gt; <span class="hljs-type">Void</span>) {
+        completion(entry(for: .now))
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">getTimeline</span>(<span class="hljs-params">in</span> <span class="hljs-params">context</span>: <span class="hljs-type">Context</span>, <span class="hljs-params">completion</span>: <span class="hljs-keyword">@escaping</span> (<span class="hljs-type">Timeline</span>&lt;<span class="hljs-type">VerseEntry</span>&gt;) -&gt; <span class="hljs-type">Void</span>) {
+        <span class="hljs-keyword">let</span> now <span class="hljs-operator">=</span> <span class="hljs-type">Date</span>()
+        <span class="hljs-keyword">let</span> tomorrow <span class="hljs-operator">=</span> <span class="hljs-type">Calendar</span>.current.startOfDay(for: now.addingTimeInterval(<span class="hljs-number">86_400</span>))
+        completion(<span class="hljs-type">Timeline</span>(entries: [entry(for: now)], policy: .after(tomorrow)))
+    }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">entry</span>(<span class="hljs-params">for</span> <span class="hljs-params">date</span>: <span class="hljs-type">Date</span>) -&gt; <span class="hljs-type">VerseEntry</span> {
+        <span class="hljs-comment">// Pick from a curated list by day-of-year: same verse for everyone, every device.</span>
+        <span class="hljs-keyword">let</span> day <span class="hljs-operator">=</span> <span class="hljs-type">Calendar</span>.current.ordinality(of: .day, in: .year, for: date) <span class="hljs-operator">??</span> <span class="hljs-number">1</span>
+        <span class="hljs-keyword">let</span> pick <span class="hljs-operator">=</span> <span class="hljs-type">DailyVerses</span>.list[(day <span class="hljs-operator">-</span> <span class="hljs-number">1</span>) <span class="hljs-operator">%</span> <span class="hljs-type">DailyVerses</span>.list.count]
+        <span class="hljs-keyword">return</span> <span class="hljs-type">VerseEntry</span>(date: date, reference: pick.reference, text: pick.text)
+    }
+}
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">VerseOfTheDayWidget</span>: <span class="hljs-title class_ inherited__">Widget</span> {
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">WidgetConfiguration</span> {
+        <span class="hljs-type">StaticConfiguration</span>(kind: <span class="hljs-string">"VerseOfTheDay"</span>, provider: <span class="hljs-type">VerseProvider</span>()) { entry <span class="hljs-keyword">in</span>
+            <span class="hljs-type">VStack</span>(alignment: .leading, spacing: <span class="hljs-number">6</span>) {
+                <span class="hljs-type">Text</span>(entry.text).font(.callout).lineLimit(<span class="hljs-number">5</span>)
+                <span class="hljs-type">Text</span>(entry.reference).font(.caption).foregroundStyle(.secondary)
+            }
+            .containerBackground(.fill.tertiary, for: .widget) <span class="hljs-comment">// iOS 17+</span>
+        }
+        .configurationDisplayName(<span class="hljs-string">"Verse of the Day"</span>)
+        .supportedFamilies([.systemSmall, .systemMedium])
+    }
+}
+</code></pre>
+<p><code>DailyVerses.list</code> is a small curated array compiled into the extension. With an iOS 16 deployment target, wrap <code>containerBackground</code> in an availability check, since that modifier is iOS 17+. The <code>.after(tomorrow)</code> policy asks WidgetKit to refresh just after midnight. It's a request, not a guarantee, so the entry should still read correctly if WidgetKit refreshes a bit late.</p>
+<hr>
+<h2 id="8-real-world-example-bible-study-ai-read-offline" tabindex="-1"><a class="observablehq-header-anchor" href="#8-real-world-example-bible-study-ai-read-offline">8. Real-world example: Bible Study AI – Read Offline</a></h2>
+<p>All of this comes from building and maintaining my own app, <strong><a href="https://apps.apple.com/us/app/bible-study-ai-read-offline/id1508795537" target="_blank" rel="noopener noreferrer">Bible Study AI – Read Offline</a></strong>. The patterns above are the approach I'd use and recommend; I'm describing the architecture, not giving a line-by-line tour of the shipping code.</p>
+<p><img src="https://bestlatestapps.com/assets/blog/building-an-offline-first-bible-reader-on-ios/bible-study-ai-screenshot-1.jpg" alt="Bible Study AI App Store screenshot 1"></p>
+<p>At the time of writing, its public App Store listing shows:</p>
+<ul>
+<li><strong>Free</strong>, in the <strong>Books</strong> and <strong>Education</strong> categories</li>
+<li>First released in <strong>April 2020</strong>: my first app on the store</li>
+<li><strong>113 ratings</strong> in the US store, averaging about <strong>4.6 stars</strong></li>
+<li>Supports <strong>iOS 16.0 and later</strong>, on iPhone and iPad</li>
+</ul>
+<p>Here's how the listing's features map to the sections above:</p>
+<table>
+<thead>
+<tr>
+<th>What the listing says</th>
+<th>Where it's covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Read all 66 books of the Bible offline" / "Multiple translations: KJV, ASV, Webster, World English, and more"</td>
+<td>Bundled read-only SQLite, one table keyed by translation + verse ID (sections 2–3)</td>
+</tr>
+<tr>
+<td>"Search across all books, chapters, and verses" / "Advanced search with history"</td>
+<td>FTS5 index shipped in the file, sanitised prefix queries (section 4)</td>
+</tr>
+<tr>
+<td>"Highlight verses with multiple colors" / "Add personal notes" / "Bookmark favorite passages"</td>
+<td>Small Core Data entities keyed by verse ID (section 5)</td>
+</tr>
+<tr>
+<td>"iCloud sync across all your devices"</td>
+<td><code>NSPersistentCloudKitContainer</code> mirroring to the private database (section 5)</td>
+</tr>
+<tr>
+<td>"Text-to-speech support" / "Auto-scroll for hands-free reading"</td>
+<td><code>AVSpeechSynthesizer</code> and its delegate driving the scroll position (section 6)</td>
+</tr>
+<tr>
+<td>"Home screen widgets: quick access to verse of the day"</td>
+<td>WidgetKit <code>StaticConfiguration</code>, date-derived entry (section 7)</td>
+</tr>
+</tbody>
+</table>
+<p><img src="https://bestlatestapps.com/assets/blog/building-an-offline-first-bible-reader-on-ios/bible-study-ai-screenshot-2.jpg" alt="Bible Study AI App Store screenshot 2"></p>
+<p>The listing also covers reading plans, daily devotionals, a prayer journal with reminders and a "Bible Study Assistant" for AI-powered answers. Those all sit on top of the same split: plan progress and prayers are user data in the synced store, reminders are local notifications, and the assistant is the one feature that needs a network. I've left the AI part out of this article on purpose. It's the one piece that <em>isn't</em> offline, and the most important design rule there is simply to make sure the rest of the app never waits on it.</p>
+<hr>
+<h2 id="9-before-you-ship-an-offline-first-reader-a-checklist" tabindex="-1"><a class="observablehq-header-anchor" href="#9-before-you-ship-an-offline-first-reader-a-checklist">9. Before you ship an offline-first reader: a checklist</a></h2>
+<ol>
+<li><strong>Airplane-mode test from a fresh install.</strong> Delete the app, turn on Airplane Mode, install from TestFlight… then read, search, highlight, take a note and listen. Everything except network features must work.</li>
+<li><strong>Text and user data are separate.</strong> The corpus is read-only in the bundle; user data lives in its own store. An app update that changes the text never touches user data.</li>
+<li><strong>Stable IDs everywhere.</strong> Every highlight, note and bookmark points at a canonical verse ID, never at a row number or a translation-specific string.</li>
+<li><strong>The CloudKit model follows the rules.</strong> Optional attributes or defaults, no unique constraints, optional relationships with inverses, and the schema is deployed to production.</li>
+<li><strong>Duplicates are handled.</strong> Two offline devices editing the same verse produce two records; your code merges them predictably.</li>
+<li><strong>Search can't crash on user input.</strong> Quotes, hyphens, emoji and other scripts are all tested against your FTS query builder.</li>
+<li><strong>Background audio is honest.</strong> The <code>audio</code> mode is used only while read-aloud is playing, and the session is deactivated when it stops.</li>
+<li><strong>The widget works with no app launch.</strong> Install, add the widget, never open the app: it should still show a verse.</li>
+</ol>
+<hr>
+<h2 id="wrapping-up" tabindex="-1"><a class="observablehq-header-anchor" href="#wrapping-up">Wrapping up</a></h2>
+<p>Offline-first sounds like a constraint, but for a reading app it makes things simpler. A read-only database in the bundle can't be corrupted and never needs migrating. A small, separate user store syncs cheaply. And a verse ID that never changes ties the two together. Add <code>AVSpeechSynthesizer</code> and WidgetKit and you get most of what people want from a daily reading app, without a single required network call.</p>
+<p>If you want to see where this ended up, try the app:</p>
+<ul>
+<li><strong>Bible Study AI – Read Offline (iOS):</strong> <a href="https://apps.apple.com/us/app/bible-study-ai-read-offline/id1508795537" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/bible-study-ai-read-offline/id1508795537</a></li>
+<li><strong>All of my free iOS apps:</strong> <a href="https://apps.apple.com/us/developer/alok-singh/id1508795536" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/developer/alok-singh/id1508795536</a></li>
+<li><strong>My portfolio:</strong> <a href="https://bestlatestapps.com/alok/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/alok/</a></li>
+</ul>
+<p>If you've built a large offline corpus on iOS and solved sync or search differently, tell me in the comments. I'm always curious how other people draw the line between "bundled" and "user" data.</p>
+<p><em>— Alok Kumar Singh</em></p>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/building-an-offline-first-bible-reader-on-ios/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/building-an-offline-first-bible-reader-on-ios/</a></em></p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./convert-as-you-type-currency-conversion-in-swift"><span>Convert-As-You-Type Currency Conversion in Swift</span></a><a rel="next" href="./building-an-offline-ebook-reader-for-ios"><span>Building an Offline eBook Reader for iOS</span></a></nav>
+<div>Articles by Alok Kumar Singh. Originals at <a href="https://bestlatestapps.com/blog/" target="_blank" rel="noopener noreferrer">bestlatestapps.com/blog</a>.</div>
+</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>Convert-As-You-Type Currency Conversion in Swift: Decimal Maths, Cached Rates and Locale-Aware Formatting | Alok Singh, App Dev Notes</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="modulepreload" href="./_observablehq/client.097df403.js">
+<link rel="modulepreload" href="./_observablehq/runtime.fa9f71c0.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.60afab10.js">
+<link rel="canonical" href="https://bestlatestapps.com/blog/convert-as-you-type-currency-conversion-in-swift/"><meta name="description" content="Why Double is the wrong type for money, how to derive any cross rate from one base, keeping rates fresh without a refresh button, and formatting 150+…">
+<script type="module">
+
+import "./_observablehq/client.097df403.js";
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Alok Singh, App Dev Notes</a></li>
+  </ol>
+  <div id="observablehq-search"><input type="search" placeholder="Search"></div>
+  <div id="observablehq-search-results"></div>
+  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.755d897f.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
+  <ol>
+    <li class="observablehq-link"><a href="./tic-tac-toe-in-swiftui-done-properly">Tic Tac Toe in SwiftUI, Done Properly</a></li>
+    <li class="observablehq-link"><a href="./the-sending-side-of-apns">The Sending Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./the-device-side-of-apns">The Device Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./text-plus-audio-fully-offline">Text Plus Audio, Fully Offline</a></li>
+    <li class="observablehq-link"><a href="./stop-hand-rolling-unit-conversions">Stop Hand-Rolling Unit Conversions</a></li>
+    <li class="observablehq-link"><a href="./shipping-a-4k-wallpaper-app-without-running-out-of-memory">Shipping a 4K Wallpaper App Without Running Out of Memory</a></li>
+    <li class="observablehq-link"><a href="./medication-reminders-that-actually-fire">Medication Reminders That Actually Fire</a></li>
+    <li class="observablehq-link"><a href="./from-barcode-to-pdf">From Barcode to PDF</a></li>
+    <li class="observablehq-link"><a href="./drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game">Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game,</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./convert-as-you-type-currency-conversion-in-swift">Convert-As-You-Type Currency Conversion in Swift</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-first-bible-reader-on-ios">Building an Offline-First Bible Reader on iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-ebook-reader-for-ios">Building an Offline eBook Reader for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-quotes-app-in-swiftui">Building an Offline Quotes App in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-an-admob-earnings-dashboard-for-ios">Building an AdMob Earnings Dashboard for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-tap-to-match-marble-game-with-spritekit-and-swiftui">Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine">Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine</a></li>
+    <li class="observablehq-link"><a href="./building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe">Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioE</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-ios-component-catalogue">Building a Live iOS Component Catalogue</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-temple-darshan-app-for-ios">Building a Live Temple Darshan App for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-hashtag-copier-for-ios">Building a Hashtag Copier for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-chromatic-guitar-tuner-on-ios">Building a Chromatic Guitar Tuner on iOS</a></li>
+    <li class="observablehq-link"><a href="./animating-algorithms-in-swiftui">Animating Algorithms in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./a-practical-guide-to-ios-haptics">A Practical Guide to iOS Haptics</a></li>
+    <li class="observablehq-link"><a href="./a-document-scanner-in-an-afternoon">A Document Scanner in an Afternoon</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#1-money-is-not-a-double">1. Money is not a Double</a></li>
+<li class="observablehq-secondary-link"><a href="#2-one-base-every-cross-rate">2. One base, every cross rate</a></li>
+<li class="observablehq-secondary-link"><a href="#3-convert-as-you-type">3. Convert as you type</a></li>
+<li class="observablehq-secondary-link"><a href="#4-rates-that-update-themselves-and-work-offline">4. Rates that update themselves, and work offline</a></li>
+<li class="observablehq-secondary-link"><a href="#5-150-currencies-names-symbols-and-decimals">5. 150+ currencies: names, symbols and decimals</a></li>
+<li class="observablehq-secondary-link"><a href="#6-real-world-example-currency-converter-fast">6. Real-world example: Currency Converter : Fast</a></li>
+<li class="observablehq-secondary-link"><a href="#7-before-you-ship-a-currency-converter-a-checklist">7. Before you ship a currency converter: a checklist</a></li>
+<li class="observablehq-secondary-link"><a href="#wrapping-up">Wrapping up</a></li>
+</ol>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="convert-as-you-type-currency-conversion-in-swift-decimal-maths-cached-rates-and-locale-aware-formatting" tabindex="-1"><a class="observablehq-header-anchor" href="#convert-as-you-type-currency-conversion-in-swift-decimal-maths-cached-rates-and-locale-aware-formatting">Convert-As-You-Type Currency Conversion in Swift: Decimal Maths, Cached Rates and Locale-Aware Formatting</a></h1>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/convert-as-you-type-currency-conversion-in-swift/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/convert-as-you-type-currency-conversion-in-swift/</a></em></p>
+<p><em>Why Double is the wrong type for money, how to derive any cross rate from one base, keeping rates fresh without a refresh button, and formatting 150+ currencies correctly</em></p>
+<p><img src="https://bestlatestapps.com/assets/blog/convert-as-you-type-currency-conversion-in-swift/currency-converter-icon-512.jpg" alt="Currency Converter : Fast app icon"></p>
+<p>A currency converter is used at the worst possible moments: at a market stall abroad, at a checkout page in another currency, in a taxi with a meter running. Nobody wants to tap "Convert". Nobody wants a spinner. And nobody wants to see <code>0.30000000000000004</code> on the screen.</p>
+<p><strong>Currency Converter : Fast</strong> is one of my first apps, published in April 2020. Its listing describes the whole philosophy in a few lines: 150+ currencies, "converts as you type (no need for a 'Convert' button!)", exchange rates "updated automatically — you don't have to do anything!", and 3 decimal places "for greater accuracy".</p>
+<p>Each of those promises maps onto a specific technical decision: the number type, the rate model, caching and refresh, and formatting. This article goes through how I'd build each one in Swift. API names and availability are checked against Apple's documentation. I describe the approach I'd use rather than the app's internals, and I deliberately don't name a rate provider: the listing doesn't, and the design is the same whichever one you use.</p>
+<hr>
+<h2 id="1-money-is-not-a-double" tabindex="-1"><a class="observablehq-header-anchor" href="#1-money-is-not-a-double">1. Money is not a Double</a></h2>
+<p>Binary floating point can't represent most decimal fractions exactly. <code>0.1 + 0.2</code> isn't <code>0.3</code>, and after a few multiplications by exchange rates, the error shows up in exactly the decimal places you're displaying.</p>
+<p>Foundation's <code>Decimal</code> is a base-10 number type, so <code>0.1</code> really is 0.1:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> Foundation
+
+<span class="hljs-keyword">let</span> a: <span class="hljs-type">Double</span> <span class="hljs-operator">=</span> <span class="hljs-number">0.1</span> <span class="hljs-operator">+</span> <span class="hljs-number">0.2</span>
+<span class="hljs-built_in">print</span>(a)                                  <span class="hljs-comment">// 0.30000000000000004</span>
+
+<span class="hljs-keyword">let</span> b <span class="hljs-operator">=</span> <span class="hljs-type">Decimal</span>(string: <span class="hljs-string">"0.1"</span>)<span class="hljs-operator">!</span> <span class="hljs-operator">+</span> <span class="hljs-type">Decimal</span>(string: <span class="hljs-string">"0.2"</span>)<span class="hljs-operator">!</span>
+<span class="hljs-built_in">print</span>(b)                                  <span class="hljs-comment">// 0.3</span>
+</code></pre>
+<p>The rule I follow: <strong>amounts and rates are <code>Decimal</code> from the moment they enter the app</strong>, whether that's the user's typing or the JSON from the rates API, until the moment they're formatted for display. Two gotchas:</p>
+<ul>
+<li><code>Decimal(0.1)</code> converts <em>from a Double</em>, so the binary error comes with it. Initialise from strings: <code>Decimal(string:locale:)</code>.</li>
+<li><code>JSONDecoder</code> decodes <code>Decimal</code> fields via <code>Double</code> internally on some systems, which can reintroduce error in the last digits. If exactness matters, decode rates as <code>String</code>s and convert them yourself, as below.</li>
+</ul>
+<hr>
+<h2 id="2-one-base-every-cross-rate" tabindex="-1"><a class="observablehq-header-anchor" href="#2-one-base-every-cross-rate">2. One base, every cross rate</a></h2>
+<p>You don't need a 150 × 150 table. Fetch every currency's rate against <strong>one base</strong> (say USD), and derive any pair:</p>
+<pre data-language="swift"><code class="language-swift">amount_in_B <span class="hljs-operator">=</span> amount_in_A <span class="hljs-operator">×</span> (rate_B <span class="hljs-operator">/</span> rate_A)       <span class="hljs-keyword">where</span> rate_X <span class="hljs-operator">=</span> units of <span class="hljs-type">X</span> per <span class="hljs-number">1</span> base
+</code></pre>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> Foundation
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">RateTable</span>: <span class="hljs-title class_ inherited__">Codable</span> {
+    <span class="hljs-keyword">let</span> base: <span class="hljs-type">String</span>                     <span class="hljs-comment">// "USD"</span>
+    <span class="hljs-keyword">let</span> rates: [<span class="hljs-type">String</span>: <span class="hljs-type">Decimal</span>]         <span class="hljs-comment">// "EUR": 0.92 means 1 USD = 0.92 EUR</span>
+    <span class="hljs-keyword">let</span> fetchedAt: <span class="hljs-type">Date</span>
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">rate</span>(<span class="hljs-params">from</span>: <span class="hljs-type">String</span>, <span class="hljs-params">to</span>: <span class="hljs-type">String</span>) -&gt; <span class="hljs-type">Decimal</span>? {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> a <span class="hljs-operator">=</span> from <span class="hljs-operator">==</span> base <span class="hljs-operator">?</span> <span class="hljs-number">1</span> : rates[from],
+              <span class="hljs-keyword">let</span> b <span class="hljs-operator">=</span> to <span class="hljs-operator">==</span> base <span class="hljs-operator">?</span> <span class="hljs-number">1</span> : rates[to],
+              a <span class="hljs-operator">!=</span> <span class="hljs-number">0</span> <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span> }
+        <span class="hljs-keyword">return</span> b <span class="hljs-operator">/</span> a
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">convert</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">amount</span>: <span class="hljs-type">Decimal</span>, <span class="hljs-params">from</span>: <span class="hljs-type">String</span>, <span class="hljs-params">to</span>: <span class="hljs-type">String</span>) -&gt; <span class="hljs-type">Decimal</span>? {
+        rate(from: from, to: to).map { amount <span class="hljs-operator">*</span> <span class="hljs-variable">$0</span> }
+    }
+}
+
+<span class="hljs-comment">// Decode rates exactly: the API sends numbers, but we read them as strings first.</span>
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">RatesResponse</span>: <span class="hljs-title class_ inherited__">Decodable</span> {
+    <span class="hljs-keyword">let</span> base: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">let</span> rates: [<span class="hljs-type">String</span>: <span class="hljs-type">Decimal</span>]
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">enum</span> <span class="hljs-title class_">CodingKeys</span>: <span class="hljs-title class_ inherited__">String</span>, <span class="hljs-title class_ inherited__">CodingKey</span> { <span class="hljs-keyword">case</span> base, rates }
+
+    <span class="hljs-keyword">init</span>(<span class="hljs-params">from</span> <span class="hljs-params">decoder</span>: <span class="hljs-type">Decoder</span>) <span class="hljs-keyword">throws</span> {
+        <span class="hljs-keyword">let</span> c <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> decoder.container(keyedBy: <span class="hljs-type">CodingKeys</span>.<span class="hljs-keyword">self</span>)
+        base <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> c.decode(<span class="hljs-type">String</span>.<span class="hljs-keyword">self</span>, forKey: .base)
+        <span class="hljs-comment">// Assumes the provider sends rates as JSON strings; if it sends numbers,</span>
+        <span class="hljs-comment">// decode [String: Double] and convert via "\(value)" to limit binary error.</span>
+        <span class="hljs-keyword">let</span> raw <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> c.decode([String: <span class="hljs-type">String</span>].<span class="hljs-keyword">self</span>, forKey: .rates)
+        rates <span class="hljs-operator">=</span> raw.compactMapValues { <span class="hljs-type">Decimal</span>(string: <span class="hljs-variable">$0</span>, locale: <span class="hljs-type">Locale</span>(identifier: <span class="hljs-string">"en_US_POSIX"</span>)) }
+    }
+}
+</code></pre>
+<p><code>RateTable.rate(from:to:)</code> is also how you show "the current exchange rate of what you're converting", one of the listing's features: <code>1 EUR = 1.087 USD</code>, computed from the same table.</p>
+<p>Note the <code>en_US_POSIX</code> locale when parsing API data. API numbers always use <code>.</code> as the decimal separator, whatever the user's device language is.</p>
+<hr>
+<h2 id="3-convert-as-you-type" tabindex="-1"><a class="observablehq-header-anchor" href="#3-convert-as-you-type">3. Convert as you type</a></h2>
+<p>With <code>Decimal</code> maths and a local rate table, conversion is instant and synchronous. There's no reason for a button. In SwiftUI:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> SwiftUI
+
+<span class="hljs-meta">@MainActor</span>
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ConverterModel</span>: <span class="hljs-title class_ inherited__">ObservableObject</span> {
+    <span class="hljs-meta">@Published</span> <span class="hljs-keyword">var</span> input <span class="hljs-operator">=</span> <span class="hljs-string">""</span>
+    <span class="hljs-meta">@Published</span> <span class="hljs-keyword">var</span> from <span class="hljs-operator">=</span> <span class="hljs-string">"USD"</span>
+    <span class="hljs-meta">@Published</span> <span class="hljs-keyword">var</span> to <span class="hljs-operator">=</span> <span class="hljs-string">"EUR"</span>
+    <span class="hljs-meta">@Published</span> <span class="hljs-keyword">private(set)</span> <span class="hljs-keyword">var</span> table: <span class="hljs-type">RateTable</span>?
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> parser: <span class="hljs-type">NumberFormatter</span> <span class="hljs-operator">=</span> {
+        <span class="hljs-keyword">let</span> f <span class="hljs-operator">=</span> <span class="hljs-type">NumberFormatter</span>()
+        f.numberStyle <span class="hljs-operator">=</span> .decimal
+        f.generatesDecimalNumbers <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>   <span class="hljs-comment">// parse straight to NSDecimalNumber, never via Double</span>
+        f.isLenient <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>
+        <span class="hljs-keyword">return</span> f
+    }()
+
+    <span class="hljs-keyword">var</span> amount: <span class="hljs-type">Decimal</span>? {
+        (parser.number(from: input) <span class="hljs-keyword">as?</span> <span class="hljs-type">NSDecimalNumber</span>)<span class="hljs-operator">?</span>.decimalValue
+    }
+
+    <span class="hljs-keyword">var</span> result: <span class="hljs-type">Decimal</span>? {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> amount, <span class="hljs-keyword">let</span> table <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span> }
+        <span class="hljs-keyword">return</span> table.convert(amount, from: from, to: to)
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">swap</span>() { (from, to) <span class="hljs-operator">=</span> (to, from) }
+}
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">ConverterView</span>: <span class="hljs-title class_ inherited__">View</span> {
+    <span class="hljs-meta">@StateObject</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> model <span class="hljs-operator">=</span> <span class="hljs-type">ConverterModel</span>()
+
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">View</span> {
+        <span class="hljs-type">Form</span> {
+            <span class="hljs-type">Section</span> {
+                <span class="hljs-type">TextField</span>(<span class="hljs-string">"Amount"</span>, text: <span class="hljs-variable">$model</span>.input)
+                    .keyboardType(.decimalPad)
+                    .font(.largeTitle.monospacedDigit())
+                <span class="hljs-type">CurrencyPicker</span>(title: <span class="hljs-string">"From"</span>, code: <span class="hljs-variable">$model</span>.from)
+            }
+            <span class="hljs-type">Section</span> {
+                <span class="hljs-type">Text</span>(model.result.map { <span class="hljs-type">CurrencyText</span>.format(<span class="hljs-variable">$0</span>, code: model.to) } <span class="hljs-operator">??</span> <span class="hljs-string">"—"</span>)
+                    .font(.largeTitle.monospacedDigit())
+                    .contentTransition(.numericText())          <span class="hljs-comment">// iOS 17: digits roll smoothly</span>
+                    .animation(.snappy, value: model.result)
+                <span class="hljs-type">CurrencyPicker</span>(title: <span class="hljs-string">"To"</span>, code: <span class="hljs-variable">$model</span>.to)
+            }
+            <span class="hljs-type">Button</span>(<span class="hljs-string">"Swap"</span>, systemImage: <span class="hljs-string">"arrow.up.arrow.down"</span>, action: model.swap)
+        }
+    }
+}
+</code></pre>
+<p>Because <code>result</code> is a computed property, every keystroke recomputes it: there's no debounce and no task. <code>CurrencyPicker</code> is a searchable list of codes (section 5).</p>
+<p>The decimal-pad keyboard shows the user's locale separator, and the <code>NumberFormatter</code> uses <code>Locale.current</code> by default, so "12,50" in Germany and "12.50" in the US both parse.</p>
+<hr>
+<h2 id="4-rates-that-update-themselves-and-work-offline" tabindex="-1"><a class="observablehq-header-anchor" href="#4-rates-that-update-themselves-and-work-offline">4. Rates that update themselves, and work offline</a></h2>
+<p>"Exchange rates are updated automatically" has three parts: a cache that's always there, a refresh when the app comes to the foreground, and an occasional refresh in the background.</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> Foundation
+
+<span class="hljs-keyword">actor</span> <span class="hljs-title class_">RateStore</span> {
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> shared <span class="hljs-operator">=</span> <span class="hljs-type">RateStore</span>()
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> fileURL: <span class="hljs-type">URL</span> <span class="hljs-operator">=</span> <span class="hljs-type">FileManager</span>.default
+        .urls(for: .cachesDirectory, in: .userDomainMask)[<span class="hljs-number">0</span>]
+        .appendingPathComponent(<span class="hljs-string">"rates.json"</span>)
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> maxAge: <span class="hljs-type">TimeInterval</span> <span class="hljs-operator">=</span> <span class="hljs-number">60</span> <span class="hljs-operator">*</span> <span class="hljs-number">60</span>          <span class="hljs-comment">// refresh if older than an hour</span>
+
+    <span class="hljs-comment">/// Always returns something if we've ever succeeded, even offline.</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">cached</span>() -&gt; <span class="hljs-type">RateTable</span>? {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> data <span class="hljs-operator">=</span> <span class="hljs-keyword">try?</span> <span class="hljs-type">Data</span>(contentsOf: fileURL) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span> }
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">try?</span> <span class="hljs-type">JSONDecoder</span>().decode(<span class="hljs-type">RateTable</span>.<span class="hljs-keyword">self</span>, from: data)
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">refreshIfStale</span>(<span class="hljs-params">force</span>: <span class="hljs-type">Bool</span> <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>) <span class="hljs-keyword">async</span> -&gt; <span class="hljs-type">RateTable</span>? {
+        <span class="hljs-keyword">if</span> <span class="hljs-operator">!</span>force, <span class="hljs-keyword">let</span> c <span class="hljs-operator">=</span> cached(), <span class="hljs-type">Date</span>().timeIntervalSince(c.fetchedAt) <span class="hljs-operator">&lt;</span> maxAge { <span class="hljs-keyword">return</span> c }
+        <span class="hljs-keyword">do</span> {
+            <span class="hljs-keyword">var</span> request <span class="hljs-operator">=</span> <span class="hljs-type">URLRequest</span>(url: <span class="hljs-type">URL</span>(string: <span class="hljs-string">"https://rates.example.com/latest?base=USD"</span>)<span class="hljs-operator">!</span>)
+            request.timeoutInterval <span class="hljs-operator">=</span> <span class="hljs-number">10</span>
+            <span class="hljs-keyword">let</span> (data, response) <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> <span class="hljs-type">URLSession</span>.shared.data(for: request)
+            <span class="hljs-keyword">guard</span> (response <span class="hljs-keyword">as?</span> <span class="hljs-type">HTTPURLResponse</span>)<span class="hljs-operator">?</span>.statusCode <span class="hljs-operator">==</span> <span class="hljs-number">200</span> <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> cached() }
+            <span class="hljs-keyword">let</span> decoded <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> <span class="hljs-type">JSONDecoder</span>().decode(<span class="hljs-type">RatesResponse</span>.<span class="hljs-keyword">self</span>, from: data)
+            <span class="hljs-keyword">let</span> table <span class="hljs-operator">=</span> <span class="hljs-type">RateTable</span>(base: decoded.base, rates: decoded.rates, fetchedAt: <span class="hljs-type">Date</span>())
+            <span class="hljs-keyword">try</span> <span class="hljs-type">JSONEncoder</span>().encode(table).write(to: fileURL, options: .atomic)
+            <span class="hljs-keyword">return</span> table
+        } <span class="hljs-keyword">catch</span> {
+            <span class="hljs-keyword">return</span> cached()                                   <span class="hljs-comment">// offline or failed: keep the last good table</span>
+        }
+    }
+}
+</code></pre>
+<p>Key behaviours:</p>
+<ul>
+<li><strong>Show the cache immediately</strong>, then refresh. The UI never waits on the network.</li>
+<li><strong>On failure, keep the last good table.</strong> A slightly old rate is far more useful than an error screen at a market stall.</li>
+<li><strong>Show the age.</strong> "Rates updated 3 hours ago" in small text is honest, and it's the one piece of UI that explains a surprising number.</li>
+<li><strong>Bundle a seed table</strong> in the app, so a first launch in Airplane Mode still converts. Label it with its date.</li>
+</ul>
+<p>For background refresh, SwiftUI's <code>backgroundTask(_:action:)</code> scene modifier (iOS 16+) with <code>.appRefresh</code> pairs with <code>BGAppRefreshTaskRequest</code> (iOS 13+):</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> SwiftUI
+<span class="hljs-keyword">import</span> BackgroundTasks
+
+<span class="hljs-keyword">@main</span>
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">CurrencyApp</span>: <span class="hljs-title class_ inherited__">App</span> {
+    <span class="hljs-meta">@Environment</span>(\.scenePhase) <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> phase
+
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">Scene</span> {
+        <span class="hljs-type">WindowGroup</span> { <span class="hljs-type">ConverterView</span>() }
+            .onChange(of: phase) { <span class="hljs-keyword">_</span>, newPhase <span class="hljs-keyword">in</span>
+                <span class="hljs-keyword">if</span> newPhase <span class="hljs-operator">==</span> .active { <span class="hljs-type">Task</span> { <span class="hljs-keyword">_</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">await</span> <span class="hljs-type">RateStore</span>.shared.refreshIfStale() } }
+                <span class="hljs-keyword">if</span> newPhase <span class="hljs-operator">==</span> .background { scheduleRefresh() }
+            }
+            .backgroundTask(.appRefresh(<span class="hljs-string">"rates.refresh"</span>)) {
+                <span class="hljs-keyword">_</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">await</span> <span class="hljs-type">RateStore</span>.shared.refreshIfStale(force: <span class="hljs-literal">true</span>)
+                scheduleRefresh()
+            }
+    }
+}
+
+<span class="hljs-keyword">func</span> <span class="hljs-title function_">scheduleRefresh</span>() {
+    <span class="hljs-keyword">let</span> request <span class="hljs-operator">=</span> <span class="hljs-type">BGAppRefreshTaskRequest</span>(identifier: <span class="hljs-string">"rates.refresh"</span>)
+    request.earliestBeginDate <span class="hljs-operator">=</span> <span class="hljs-type">Date</span>(timeIntervalSinceNow: <span class="hljs-number">4</span> <span class="hljs-operator">*</span> <span class="hljs-number">60</span> <span class="hljs-operator">*</span> <span class="hljs-number">60</span>)
+    <span class="hljs-keyword">try?</span> <span class="hljs-type">BGTaskScheduler</span>.shared.submit(request)
+}
+</code></pre>
+<p>Add <code>rates.refresh</code> to <code>BGTaskSchedulerPermittedIdentifiers</code> in Info.plist and enable Background Modes → Background fetch. Remember that <code>earliestBeginDate</code> is a floor, not a schedule: the system decides when, based on how the user actually uses the app. The foreground refresh is what really keeps rates fresh.</p>
+<hr>
+<h2 id="5-150-currencies-names-symbols-and-decimals" tabindex="-1"><a class="observablehq-header-anchor" href="#5-150-currencies-names-symbols-and-decimals">5. 150+ currencies: names, symbols and decimals</a></h2>
+<p>Foundation knows a great deal about currencies, so you don't have to maintain that list by hand:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> Foundation
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">CurrencyInfo</span>: <span class="hljs-title class_ inherited__">Identifiable</span>, <span class="hljs-title class_ inherited__">Hashable</span> {
+    <span class="hljs-keyword">let</span> code: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">var</span> id: <span class="hljs-type">String</span> { code }
+    <span class="hljs-keyword">var</span> name: <span class="hljs-type">String</span> { <span class="hljs-type">Locale</span>.current.localizedString(forCurrencyCode: code) <span class="hljs-operator">??</span> code }
+}
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">CurrencyCatalog</span> {
+    <span class="hljs-comment">/// Intersect what the rates API supports with what Foundation can name.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">available</span>(<span class="hljs-params">in</span> <span class="hljs-params">table</span>: <span class="hljs-type">RateTable</span>) -&gt; [<span class="hljs-type">CurrencyInfo</span>] {
+        <span class="hljs-keyword">let</span> common <span class="hljs-operator">=</span> <span class="hljs-type">Set</span>(<span class="hljs-type">Locale</span>.commonISOCurrencyCodes)          <span class="hljs-comment">// iOS 16+</span>
+        <span class="hljs-keyword">return</span> (<span class="hljs-type">Array</span>(table.rates.keys) <span class="hljs-operator">+</span> [table.base])
+            .filter(common.contains)
+            .map(<span class="hljs-type">CurrencyInfo</span>.<span class="hljs-keyword">init</span>)
+            .sorted { <span class="hljs-variable">$0</span>.name.localizedCompare(<span class="hljs-variable">$1</span>.name) <span class="hljs-operator">==</span> .orderedAscending }
+    }
+}
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">CurrencyText</span> {
+    <span class="hljs-comment">/// Three decimals, as the listing promises, with the locale's grouping and symbol.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">format</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">value</span>: <span class="hljs-type">Decimal</span>, <span class="hljs-params">code</span>: <span class="hljs-type">String</span>) -&gt; <span class="hljs-type">String</span> {
+        value.formatted(.currency(code: code).precision(.fractionLength(<span class="hljs-number">3</span>)))
+    }
+}
+
+<span class="hljs-comment">// CurrencyText.format(1234.5678, code: "EUR") → "€1,234.568" in en_US, "1.234,568 €" in de_DE</span>
+</code></pre>
+<p><code>localizedString(forCurrencyCode:)</code> gives "Colombian Peso" in English and "Peso colombiano" in Spanish for free. <code>Decimal.FormatStyle.Currency</code> (iOS 15+) handles the symbol, its position, grouping and the decimal separator for the user's locale.</p>
+<p>About <strong>three decimal places</strong>: most currencies have two minor units, some have zero (JPY, KRW) and a few have three (KWD, BHD). Showing three everywhere is a deliberate product choice. It gives more precision on small amounts and on the exchange rate itself. If you'd rather respect each currency's standard, use <code>.precision(.fractionLength(0...3))</code> with rounding, or read the currency's default fraction digits from a <code>NumberFormatter</code> set to <code>.currency</code> style.</p>
+<p>Make the picker <strong>searchable by code and by name</strong> (<code>.searchable(text:)</code>), and put recently used currencies at the top. Most people convert between the same two or three currencies over and over.</p>
+<hr>
+<h2 id="6-real-world-example-currency-converter-fast" tabindex="-1"><a class="observablehq-header-anchor" href="#6-real-world-example-currency-converter-fast">6. Real-world example: Currency Converter : Fast</a></h2>
+<p>This is the approach I'd use, and recommend, for <strong><a href="https://apps.apple.com/us/app/currency-converter-fast/id1509291290" target="_blank" rel="noopener noreferrer">Currency Converter : Fast</a></strong>.</p>
+<p><img src="https://bestlatestapps.com/assets/blog/convert-as-you-type-currency-conversion-in-swift/currency-converter-screenshot-1.jpg" alt="Currency Converter App Store screenshot 1"></p>
+<p>At the time of writing, its App Store listing shows:</p>
+<ul>
+<li><strong>Free</strong>, in <strong>Finance</strong> and <strong>Productivity</strong></li>
+<li>First released in <strong>April 2020</strong></li>
+<li><strong>7 ratings</strong> in the US store, averaging about <strong>4.7 stars</strong></li>
+<li>Supports <strong>iOS 17.6 and later</strong></li>
+</ul>
+<p>How the listing's features map to this article:</p>
+<table>
+<thead>
+<tr>
+<th>What the listing says</th>
+<th>Where it's covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Over 150 currencies supported" / "from the US Dollar to the Colombian Peso"</td>
+<td>One-base rate table plus Foundation's currency names (sections 2, 5)</td>
+</tr>
+<tr>
+<td>"Converts as you type (no need for a 'Convert' button!)"</td>
+<td>Synchronous <code>Decimal</code> conversion as a computed property (section 3)</td>
+</tr>
+<tr>
+<td>"Exchange rates are updated automatically – you don't have to do anything!"</td>
+<td>Cache-first store, foreground refresh, background app refresh (section 4)</td>
+</tr>
+<tr>
+<td>"Uses 3 decimal places for greater accuracy!"</td>
+<td><code>Decimal</code> maths and <code>.precision(.fractionLength(3))</code> (sections 1, 5)</td>
+</tr>
+<tr>
+<td>"Find the current exchange rate of what you're converting"</td>
+<td><code>RateTable.rate(from:to:)</code> (section 2)</td>
+</tr>
+</tbody>
+</table>
+<p><img src="https://bestlatestapps.com/assets/blog/convert-as-you-type-currency-conversion-in-swift/currency-converter-screenshot-2.jpg" alt="Currency Converter App Store screenshot 2"></p>
+<p>Because the app targets iOS 17.6 and later, everything above, including <code>contentTransition(.numericText())</code>, the two-parameter <code>onChange</code> and the SwiftUI background task, is available without availability checks.</p>
+<hr>
+<h2 id="7-before-you-ship-a-currency-converter-a-checklist" tabindex="-1"><a class="observablehq-header-anchor" href="#7-before-you-ship-a-currency-converter-a-checklist">7. Before you ship a currency converter: a checklist</a></h2>
+<ol>
+<li><strong><code>Decimal</code> end to end.</strong> No <code>Double</code> between parsing and formatting, and no <code>Decimal(someDouble)</code>.</li>
+<li><strong>API numbers are parsed with <code>en_US_POSIX</code></strong>, and user input with the user's locale.</li>
+<li><strong>Cross rates come from one base.</strong> Test that A → B → A returns the original amount, within rounding.</li>
+<li><strong>The cache is shown first.</strong> Launch in Airplane Mode: you see the last rates and their age, not an error.</li>
+<li><strong>A seed table ships in the bundle</strong> for first-launch offline use.</li>
+<li><strong>Background refresh is configured</strong> (permitted identifiers, background mode), and foreground refresh does the real work.</li>
+<li><strong>Formatting is tested in several locales</strong>: en_US, de_DE, fr_FR, ja_JP and ar, at least.</li>
+<li><strong>Zero-decimal and three-decimal currencies look right</strong>, according to your product decision.</li>
+<li><strong>Rates are labelled honestly.</strong> These are indicative mid-market-style rates, not what a bank or card will charge.</li>
+</ol>
+<hr>
+<h2 id="wrapping-up" tabindex="-1"><a class="observablehq-header-anchor" href="#wrapping-up">Wrapping up</a></h2>
+<p>The "fast" in a fast currency converter isn't about network speed. It's about never needing the network at the moment of use. Keep money in <code>Decimal</code>, derive every pair from one cached base table, refresh quietly in the foreground and background, and let Foundation handle names, symbols and locale formatting. The result converts as you type, anywhere, even in Airplane Mode.</p>
+<p>Try it, or explore my other apps:</p>
+<ul>
+<li><strong>Currency Converter : Fast (iOS):</strong> <a href="https://apps.apple.com/us/app/currency-converter-fast/id1509291290" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/currency-converter-fast/id1509291290</a></li>
+<li><strong>All of my free iOS apps:</strong> <a href="https://apps.apple.com/us/developer/alok-singh/id1508795536" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/developer/alok-singh/id1508795536</a></li>
+<li><strong>My portfolio:</strong> <a href="https://bestlatestapps.com/alok/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/alok/</a></li>
+</ul>
+<p>How do you handle money in Swift: <code>Decimal</code>, integer minor units, or a library? I'd love to hear the trade-offs you've found in the comments.</p>
+<p><em>— Alok Kumar Singh</em></p>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/convert-as-you-type-currency-conversion-in-swift/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/convert-as-you-type-currency-conversion-in-swift/</a></em></p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game"><span>Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game,</span></a><a rel="next" href="./building-an-offline-first-bible-reader-on-ios"><span>Building an Offline-First Bible Reader on iOS</span></a></nav>
+<div>Articles by Alok Kumar Singh. Originals at <a href="https://bestlatestapps.com/blog/" target="_blank" rel="noopener noreferrer">bestlatestapps.com/blog</a>.</div>
+</footer>
+</div>
+</body>
+</html>

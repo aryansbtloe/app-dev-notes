@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI: Physics, Cluster Matching, Timers, Lives and Power-Ups | Alok Singh, App Dev Notes</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="modulepreload" href="./_observablehq/client.097df403.js">
+<link rel="modulepreload" href="./_observablehq/runtime.fa9f71c0.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.60afab10.js">
+<link rel="canonical" href="https://bestlatestapps.com/blog/building-a-tap-to-match-marble-game-with-spritekit-and-swiftui/"><meta name="description" content="A complete walkthrough of the game loop: marbles that settle under real physics, finding touching same-colour clusters, a pause-safe countdown, lives and…">
+<script type="module">
+
+import "./_observablehq/client.097df403.js";
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Alok Singh, App Dev Notes</a></li>
+  </ol>
+  <div id="observablehq-search"><input type="search" placeholder="Search"></div>
+  <div id="observablehq-search-results"></div>
+  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.755d897f.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
+  <ol>
+    <li class="observablehq-link"><a href="./tic-tac-toe-in-swiftui-done-properly">Tic Tac Toe in SwiftUI, Done Properly</a></li>
+    <li class="observablehq-link"><a href="./the-sending-side-of-apns">The Sending Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./the-device-side-of-apns">The Device Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./text-plus-audio-fully-offline">Text Plus Audio, Fully Offline</a></li>
+    <li class="observablehq-link"><a href="./stop-hand-rolling-unit-conversions">Stop Hand-Rolling Unit Conversions</a></li>
+    <li class="observablehq-link"><a href="./shipping-a-4k-wallpaper-app-without-running-out-of-memory">Shipping a 4K Wallpaper App Without Running Out of Memory</a></li>
+    <li class="observablehq-link"><a href="./medication-reminders-that-actually-fire">Medication Reminders That Actually Fire</a></li>
+    <li class="observablehq-link"><a href="./from-barcode-to-pdf">From Barcode to PDF</a></li>
+    <li class="observablehq-link"><a href="./drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game">Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game,</a></li>
+    <li class="observablehq-link"><a href="./convert-as-you-type-currency-conversion-in-swift">Convert-As-You-Type Currency Conversion in Swift</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-first-bible-reader-on-ios">Building an Offline-First Bible Reader on iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-ebook-reader-for-ios">Building an Offline eBook Reader for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-quotes-app-in-swiftui">Building an Offline Quotes App in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-an-admob-earnings-dashboard-for-ios">Building an AdMob Earnings Dashboard for iOS</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./building-a-tap-to-match-marble-game-with-spritekit-and-swiftui">Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine">Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine</a></li>
+    <li class="observablehq-link"><a href="./building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe">Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioE</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-ios-component-catalogue">Building a Live iOS Component Catalogue</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-temple-darshan-app-for-ios">Building a Live Temple Darshan App for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-hashtag-copier-for-ios">Building a Hashtag Copier for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-chromatic-guitar-tuner-on-ios">Building a Chromatic Guitar Tuner on iOS</a></li>
+    <li class="observablehq-link"><a href="./animating-algorithms-in-swiftui">Animating Algorithms in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./a-practical-guide-to-ios-haptics">A Practical Guide to iOS Haptics</a></li>
+    <li class="observablehq-link"><a href="./a-document-scanner-in-an-afternoon">A Document Scanner in an Afternoon</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#1-why-sprite-kit-and-how-it-fits-with-swift-ui">1. Why SpriteKit, and how it fits with SwiftUI</a></li>
+<li class="observablehq-secondary-link"><a href="#2-a-playfield-of-marbles-that-settle-under-physics">2. A playfield of marbles that settle under physics</a></li>
+<li class="observablehq-secondary-link"><a href="#3-tap-to-match-finding-the-touching-cluster">3. Tap-to-match: finding the touching cluster</a></li>
+<li class="observablehq-secondary-link"><a href="#4-popping-with-juice">4. Popping with juice</a></li>
+<li class="observablehq-secondary-link"><a href="#5-a-countdown-that-survives-pausing">5. A countdown that survives pausing</a></li>
+<li class="observablehq-secondary-link"><a href="#6-lives-and-levels">6. Lives and levels</a></li>
+<li class="observablehq-secondary-link"><a href="#7-power-ups-lightning-heart-and-bomb">7. Power-ups: Lightning, Heart and Bomb</a></li>
+<li class="observablehq-secondary-link"><a href="#8-real-world-example-marbles-popperz">8. Real-world example: Marbles Popperz</a></li>
+<li class="observablehq-secondary-link"><a href="#9-before-you-ship-a-casual-game-a-checklist">9. Before you ship a casual game: a checklist</a></li>
+<li class="observablehq-secondary-link"><a href="#wrapping-up">Wrapping up</a></li>
+</ol>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="building-a-tap-to-match-marble-game-with-sprite-kit-and-swift-ui-physics-cluster-matching-timers-lives-and-power-ups" tabindex="-1"><a class="observablehq-header-anchor" href="#building-a-tap-to-match-marble-game-with-sprite-kit-and-swift-ui-physics-cluster-matching-timers-lives-and-power-ups">Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI: Physics, Cluster Matching, Timers, Lives and Power-Ups</a></h1>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/building-a-tap-to-match-marble-game-with-spritekit-and-swiftui/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/building-a-tap-to-match-marble-game-with-spritekit-and-swiftui/</a></em></p>
+<p><em>A complete walkthrough of the game loop: marbles that settle under real physics, finding touching same-colour clusters, a pause-safe countdown, lives and levels, Lightning, Heart and Bomb power-ups, and particle effects, all hosted in SwiftUI with SpriteView</em></p>
+<p><img src="https://bestlatestapps.com/assets/blog/building-a-tap-to-match-marble-game-with-spritekit-and-swiftui/marbles-popperz-icon-512.jpg" alt="Marbles Popperz app icon"></p>
+<p>Every game developer has a "small" game that taught them how games actually work. Mine is <strong>Marbles Popperz</strong>, a puzzle game where you tap marbles of the same colour to match them and score points before time runs out. It has a lives system, levels that get harder, three power-ups (Lightning Flash, Heart and Bomb) and global leaderboards.</p>
+<p>On paper that's a weekend project. In practice it touches nearly every part of a real game: a physics world, hit-testing, a frame-driven clock that has to survive pausing, difficulty tuning, juicy feedback, and a SwiftUI interface laid over a SpriteKit scene.</p>
+<p>This article walks through how I'd build each piece with SpriteKit, Apple's 2D game framework. The code is mine, written for this article, and the design choices are labelled as the approach I'd use. Game Center leaderboards get their own article, my Speck Match piece, so here I'll stay on gameplay.</p>
+<hr>
+<h2 id="1-why-sprite-kit-and-how-it-fits-with-swift-ui" tabindex="-1"><a class="observablehq-header-anchor" href="#1-why-sprite-kit-and-how-it-fits-with-swift-ui">1. Why SpriteKit, and how it fits with SwiftUI</a></h2>
+<p>For a 2D casual game on Apple platforms, SpriteKit is the shortest path. It gives you a scene graph (<code>SKScene</code>, <code>SKSpriteNode</code>), actions for animation (<code>SKAction</code>), a built-in physics engine (<code>SKPhysicsBody</code>) and particles (<code>SKEmitterNode</code>), all rendered on the GPU, with no third-party engine to update.</p>
+<p>Since iOS 14, <code>SpriteView</code> lets a SwiftUI view host a scene directly. So menus, the HUD and settings can be ordinary SwiftUI, and only the playfield is SpriteKit:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> SwiftUI
+<span class="hljs-keyword">import</span> SpriteKit
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">GameScreen</span>: <span class="hljs-title class_ inherited__">View</span> {
+    <span class="hljs-meta">@StateObject</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> state <span class="hljs-operator">=</span> <span class="hljs-type">GameState</span>()
+    <span class="hljs-meta">@State</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> scene: <span class="hljs-type">MarbleScene</span> <span class="hljs-operator">=</span> {
+        <span class="hljs-keyword">let</span> s <span class="hljs-operator">=</span> <span class="hljs-type">MarbleScene</span>(size: <span class="hljs-type">CGSize</span>(width: <span class="hljs-number">390</span>, height: <span class="hljs-number">700</span>))
+        s.scaleMode <span class="hljs-operator">=</span> .resizeFill
+        <span class="hljs-keyword">return</span> s
+    }()
+
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">View</span> {
+        <span class="hljs-type">ZStack</span>(alignment: .top) {
+            <span class="hljs-type">SpriteView</span>(scene: scene, preferredFramesPerSecond: <span class="hljs-number">60</span>)
+                .ignoresSafeArea()
+                .onAppear { scene.state <span class="hljs-operator">=</span> state }
+
+            <span class="hljs-type">HUD</span>(score: state.score, lives: state.lives,
+                timeLeft: state.timeLeft, level: state.level)
+                .padding()
+        }
+    }
+}
+
+<span class="hljs-meta">@MainActor</span>
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">GameState</span>: <span class="hljs-title class_ inherited__">ObservableObject</span> {
+    <span class="hljs-meta">@Published</span> <span class="hljs-keyword">var</span> score <span class="hljs-operator">=</span> <span class="hljs-number">0</span>
+    <span class="hljs-meta">@Published</span> <span class="hljs-keyword">var</span> lives <span class="hljs-operator">=</span> <span class="hljs-number">3</span>
+    <span class="hljs-meta">@Published</span> <span class="hljs-keyword">var</span> level <span class="hljs-operator">=</span> <span class="hljs-number">1</span>
+    <span class="hljs-meta">@Published</span> <span class="hljs-keyword">var</span> timeLeft: <span class="hljs-type">TimeInterval</span> <span class="hljs-operator">=</span> <span class="hljs-number">60</span>
+    <span class="hljs-meta">@Published</span> <span class="hljs-keyword">var</span> isGameOver <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>
+}
+</code></pre>
+<p>The rule I follow: <strong>the scene owns the simulation; SwiftUI owns the chrome.</strong> The scene writes to a shared <code>GameState</code>, and SwiftUI just renders it. Keep SwiftUI state changes to a few per second, not 60, or you'll pay for view updates every frame.</p>
+<hr>
+<h2 id="2-a-playfield-of-marbles-that-settle-under-physics" tabindex="-1"><a class="observablehq-header-anchor" href="#2-a-playfield-of-marbles-that-settle-under-physics">2. A playfield of marbles that settle under physics</a></h2>
+<p>Marbles should <em>behave</em> like marbles. When some pop, the ones above should roll down and fill the gap. Giving each marble a circular physics body, and the scene an edge loop, gets you that for free:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> SpriteKit
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">MarbleColor</span>: <span class="hljs-title class_ inherited__">CaseIterable</span> { <span class="hljs-keyword">case</span> red, blue, green, yellow, purple }
+
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Marble</span>: <span class="hljs-title class_ inherited__">SKSpriteNode</span> {
+    <span class="hljs-keyword">let</span> color: <span class="hljs-type">MarbleColor</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> radius: <span class="hljs-type">CGFloat</span> <span class="hljs-operator">=</span> <span class="hljs-number">22</span>
+
+    <span class="hljs-keyword">init</span>(<span class="hljs-params">color</span>: <span class="hljs-type">MarbleColor</span>) {
+        <span class="hljs-keyword">self</span>.color <span class="hljs-operator">=</span> color
+        <span class="hljs-keyword">let</span> texture <span class="hljs-operator">=</span> <span class="hljs-type">SKTexture</span>(imageNamed: <span class="hljs-string">"marble-<span class="hljs-subst">\(color)</span>"</span>)    <span class="hljs-comment">// from a texture atlas</span>
+        <span class="hljs-keyword">super</span>.<span class="hljs-keyword">init</span>(texture: texture, color: .clear,
+                   size: <span class="hljs-type">CGSize</span>(width: <span class="hljs-keyword">Self</span>.radius <span class="hljs-operator">*</span> <span class="hljs-number">2</span>, height: <span class="hljs-keyword">Self</span>.radius <span class="hljs-operator">*</span> <span class="hljs-number">2</span>))
+        name <span class="hljs-operator">=</span> <span class="hljs-string">"marble"</span>
+        <span class="hljs-keyword">let</span> body <span class="hljs-operator">=</span> <span class="hljs-type">SKPhysicsBody</span>(circleOfRadius: <span class="hljs-keyword">Self</span>.radius)
+        body.restitution <span class="hljs-operator">=</span> <span class="hljs-number">0.2</span>          <span class="hljs-comment">// a little bounce</span>
+        body.friction <span class="hljs-operator">=</span> <span class="hljs-number">0.3</span>
+        body.allowsRotation <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>
+        physicsBody <span class="hljs-operator">=</span> body
+    }
+    <span class="hljs-keyword">required</span> <span class="hljs-keyword">init?</span>(<span class="hljs-params">coder</span>: <span class="hljs-type">NSCoder</span>) { <span class="hljs-built_in">fatalError</span>() }
+}
+
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MarbleScene</span>: <span class="hljs-title class_ inherited__">SKScene</span> {
+    <span class="hljs-keyword">weak</span> <span class="hljs-keyword">var</span> state: <span class="hljs-type">GameState</span>?
+    <span class="hljs-keyword">var</span> config <span class="hljs-operator">=</span> <span class="hljs-type">LevelConfig</span>.forLevel(<span class="hljs-number">1</span>)
+    <span class="hljs-keyword">var</span> remaining: <span class="hljs-type">TimeInterval</span> <span class="hljs-operator">=</span> <span class="hljs-number">60</span>
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> lastUpdate: <span class="hljs-type">TimeInterval</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>
+
+    <span class="hljs-keyword">override</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">didMove</span>(<span class="hljs-params">to</span> <span class="hljs-params">view</span>: <span class="hljs-type">SKView</span>) {
+        backgroundColor <span class="hljs-operator">=</span> .black
+        physicsBody <span class="hljs-operator">=</span> <span class="hljs-type">SKPhysicsBody</span>(edgeLoopFrom: frame)         <span class="hljs-comment">// the walls of the jar</span>
+        physicsWorld.gravity <span class="hljs-operator">=</span> <span class="hljs-type">CGVector</span>(dx: <span class="hljs-number">0</span>, dy: <span class="hljs-operator">-</span><span class="hljs-number">9.8</span>)
+        view.ignoresSiblingOrder <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>                          <span class="hljs-comment">// lets SpriteKit batch draws</span>
+        fill(count: config.marbleCount)
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">fill</span>(<span class="hljs-params">count</span>: <span class="hljs-type">Int</span>) {
+        <span class="hljs-keyword">let</span> palette <span class="hljs-operator">=</span> <span class="hljs-type">Array</span>(<span class="hljs-type">MarbleColor</span>.allCases.prefix(config.colorCount))
+        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-number">0</span><span class="hljs-operator">..&lt;</span>count {
+            <span class="hljs-keyword">let</span> marble <span class="hljs-operator">=</span> <span class="hljs-type">Marble</span>(color: palette.randomElement()<span class="hljs-operator">!</span>)
+            marble.position <span class="hljs-operator">=</span> <span class="hljs-type">CGPoint</span>(x: .random(in: <span class="hljs-number">40</span><span class="hljs-operator">...</span>(size.width <span class="hljs-operator">-</span> <span class="hljs-number">40</span>)),
+                                      y: size.height <span class="hljs-operator">+</span> <span class="hljs-type">CGFloat</span>(i) <span class="hljs-operator">*</span> <span class="hljs-number">8</span>)   <span class="hljs-comment">// drop in from above</span>
+            addChild(marble)
+        }
+    }
+}
+</code></pre>
+<p>Two cheap wins: put every marble texture in one <strong>texture atlas</strong>, so all marbles are drawn in a few batched calls; and set <code>ignoresSiblingOrder</code> so SpriteKit is free to reorder draws for batching.</p>
+<hr>
+<h2 id="3-tap-to-match-finding-the-touching-cluster" tabindex="-1"><a class="observablehq-header-anchor" href="#3-tap-to-match-finding-the-touching-cluster">3. Tap-to-match: finding the touching cluster</a></h2>
+<p>The listing describes the core loop simply: "Tap marbles of the same color to match them… The more marbles you match, the higher your score." The approach I'd use is <strong>cluster matching</strong>. Tapping a marble pops it together with every same-colour marble it is touching, directly or through a chain. A lone marble doesn't pop. Bigger clusters score more, which rewards looking before you tap.</p>
+<p>Hit-testing uses <code>nodes(at:)</code>. The cluster is a breadth-first search over "touching" neighbours:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">extension</span> <span class="hljs-title class_">MarbleScene</span> {
+    <span class="hljs-keyword">override</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">touchesBegan</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">touches</span>: <span class="hljs-type">Set</span>&lt;<span class="hljs-type">UITouch</span>&gt;, <span class="hljs-params">with</span> <span class="hljs-params">event</span>: <span class="hljs-type">UIEvent</span>?) {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> point <span class="hljs-operator">=</span> touches.first<span class="hljs-operator">?</span>.location(in: <span class="hljs-keyword">self</span>),
+              <span class="hljs-keyword">let</span> tapped <span class="hljs-operator">=</span> nodes(at: point).compactMap({ <span class="hljs-variable">$0</span> <span class="hljs-keyword">as?</span> <span class="hljs-type">Marble</span> }).first <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+
+        <span class="hljs-keyword">let</span> cluster <span class="hljs-operator">=</span> cluster(from: tapped)
+        <span class="hljs-keyword">guard</span> cluster.count <span class="hljs-operator">&gt;=</span> <span class="hljs-number">2</span> <span class="hljs-keyword">else</span> {
+            tapped.run(.sequence([.moveBy(x: <span class="hljs-number">6</span>, y: <span class="hljs-number">0</span>, duration: <span class="hljs-number">0.04</span>),
+                                  .moveBy(x: <span class="hljs-operator">-</span><span class="hljs-number">12</span>, y: <span class="hljs-number">0</span>, duration: <span class="hljs-number">0.08</span>),
+                                  .moveBy(x: <span class="hljs-number">6</span>, y: <span class="hljs-number">0</span>, duration: <span class="hljs-number">0.04</span>)]))   <span class="hljs-comment">// "no match" wiggle</span>
+            <span class="hljs-keyword">return</span>
+        }
+        pop(cluster)
+        state<span class="hljs-operator">?</span>.score <span class="hljs-operator">+=</span> score(forClusterOf: cluster.count)
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">cluster</span>(<span class="hljs-params">from</span> <span class="hljs-params">start</span>: <span class="hljs-type">Marble</span>) -&gt; [<span class="hljs-type">Marble</span>] {
+        <span class="hljs-keyword">let</span> all <span class="hljs-operator">=</span> children.compactMap { <span class="hljs-variable">$0</span> <span class="hljs-keyword">as?</span> <span class="hljs-type">Marble</span> }.filter { <span class="hljs-variable">$0</span>.color <span class="hljs-operator">==</span> start.color }
+        <span class="hljs-keyword">let</span> touchDistance <span class="hljs-operator">=</span> <span class="hljs-type">Marble</span>.radius <span class="hljs-operator">*</span> <span class="hljs-number">2</span> <span class="hljs-operator">+</span> <span class="hljs-number">4</span>                  <span class="hljs-comment">// small tolerance for resting contact</span>
+        <span class="hljs-keyword">var</span> visited: <span class="hljs-type">Set</span>&lt;<span class="hljs-type">ObjectIdentifier</span>&gt; <span class="hljs-operator">=</span> [<span class="hljs-type">ObjectIdentifier</span>(start)]
+        <span class="hljs-keyword">var</span> queue <span class="hljs-operator">=</span> [start], result: [<span class="hljs-type">Marble</span>] <span class="hljs-operator">=</span> []
+
+        <span class="hljs-keyword">while</span> <span class="hljs-keyword">let</span> current <span class="hljs-operator">=</span> queue.popLast() {
+            result.append(current)
+            <span class="hljs-keyword">for</span> other <span class="hljs-keyword">in</span> all <span class="hljs-keyword">where</span> <span class="hljs-operator">!</span>visited.contains(<span class="hljs-type">ObjectIdentifier</span>(other)) {
+                <span class="hljs-keyword">if</span> hypot(other.position.x <span class="hljs-operator">-</span> current.position.x,
+                         other.position.y <span class="hljs-operator">-</span> current.position.y) <span class="hljs-operator">&lt;=</span> touchDistance {
+                    visited.insert(<span class="hljs-type">ObjectIdentifier</span>(other))
+                    queue.append(other)
+                }
+            }
+        }
+        <span class="hljs-keyword">return</span> result
+    }
+
+    <span class="hljs-comment">/// Quadratic reward: 2 marbles = 20, 5 marbles = 125, 10 marbles = 500.</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">score</span>(<span class="hljs-params">forClusterOf</span> <span class="hljs-params">n</span>: <span class="hljs-type">Int</span>) -&gt; <span class="hljs-type">Int</span> { n <span class="hljs-operator">*</span> n <span class="hljs-operator">*</span> <span class="hljs-number">5</span> }
+}
+</code></pre>
+<p>With a few dozen marbles on screen, this brute-force neighbour check is trivially fast. If you ever have hundreds, bucket marbles into a grid by position first. Distance-based neighbours work better than physics contact callbacks here, because resting marbles don't keep reporting contacts.</p>
+<hr>
+<h2 id="4-popping-with-juice" tabindex="-1"><a class="observablehq-header-anchor" href="#4-popping-with-juice">4. Popping with juice</a></h2>
+<p>A match should feel <em>good</em>: a quick scale-up, a fade, a particle burst and a sound. The physics then lets the marbles above fall into the gap.</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">extension</span> <span class="hljs-title class_">MarbleScene</span> {
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">pop</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">marbles</span>: [<span class="hljs-type">Marble</span>]) {
+        <span class="hljs-keyword">for</span> (i, marble) <span class="hljs-keyword">in</span> marbles.enumerated() {
+            marble.physicsBody <span class="hljs-operator">=</span> <span class="hljs-literal">nil</span>                              <span class="hljs-comment">// stop it interacting while it pops</span>
+            <span class="hljs-keyword">let</span> delay <span class="hljs-operator">=</span> <span class="hljs-type">SKAction</span>.wait(forDuration: <span class="hljs-type">Double</span>(i) <span class="hljs-operator">*</span> <span class="hljs-number">0.03</span>)   <span class="hljs-comment">// a ripple through the cluster</span>
+            <span class="hljs-keyword">let</span> burst <span class="hljs-operator">=</span> <span class="hljs-type">SKAction</span>.run { [<span class="hljs-keyword">weak</span> <span class="hljs-keyword">self</span>] <span class="hljs-keyword">in</span> <span class="hljs-keyword">self</span><span class="hljs-operator">?</span>.spawnBurst(at: marble.position) }
+            <span class="hljs-keyword">let</span> vanish <span class="hljs-operator">=</span> <span class="hljs-type">SKAction</span>.group([.scale(to: <span class="hljs-number">1.4</span>, duration: <span class="hljs-number">0.12</span>), .fadeOut(withDuration: <span class="hljs-number">0.12</span>)])
+            marble.run(.sequence([delay, burst, vanish, .removeFromParent()]))
+        }
+        run(.playSoundFileNamed(<span class="hljs-string">"pop.caf"</span>, waitForCompletion: <span class="hljs-literal">false</span>))
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">spawnBurst</span>(<span class="hljs-params">at</span> <span class="hljs-params">point</span>: <span class="hljs-type">CGPoint</span>) {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> emitter <span class="hljs-operator">=</span> <span class="hljs-type">SKEmitterNode</span>(fileNamed: <span class="hljs-string">"Pop.sks"</span>) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }   <span class="hljs-comment">// designed in Xcode</span>
+        emitter.position <span class="hljs-operator">=</span> point
+        emitter.numParticlesToEmit <span class="hljs-operator">=</span> <span class="hljs-number">24</span>
+        addChild(emitter)
+        emitter.run(.sequence([.wait(forDuration: <span class="hljs-number">0.6</span>), .removeFromParent()]))
+    }
+}
+</code></pre>
+<p>The 30 ms stagger is the cheapest "juice" there is. A cluster of eight pops as a ripple instead of all at once, and players read that as a chain reaction. Always remove finished emitters, or they pile up invisibly and eat frame time.</p>
+<hr>
+<h2 id="5-a-countdown-that-survives-pausing" tabindex="-1"><a class="observablehq-header-anchor" href="#5-a-countdown-that-survives-pausing">5. A countdown that survives pausing</a></h2>
+<p>"Watch the timer – you need to match quickly!" The timer must stop when the game is paused, when a phone call comes in and when the app goes to the background. A <code>Timer</code> or <code>Date</code> arithmetic gets this wrong. The robust pattern is to <strong>accumulate frame deltas in <code>update(_:)</code></strong>, and only while the game is actually running:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">extension</span> <span class="hljs-title class_">MarbleScene</span> {
+    <span class="hljs-keyword">override</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">update</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">currentTime</span>: <span class="hljs-type">TimeInterval</span>) {
+        <span class="hljs-keyword">defer</span> { lastUpdate <span class="hljs-operator">=</span> currentTime }
+        <span class="hljs-keyword">guard</span> lastUpdate <span class="hljs-operator">&gt;</span> <span class="hljs-number">0</span>, <span class="hljs-operator">!</span>isPaused, <span class="hljs-keyword">let</span> state, <span class="hljs-operator">!</span>state.isGameOver <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+
+        <span class="hljs-comment">// Clamp so a long hitch (or resuming from pause) can't eat seconds at once.</span>
+        <span class="hljs-keyword">let</span> dt <span class="hljs-operator">=</span> <span class="hljs-built_in">min</span>(currentTime <span class="hljs-operator">-</span> lastUpdate, <span class="hljs-number">1.0</span> <span class="hljs-operator">/</span> <span class="hljs-number">20.0</span>)
+        remaining <span class="hljs-operator">-=</span> dt
+
+        <span class="hljs-comment">// Push to SwiftUI only when the displayed whole second changes.</span>
+        <span class="hljs-keyword">let</span> shown <span class="hljs-operator">=</span> <span class="hljs-built_in">max</span>(<span class="hljs-number">0</span>, remaining.rounded(.up))
+        <span class="hljs-keyword">if</span> shown <span class="hljs-operator">!=</span> state.timeLeft { state.timeLeft <span class="hljs-operator">=</span> shown }
+
+        <span class="hljs-keyword">if</span> remaining <span class="hljs-operator">&lt;=</span> <span class="hljs-number">0</span> { timeUp() }
+        <span class="hljs-keyword">if</span> children.compactMap({ <span class="hljs-variable">$0</span> <span class="hljs-keyword">as?</span> <span class="hljs-type">Marble</span> }).isEmpty { levelCleared() }
+    }
+}
+</code></pre>
+<p>(<code>remaining</code> and <code>lastUpdate</code> are the stored properties declared on the scene in section 2.) Three details carry the weight:</p>
+<ul>
+<li><strong>Clamp <code>dt</code>.</strong> After a pause, <code>currentTime</code> jumps forward. Without the clamp, the first frame back would subtract all of the paused time.</li>
+<li><strong>Guard on <code>isPaused</code>.</strong> Pausing the <code>SKView</code> stops the frame loop entirely. Pausing just the scene stops its actions and physics, and the explicit guard makes sure the clock stops too, whichever you use.</li>
+<li><strong>Throttle UI updates.</strong> Writing to <code>@Published</code> state 60 times a second makes SwiftUI re-render the HUD 60 times a second. Write only when the displayed value changes.</li>
+</ul>
+<p>Pausing itself is one line, <code>scene.isPaused = true</code>. Wire it to the scene phase going to <code>.inactive</code> or <code>.background</code> in SwiftUI.</p>
+<hr>
+<h2 id="6-lives-and-levels" tabindex="-1"><a class="observablehq-header-anchor" href="#6-lives-and-levels">6. Lives and levels</a></h2>
+<p>The listing has a "Lives system – be careful not to run out!" and "Level progression – difficulty increases as you advance". The approach I'd use: running out of time on a level costs a life and restarts that level, and clearing the jar advances you. Difficulty lives in one small table, so tuning never means touching game logic:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">LevelConfig</span> {
+    <span class="hljs-keyword">let</span> marbleCount: <span class="hljs-type">Int</span>
+    <span class="hljs-keyword">let</span> colorCount: <span class="hljs-type">Int</span>
+    <span class="hljs-keyword">let</span> seconds: <span class="hljs-type">TimeInterval</span>
+    <span class="hljs-keyword">let</span> powerUpChance: <span class="hljs-type">Double</span>
+
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">forLevel</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">level</span>: <span class="hljs-type">Int</span>) -&gt; <span class="hljs-type">LevelConfig</span> {
+        <span class="hljs-type">LevelConfig</span>(
+            marbleCount: <span class="hljs-built_in">min</span>(<span class="hljs-number">30</span> <span class="hljs-operator">+</span> level <span class="hljs-operator">*</span> <span class="hljs-number">4</span>, <span class="hljs-number">80</span>),       <span class="hljs-comment">// more marbles</span>
+            colorCount: <span class="hljs-built_in">min</span>(<span class="hljs-number">3</span> <span class="hljs-operator">+</span> level <span class="hljs-operator">/</span> <span class="hljs-number">3</span>, <span class="hljs-number">5</span>),          <span class="hljs-comment">// more colours = smaller clusters</span>
+            seconds: <span class="hljs-built_in">max</span>(<span class="hljs-number">60</span> <span class="hljs-operator">-</span> <span class="hljs-type">Double</span>(level) <span class="hljs-operator">*</span> <span class="hljs-number">2</span>, <span class="hljs-number">30</span>),   <span class="hljs-comment">// less time</span>
+            powerUpChance: <span class="hljs-built_in">max</span>(<span class="hljs-number">0.08</span> <span class="hljs-operator">-</span> <span class="hljs-type">Double</span>(level) <span class="hljs-operator">*</span> <span class="hljs-number">0.004</span>, <span class="hljs-number">0.03</span>)
+        )
+    }
+}
+
+<span class="hljs-keyword">extension</span> <span class="hljs-title class_">MarbleScene</span> {
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">timeUp</span>() {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> state <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+        state.lives <span class="hljs-operator">-=</span> <span class="hljs-number">1</span>
+        <span class="hljs-keyword">if</span> state.lives <span class="hljs-operator">&lt;=</span> <span class="hljs-number">0</span> { state.isGameOver <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>; isPaused <span class="hljs-operator">=</span> <span class="hljs-literal">true</span> }
+        <span class="hljs-keyword">else</span> { restartLevel() }
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">restartLevel</span>() {
+        enumerateChildNodes(withName: <span class="hljs-string">"marble"</span>) { node, <span class="hljs-keyword">_</span> <span class="hljs-keyword">in</span> node.removeFromParent() }
+        remaining <span class="hljs-operator">=</span> config.seconds
+        fill(count: config.marbleCount)
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">levelCleared</span>() {
+        state<span class="hljs-operator">?</span>.level <span class="hljs-operator">+=</span> <span class="hljs-number">1</span>
+        config <span class="hljs-operator">=</span> .forLevel(state<span class="hljs-operator">?</span>.level <span class="hljs-operator">??</span> <span class="hljs-number">1</span>)
+        remaining <span class="hljs-operator">=</span> config.seconds
+        fill(count: config.marbleCount)
+    }
+}
+</code></pre>
+<p>Adding a colour is the most powerful difficulty knob in a colour-match game. Each extra colour shrinks the average cluster, which lowers scores and raises pressure without touching the clock.</p>
+<hr>
+<h2 id="7-power-ups-lightning-heart-and-bomb" tabindex="-1"><a class="observablehq-header-anchor" href="#7-power-ups-lightning-heart-and-bomb">7. Power-ups: Lightning, Heart and Bomb</a></h2>
+<p>The listing names three power-ups: "Lightning Flash – Clear multiple marbles at once", "Heart – Gain an extra life" and "Bomb – Explode surrounding marbles". I'd model them as special marbles that spawn occasionally and trigger when tapped:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">enum</span> <span class="hljs-title class_">PowerUp</span> { <span class="hljs-keyword">case</span> lightning, heart, bomb }
+
+<span class="hljs-keyword">extension</span> <span class="hljs-title class_">MarbleScene</span> {
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">trigger</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">powerUp</span>: <span class="hljs-type">PowerUp</span>, <span class="hljs-params">at</span> <span class="hljs-params">point</span>: <span class="hljs-type">CGPoint</span>) {
+        <span class="hljs-keyword">let</span> marbles <span class="hljs-operator">=</span> children.compactMap { <span class="hljs-variable">$0</span> <span class="hljs-keyword">as?</span> <span class="hljs-type">Marble</span> }
+        <span class="hljs-keyword">switch</span> powerUp {
+        <span class="hljs-keyword">case</span> .lightning:
+            <span class="hljs-comment">// Clear every marble of the most common colour.</span>
+            <span class="hljs-keyword">let</span> counts <span class="hljs-operator">=</span> <span class="hljs-type">Dictionary</span>(grouping: marbles, by: \.color)
+            <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> biggest <span class="hljs-operator">=</span> counts.max(by: { <span class="hljs-variable">$0</span>.value.count <span class="hljs-operator">&lt;</span> <span class="hljs-variable">$1</span>.value.count })<span class="hljs-operator">?</span>.value {
+                pop(biggest); state<span class="hljs-operator">?</span>.score <span class="hljs-operator">+=</span> score(forClusterOf: biggest.count)
+            }
+        <span class="hljs-keyword">case</span> .heart:
+            state<span class="hljs-operator">?</span>.lives <span class="hljs-operator">+=</span> <span class="hljs-number">1</span>
+        <span class="hljs-keyword">case</span> .bomb:
+            <span class="hljs-keyword">let</span> blastRadius: <span class="hljs-type">CGFloat</span> <span class="hljs-operator">=</span> <span class="hljs-number">110</span>
+            <span class="hljs-keyword">let</span> hit <span class="hljs-operator">=</span> marbles.filter { hypot(<span class="hljs-variable">$0</span>.position.x <span class="hljs-operator">-</span> point.x, <span class="hljs-variable">$0</span>.position.y <span class="hljs-operator">-</span> point.y) <span class="hljs-operator">&lt;</span> blastRadius }
+            pop(hit); state<span class="hljs-operator">?</span>.score <span class="hljs-operator">+=</span> hit.count <span class="hljs-operator">*</span> <span class="hljs-number">10</span>
+            <span class="hljs-comment">// Push the survivors outwards for a satisfying shove.</span>
+            <span class="hljs-keyword">for</span> m <span class="hljs-keyword">in</span> marbles <span class="hljs-keyword">where</span> <span class="hljs-operator">!</span>hit.contains(m) {
+                <span class="hljs-keyword">let</span> d <span class="hljs-operator">=</span> <span class="hljs-type">CGVector</span>(dx: m.position.x <span class="hljs-operator">-</span> point.x, dy: m.position.y <span class="hljs-operator">-</span> point.y)
+                <span class="hljs-keyword">let</span> len <span class="hljs-operator">=</span> <span class="hljs-built_in">max</span>(hypot(d.dx, d.dy), <span class="hljs-number">1</span>)
+                m.physicsBody<span class="hljs-operator">?</span>.applyImpulse(<span class="hljs-type">CGVector</span>(dx: d.dx <span class="hljs-operator">/</span> len <span class="hljs-operator">*</span> <span class="hljs-number">30</span>, dy: d.dy <span class="hljs-operator">/</span> len <span class="hljs-operator">*</span> <span class="hljs-number">30</span>))
+            }
+        }
+    }
+}
+</code></pre>
+<p>Which marbles "Lightning" clears is my design choice; the listing only says it clears multiple at once. The bomb's impulse on survivors is where the physics world pays off a second time. The jar visibly reacts, and the new arrangement creates fresh clusters.</p>
+<hr>
+<h2 id="8-real-world-example-marbles-popperz" tabindex="-1"><a class="observablehq-header-anchor" href="#8-real-world-example-marbles-popperz">8. Real-world example: Marbles Popperz</a></h2>
+<p>This walkthrough is based on building <strong><a href="https://apps.apple.com/us/app/marbles-popperz/id1601511276" target="_blank" rel="noopener noreferrer">Marbles Popperz</a></strong>. The code here is the approach I'd use, not the shipped source.</p>
+<p><img src="https://bestlatestapps.com/assets/blog/building-a-tap-to-match-marble-game-with-spritekit-and-swiftui/marbles-popperz-screenshot-1.jpg" alt="Marbles Popperz App Store screenshot 1"></p>
+<p>At the time of writing, its App Store listing shows:</p>
+<ul>
+<li><strong>Free</strong>, in <strong>Games</strong> (Puzzle, Board)</li>
+<li>First released in <strong>December 2021</strong></li>
+<li><strong>3 ratings</strong> in the US store, averaging about <strong>3.7 stars</strong></li>
+<li>Supports <strong>iOS 16.0 and later</strong></li>
+</ul>
+<p>How the listing maps to this article:</p>
+<table>
+<thead>
+<tr>
+<th>What the listing says</th>
+<th>Where it's covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Simple tap-to-match gameplay" / "Match marbles by color to remove them"</td>
+<td>Hit-testing and cluster matching (section 3)</td>
+</tr>
+<tr>
+<td>"Beautiful visual effects and animations"</td>
+<td>Staggered pops and particle bursts (section 4)</td>
+</tr>
+<tr>
+<td>"Watch the timer - you need to match quickly!"</td>
+<td>Pause-safe countdown in <code>update(_:)</code> (section 5)</td>
+</tr>
+<tr>
+<td>"Lives system" / "Level progression - difficulty increases as you advance"</td>
+<td>Lives and a level table (section 6)</td>
+</tr>
+<tr>
+<td>"Lightning Flash", "Heart", "Bomb"</td>
+<td>Power-ups (section 7)</td>
+</tr>
+<tr>
+<td>"Global leaderboards - compete with players worldwide"</td>
+<td>Game Center, covered in my Speck Match article</td>
+</tr>
+</tbody>
+</table>
+<p><img src="https://bestlatestapps.com/assets/blog/building-a-tap-to-match-marble-game-with-spritekit-and-swiftui/marbles-popperz-screenshot-2.jpg" alt="Marbles Popperz App Store screenshot 2"></p>
+<p>The rating average is a useful honest signal for a small game: three ratings is too few to mean much. The way to learn what players struggle with is to watch someone play your first three levels without saying a word.</p>
+<hr>
+<h2 id="9-before-you-ship-a-casual-game-a-checklist" tabindex="-1"><a class="observablehq-header-anchor" href="#9-before-you-ship-a-casual-game-a-checklist">9. Before you ship a casual game: a checklist</a></h2>
+<ol>
+<li><strong>The timer pauses</strong> on pause, on interruptions and in the background, and <code>dt</code> is clamped on resume.</li>
+<li><strong>The UI isn't updated every frame</strong>, only when displayed values change.</li>
+<li><strong>Textures are in an atlas</strong> and <code>ignoresSiblingOrder</code> is on. Check the draw count with <code>showsDrawCount</code> during development.</li>
+<li><strong>Finished emitters and actions are removed.</strong> No invisible nodes pile up.</li>
+<li><strong>The difficulty table is data</strong>, and each level has been played by someone other than you.</li>
+<li><strong>Taps feel fair.</strong> The hit area isn't smaller than the visible marble, and a mis-tap gets clear feedback.</li>
+<li><strong>Colour isn't the only cue.</strong> Add patterns or symbols to marbles for colour-blind players.</li>
+<li><strong>Sound respects the silent switch</strong>, and there's a mute option.</li>
+<li><strong>Test on the oldest supported device</strong> at 60 fps with the maximum marble count.</li>
+</ol>
+<hr>
+<h2 id="wrapping-up" tabindex="-1"><a class="observablehq-header-anchor" href="#wrapping-up">Wrapping up</a></h2>
+<p>A tap-to-match game is a perfect classroom. Physics gives you settling for free. A simple search gives you clusters. A clamped delta gives you an honest clock. A table gives you difficulty. And a few milliseconds of stagger turn "it works" into "it feels good". SpriteKit and SwiftUI together cover all of it with nothing to install.</p>
+<p>Play the game, or explore my other work:</p>
+<ul>
+<li><strong>Marbles Popperz (iOS):</strong> <a href="https://apps.apple.com/us/app/marbles-popperz/id1601511276" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/marbles-popperz/id1601511276</a></li>
+<li><strong>All of my free iOS apps:</strong> <a href="https://apps.apple.com/us/developer/alok-singh/id1508795536" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/developer/alok-singh/id1508795536</a></li>
+<li><strong>My portfolio:</strong> <a href="https://bestlatestapps.com/alok/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/alok/</a></li>
+</ul>
+<p>What's your favourite bit of game "juice"? Share it in the comments.</p>
+<p><em>— Alok Kumar Singh</em></p>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/building-a-tap-to-match-marble-game-with-spritekit-and-swiftui/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/building-a-tap-to-match-marble-game-with-spritekit-and-swiftui/</a></em></p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./building-an-admob-earnings-dashboard-for-ios"><span>Building an AdMob Earnings Dashboard for iOS</span></a><a rel="next" href="./building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine"><span>Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine</span></a></nav>
+<div>Articles by Alok Kumar Singh. Originals at <a href="https://bestlatestapps.com/blog/" target="_blank" rel="noopener noreferrer">bestlatestapps.com/blog</a>.</div>
+</footer>
+</div>
+</body>
+</html>

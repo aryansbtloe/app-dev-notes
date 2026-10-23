@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>From Barcode to PDF: Building a Private, Offline Medication Tracker with VisionKit, WidgetKit and PDFKit | Alok Singh, App Dev Notes</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="modulepreload" href="./_observablehq/client.097df403.js">
+<link rel="modulepreload" href="./_observablehq/runtime.fa9f71c0.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.60afab10.js">
+<link rel="canonical" href="https://bestlatestapps.com/blog/from-barcode-to-pdf/"><meta name="description" content="Scanning a box to add a medication, a SwiftData model shared with widgets, adherence statistics, a doctor-ready PDF report, and CSV/JSON export that keeps…">
+<script type="module">
+
+import "./_observablehq/client.097df403.js";
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Alok Singh, App Dev Notes</a></li>
+  </ol>
+  <div id="observablehq-search"><input type="search" placeholder="Search"></div>
+  <div id="observablehq-search-results"></div>
+  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.755d897f.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
+  <ol>
+    <li class="observablehq-link"><a href="./tic-tac-toe-in-swiftui-done-properly">Tic Tac Toe in SwiftUI, Done Properly</a></li>
+    <li class="observablehq-link"><a href="./the-sending-side-of-apns">The Sending Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./the-device-side-of-apns">The Device Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./text-plus-audio-fully-offline">Text Plus Audio, Fully Offline</a></li>
+    <li class="observablehq-link"><a href="./stop-hand-rolling-unit-conversions">Stop Hand-Rolling Unit Conversions</a></li>
+    <li class="observablehq-link"><a href="./shipping-a-4k-wallpaper-app-without-running-out-of-memory">Shipping a 4K Wallpaper App Without Running Out of Memory</a></li>
+    <li class="observablehq-link"><a href="./medication-reminders-that-actually-fire">Medication Reminders That Actually Fire</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./from-barcode-to-pdf">From Barcode to PDF</a></li>
+    <li class="observablehq-link"><a href="./drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game">Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game,</a></li>
+    <li class="observablehq-link"><a href="./convert-as-you-type-currency-conversion-in-swift">Convert-As-You-Type Currency Conversion in Swift</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-first-bible-reader-on-ios">Building an Offline-First Bible Reader on iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-ebook-reader-for-ios">Building an Offline eBook Reader for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-quotes-app-in-swiftui">Building an Offline Quotes App in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-an-admob-earnings-dashboard-for-ios">Building an AdMob Earnings Dashboard for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-tap-to-match-marble-game-with-spritekit-and-swiftui">Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine">Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine</a></li>
+    <li class="observablehq-link"><a href="./building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe">Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioE</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-ios-component-catalogue">Building a Live iOS Component Catalogue</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-temple-darshan-app-for-ios">Building a Live Temple Darshan App for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-hashtag-copier-for-ios">Building a Hashtag Copier for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-chromatic-guitar-tuner-on-ios">Building a Chromatic Guitar Tuner on iOS</a></li>
+    <li class="observablehq-link"><a href="./animating-algorithms-in-swiftui">Animating Algorithms in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./a-practical-guide-to-ios-haptics">A Practical Guide to iOS Haptics</a></li>
+    <li class="observablehq-link"><a href="./a-document-scanner-in-an-afternoon">A Document Scanner in an Afternoon</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#1-the-model-shared-by-the-app-and-its-widgets">1. The model, shared by the app and its widgets</a></li>
+<li class="observablehq-secondary-link"><a href="#2-adding-a-medication-by-scanning-its-barcode">2. Adding a medication by scanning its barcode</a></li>
+<li class="observablehq-secondary-link"><a href="#3-adherence-the-numbers-behind-the-calendar">3. Adherence: the numbers behind the calendar</a></li>
+<li class="observablehq-secondary-link"><a href="#4-a-doctor-ready-pdf-with-ui-graphics-pdf-renderer">4. A doctor-ready PDF with UIGraphicsPDFRenderer</a></li>
+<li class="observablehq-secondary-link"><a href="#5-widgets-that-read-the-shared-store">5. Widgets that read the shared store</a></li>
+<li class="observablehq-secondary-link"><a href="#6-export-backup-and-restore-without-a-server">6. Export, backup and restore without a server</a></li>
+<li class="observablehq-secondary-link"><a href="#7-interaction-warnings-handle-with-great-care">7. Interaction warnings: handle with great care</a></li>
+<li class="observablehq-secondary-link"><a href="#8-real-world-example-track-your-pills">8. Real-world example: Track Your Pills</a></li>
+<li class="observablehq-secondary-link"><a href="#9-before-you-ship-a-medication-tracker-a-checklist">9. Before you ship a medication tracker: a checklist</a></li>
+<li class="observablehq-secondary-link"><a href="#wrapping-up">Wrapping up</a></li>
+</ol>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="from-barcode-to-pdf-building-a-private-offline-medication-tracker-with-vision-kit-widget-kit-and-pdf-kit" tabindex="-1"><a class="observablehq-header-anchor" href="#from-barcode-to-pdf-building-a-private-offline-medication-tracker-with-vision-kit-widget-kit-and-pdf-kit">From Barcode to PDF: Building a Private, Offline Medication Tracker with VisionKit, WidgetKit and PDFKit</a></h1>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/from-barcode-to-pdf/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/from-barcode-to-pdf/</a></em></p>
+<p><em>Scanning a box to add a medication, a SwiftData model shared with widgets, adherence statistics, a doctor-ready PDF report, and CSV/JSON export that keeps everything on the device</em></p>
+<p><img src="https://bestlatestapps.com/assets/blog/from-barcode-to-pdf/track-your-pills-icon-512.jpg" alt="Track Your Pills app icon"></p>
+<p>I have two medication apps on the App Store. The first, <strong>Daily Pills | Reminder</strong>, does one thing: remind you on time and count your supply. I've written about its notification engineering separately. The second, <strong>Track Your Pills</strong>, came out of what people asked for next: "Can I just scan the box?" "Can I show my doctor what I've actually taken?" "Can I see today's doses without opening the app?"</p>
+<p>Track Your Pills launched in February 2023. Its listing covers medications added "with photos, barcodes, or manual entry", tablets, capsules, syrups and injections, adherence calendars and statistics, PDF reports to "share with healthcare providers", home-screen widgets, CSV and JSON export with backup and restore, and a firm privacy line: "All data stored locally on your device… No account creation needed."</p>
+<p>This article covers the parts that are <em>different</em> from a plain reminder app. Those are barcode capture with VisionKit, a SwiftData model the app and its widgets can share, adherence maths, a PDF report built with <code>UIGraphicsPDFRenderer</code>, and export and import. I'm leaving out the notification side on purpose, because the Daily Pills article covers it. API names and availability are checked against Apple's documentation, and I describe the approach I'd use rather than the app's exact source.</p>
+<hr>
+<h2 id="1-the-model-shared-by-the-app-and-its-widgets" tabindex="-1"><a class="observablehq-header-anchor" href="#1-the-model-shared-by-the-app-and-its-widgets">1. The model, shared by the app and its widgets</a></h2>
+<p>The app targets iOS 17.6 and later, so SwiftData is available. The model separates <em>what</em> the medication is from <em>what happened</em>:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> SwiftData
+<span class="hljs-keyword">import</span> Foundation
+
+<span class="hljs-meta">@Model</span>
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Medication</span> {
+    <span class="hljs-keyword">var</span> name: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">var</span> form: <span class="hljs-type">String</span>                 <span class="hljs-comment">// "tablet", "capsule", "syrup", "injection"</span>
+    <span class="hljs-keyword">var</span> strength: <span class="hljs-type">String</span>?            <span class="hljs-comment">// "500 mg", "5 ml"</span>
+    <span class="hljs-keyword">var</span> barcode: <span class="hljs-type">String</span>?
+    <span class="hljs-meta">@Attribute</span>(.externalStorage) <span class="hljs-keyword">var</span> photo: <span class="hljs-type">Data</span>?
+    <span class="hljs-keyword">var</span> quantityRemaining: <span class="hljs-type">Double</span>    <span class="hljs-comment">// Double: syrups are measured in ml</span>
+    <span class="hljs-keyword">var</span> dosePerIntake: <span class="hljs-type">Double</span>
+    <span class="hljs-keyword">var</span> scheduleTimes: [<span class="hljs-type">DateComponents</span>]
+    <span class="hljs-keyword">var</span> startDate: <span class="hljs-type">Date</span>
+    <span class="hljs-keyword">var</span> endDate: <span class="hljs-type">Date</span>?
+    <span class="hljs-meta">@Relationship</span>(deleteRule: .cascade, inverse: \<span class="hljs-type">Intake</span>.medication) <span class="hljs-keyword">var</span> intakes: [<span class="hljs-type">Intake</span>] <span class="hljs-operator">=</span> []
+
+    <span class="hljs-keyword">init</span>(<span class="hljs-params">name</span>: <span class="hljs-type">String</span>, <span class="hljs-params">form</span>: <span class="hljs-type">String</span>, <span class="hljs-params">quantityRemaining</span>: <span class="hljs-type">Double</span>, <span class="hljs-params">dosePerIntake</span>: <span class="hljs-type">Double</span>,
+         <span class="hljs-params">scheduleTimes</span>: [<span class="hljs-type">DateComponents</span>], <span class="hljs-params">startDate</span>: <span class="hljs-type">Date</span> <span class="hljs-operator">=</span> .now) {
+        <span class="hljs-keyword">self</span>.name <span class="hljs-operator">=</span> name; <span class="hljs-keyword">self</span>.form <span class="hljs-operator">=</span> form
+        <span class="hljs-keyword">self</span>.quantityRemaining <span class="hljs-operator">=</span> quantityRemaining; <span class="hljs-keyword">self</span>.dosePerIntake <span class="hljs-operator">=</span> dosePerIntake
+        <span class="hljs-keyword">self</span>.scheduleTimes <span class="hljs-operator">=</span> scheduleTimes; <span class="hljs-keyword">self</span>.startDate <span class="hljs-operator">=</span> startDate
+    }
+}
+
+<span class="hljs-meta">@Model</span>
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Intake</span> {
+    <span class="hljs-keyword">enum</span> <span class="hljs-title class_">Status</span>: <span class="hljs-title class_ inherited__">String</span>, <span class="hljs-title class_ inherited__">Codable</span> { <span class="hljs-keyword">case</span> taken, missed, skipped }
+    <span class="hljs-keyword">var</span> scheduledAt: <span class="hljs-type">Date</span>
+    <span class="hljs-keyword">var</span> loggedAt: <span class="hljs-type">Date</span>?
+    <span class="hljs-keyword">var</span> statusRaw: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">var</span> medication: <span class="hljs-type">Medication</span>?
+
+    <span class="hljs-keyword">var</span> status: <span class="hljs-type">Status</span> { <span class="hljs-type">Status</span>(rawValue: statusRaw) <span class="hljs-operator">??</span> .missed }
+
+    <span class="hljs-keyword">init</span>(<span class="hljs-params">scheduledAt</span>: <span class="hljs-type">Date</span>, <span class="hljs-params">status</span>: <span class="hljs-type">Status</span>, <span class="hljs-params">loggedAt</span>: <span class="hljs-type">Date</span>? <span class="hljs-operator">=</span> .now) {
+        <span class="hljs-keyword">self</span>.scheduledAt <span class="hljs-operator">=</span> scheduledAt; <span class="hljs-keyword">self</span>.statusRaw <span class="hljs-operator">=</span> status.rawValue; <span class="hljs-keyword">self</span>.loggedAt <span class="hljs-operator">=</span> loggedAt
+    }
+}
+</code></pre>
+<p><code>@Attribute(.externalStorage)</code> keeps photos out of the main database file. Each intake records both the <em>scheduled</em> time and the <em>logged</em> time, which lets the report distinguish "taken on time" from "taken two hours late".</p>
+<p>Widgets run in a separate process, so the store has to live somewhere both processes can reach. That's an <strong>App Group</strong> container:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">enum</span> <span class="hljs-title class_">SharedStore</span> {
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> appGroup <span class="hljs-operator">=</span> <span class="hljs-string">"group.com.example.trackyourpills"</span>
+
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">makeContainer</span>() <span class="hljs-keyword">throws</span> -&gt; <span class="hljs-type">ModelContainer</span> {
+        <span class="hljs-keyword">let</span> config <span class="hljs-operator">=</span> <span class="hljs-type">ModelConfiguration</span>(
+            <span class="hljs-string">"Medications"</span>,
+            groupContainer: .identifier(appGroup),   <span class="hljs-comment">// same file for app and widget extension</span>
+            cloudKitDatabase: .none                  <span class="hljs-comment">// "No cloud sync required"</span>
+        )
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">try</span> <span class="hljs-type">ModelContainer</span>(for: <span class="hljs-type">Medication</span>.<span class="hljs-keyword">self</span>, <span class="hljs-type">Intake</span>.<span class="hljs-keyword">self</span>, configurations: config)
+    }
+}
+</code></pre>
+<p>Add the App Groups capability to both the app and widget targets with the same identifier. <code>cloudKitDatabase: .none</code> is the explicit, privacy-preserving choice. SwiftData otherwise looks for a CloudKit container if the iCloud capability is present.</p>
+<hr>
+<h2 id="2-adding-a-medication-by-scanning-its-barcode" tabindex="-1"><a class="observablehq-header-anchor" href="#2-adding-a-medication-by-scanning-its-barcode">2. Adding a medication by scanning its barcode</a></h2>
+<p><code>DataScannerViewController</code> (VisionKit, iOS 16+) gives you a live camera view that recognises text and machine-readable codes, with highlighting and guidance built in. You don't need to build a capture session.</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> SwiftUI
+<span class="hljs-keyword">import</span> VisionKit
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">BarcodeScannerView</span>: <span class="hljs-title class_ inherited__">UIViewControllerRepresentable</span> {
+    <span class="hljs-keyword">var</span> onCode: (<span class="hljs-type">String</span>) -&gt; <span class="hljs-type">Void</span>
+
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">var</span> canScan: <span class="hljs-type">Bool</span> {
+        <span class="hljs-type">DataScannerViewController</span>.isSupported <span class="hljs-operator">&amp;&amp;</span> <span class="hljs-type">DataScannerViewController</span>.isAvailable
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">makeUIViewController</span>(<span class="hljs-params">context</span>: <span class="hljs-type">Context</span>) -&gt; <span class="hljs-type">DataScannerViewController</span> {
+        <span class="hljs-keyword">let</span> scanner <span class="hljs-operator">=</span> <span class="hljs-type">DataScannerViewController</span>(
+            recognizedDataTypes: [.barcode(symbologies: [.ean13, .ean8, .upce, .code128, .dataMatrix])],
+            qualityLevel: .balanced,
+            recognizesMultipleItems: <span class="hljs-literal">false</span>,
+            isHighFrameRateTrackingEnabled: <span class="hljs-literal">false</span>,
+            isHighlightingEnabled: <span class="hljs-literal">true</span>)
+        scanner.delegate <span class="hljs-operator">=</span> context.coordinator
+        <span class="hljs-keyword">try?</span> scanner.startScanning()
+        <span class="hljs-keyword">return</span> scanner
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">updateUIViewController</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">controller</span>: <span class="hljs-type">DataScannerViewController</span>, <span class="hljs-params">context</span>: <span class="hljs-type">Context</span>) {}
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">makeCoordinator</span>() -&gt; <span class="hljs-type">Coordinator</span> { <span class="hljs-type">Coordinator</span>(onCode: onCode) }
+
+    <span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Coordinator</span>: <span class="hljs-title class_ inherited__">NSObject</span>, <span class="hljs-title class_ inherited__">DataScannerViewControllerDelegate</span> {
+        <span class="hljs-keyword">let</span> onCode: (<span class="hljs-type">String</span>) -&gt; <span class="hljs-type">Void</span>
+        <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> delivered <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>
+        <span class="hljs-keyword">init</span>(<span class="hljs-params">onCode</span>: <span class="hljs-keyword">@escaping</span> (<span class="hljs-type">String</span>) -&gt; <span class="hljs-type">Void</span>) { <span class="hljs-keyword">self</span>.onCode <span class="hljs-operator">=</span> onCode }
+
+        <span class="hljs-keyword">func</span> <span class="hljs-title function_">dataScanner</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">scanner</span>: <span class="hljs-type">DataScannerViewController</span>,
+                         <span class="hljs-params">didAdd</span> <span class="hljs-params">addedItems</span>: [<span class="hljs-type">RecognizedItem</span>], <span class="hljs-params">allItems</span>: [<span class="hljs-type">RecognizedItem</span>]) {
+            <span class="hljs-keyword">guard</span> <span class="hljs-operator">!</span>delivered <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+            <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> addedItems {
+                <span class="hljs-keyword">if</span> <span class="hljs-keyword">case</span> .barcode(<span class="hljs-keyword">let</span> code) <span class="hljs-operator">=</span> item, <span class="hljs-keyword">let</span> value <span class="hljs-operator">=</span> code.payloadStringValue {
+                    delivered <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>
+                    scanner.stopScanning()
+                    onCode(value)
+                    <span class="hljs-keyword">return</span>
+                }
+            }
+        }
+    }
+}
+</code></pre>
+<p>Practical notes:</p>
+<ul>
+<li><strong>Check both flags.</strong> Apple's docs say <code>isSupported</code> requires a device with the <strong>A12 Bionic chip or later</strong>. <code>isAvailable</code> additionally reflects camera permission and restrictions. When either is false, fall back to manual entry; never show a dead button.</li>
+<li><strong>Add <code>NSCameraUsageDescription</code></strong>, for example: "Scan the barcode on your medication box to fill in its details."</li>
+<li><strong>Pick the symbologies you need.</strong> Retail packaging is mostly EAN/UPC, and many pharmaceutical packs carry a GS1 DataMatrix. A narrower list means faster, more reliable recognition.</li>
+</ul>
+<h3 id="from-code-to-name-an-on-device-lookup" tabindex="-1"><a class="observablehq-header-anchor" href="#from-code-to-name-an-on-device-lookup">From code to name: an on-device lookup</a></h3>
+<p>The listing mentions "Auto-fill from extensive medication name database" and "Barcode scanning for instant medication lookup", and also says "No internet connection required". The approach that satisfies both is a <strong>bundled, read-only lookup table</strong>: barcode → name, form and strength. Then fall back to the user's own history: if they've scanned this code before, reuse what they typed.</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">MedicationCatalog</span> {
+    <span class="hljs-keyword">struct</span> <span class="hljs-title class_">Entry</span>: <span class="hljs-title class_ inherited__">Decodable</span> { <span class="hljs-keyword">let</span> name: <span class="hljs-type">String</span>; <span class="hljs-keyword">let</span> form: <span class="hljs-type">String</span>; <span class="hljs-keyword">let</span> strength: <span class="hljs-type">String</span>? }
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> byBarcode: [<span class="hljs-type">String</span>: <span class="hljs-type">Entry</span>]
+
+    <span class="hljs-keyword">init</span>() {
+        <span class="hljs-keyword">let</span> url <span class="hljs-operator">=</span> <span class="hljs-type">Bundle</span>.main.url(forResource: <span class="hljs-string">"catalog"</span>, withExtension: <span class="hljs-string">"json"</span>)<span class="hljs-operator">!</span>
+        byBarcode <span class="hljs-operator">=</span> (<span class="hljs-keyword">try?</span> <span class="hljs-type">JSONDecoder</span>().decode([String: <span class="hljs-type">Entry</span>].<span class="hljs-keyword">self</span>, from: <span class="hljs-type">Data</span>(contentsOf: url))) <span class="hljs-operator">??</span> [:]
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">lookup</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">code</span>: <span class="hljs-type">String</span>) -&gt; <span class="hljs-type">Entry</span>? { byBarcode[code] }
+}
+</code></pre>
+<p>Always show the result as an editable form, never a silent auto-save. A wrong strength is a dangerous error.</p>
+<hr>
+<h2 id="3-adherence-the-numbers-behind-the-calendar" tabindex="-1"><a class="observablehq-header-anchor" href="#3-adherence-the-numbers-behind-the-calendar">3. Adherence: the numbers behind the calendar</a></h2>
+<p>"Visual adherence calendar", "weekly and overall adherence statistics" and "per-medication adherence metrics" all come from one calculation: of the doses that were <strong>due</strong>, how many were <strong>taken</strong>?</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> Foundation
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">AdherenceStats</span> {
+    <span class="hljs-keyword">let</span> due: <span class="hljs-type">Int</span>
+    <span class="hljs-keyword">let</span> taken: <span class="hljs-type">Int</span>
+    <span class="hljs-keyword">let</span> late: <span class="hljs-type">Int</span>        <span class="hljs-comment">// taken, but more than the grace window after schedule</span>
+    <span class="hljs-keyword">var</span> rate: <span class="hljs-type">Double</span> { due <span class="hljs-operator">==</span> <span class="hljs-number">0</span> <span class="hljs-operator">?</span> <span class="hljs-number">1</span> : <span class="hljs-type">Double</span>(taken) <span class="hljs-operator">/</span> <span class="hljs-type">Double</span>(due) }
+}
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">Adherence</span> {
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> lateThreshold: <span class="hljs-type">TimeInterval</span> <span class="hljs-operator">=</span> <span class="hljs-number">60</span> <span class="hljs-operator">*</span> <span class="hljs-number">60</span>     <span class="hljs-comment">// 1 hour</span>
+
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">stats</span>(<span class="hljs-params">for</span> <span class="hljs-params">intakes</span>: [<span class="hljs-type">Intake</span>], <span class="hljs-params">in</span> <span class="hljs-params">interval</span>: <span class="hljs-type">DateInterval</span>) -&gt; <span class="hljs-type">AdherenceStats</span> {
+        <span class="hljs-keyword">let</span> due <span class="hljs-operator">=</span> intakes.filter { interval.contains(<span class="hljs-variable">$0</span>.scheduledAt) <span class="hljs-operator">&amp;&amp;</span> <span class="hljs-variable">$0</span>.status <span class="hljs-operator">!=</span> .skipped }
+        <span class="hljs-keyword">let</span> taken <span class="hljs-operator">=</span> due.filter { <span class="hljs-variable">$0</span>.status <span class="hljs-operator">==</span> .taken }
+        <span class="hljs-keyword">let</span> late <span class="hljs-operator">=</span> taken.filter { (<span class="hljs-variable">$0</span>.loggedAt <span class="hljs-operator">??</span> <span class="hljs-variable">$0</span>.scheduledAt)
+            .timeIntervalSince(<span class="hljs-variable">$0</span>.scheduledAt) <span class="hljs-operator">&gt;</span> lateThreshold }
+        <span class="hljs-keyword">return</span> <span class="hljs-type">AdherenceStats</span>(due: due.count, taken: taken.count, late: late.count)
+    }
+
+    <span class="hljs-comment">/// One value per day, for the calendar heat map.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">daily</span>(<span class="hljs-params">for</span> <span class="hljs-params">intakes</span>: [<span class="hljs-type">Intake</span>], <span class="hljs-params">days</span>: <span class="hljs-type">Int</span>, <span class="hljs-params">calendar</span>: <span class="hljs-type">Calendar</span> <span class="hljs-operator">=</span> .current)
+        -&gt; [(day: <span class="hljs-type">Date</span>, rate: <span class="hljs-type">Double</span>?)] {
+        <span class="hljs-keyword">let</span> today <span class="hljs-operator">=</span> calendar.startOfDay(for: .now)
+        <span class="hljs-keyword">return</span> (<span class="hljs-number">0</span><span class="hljs-operator">..&lt;</span>days).reversed().compactMap { offset <span class="hljs-keyword">in</span>
+            <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> day <span class="hljs-operator">=</span> calendar.date(byAdding: .day, value: <span class="hljs-operator">-</span>offset, to: today),
+                  <span class="hljs-keyword">let</span> next <span class="hljs-operator">=</span> calendar.date(byAdding: .day, value: <span class="hljs-number">1</span>, to: day) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span> }
+            <span class="hljs-keyword">let</span> s <span class="hljs-operator">=</span> stats(for: intakes, in: <span class="hljs-type">DateInterval</span>(start: day, end: next))
+            <span class="hljs-keyword">return</span> (day, s.due <span class="hljs-operator">==</span> <span class="hljs-number">0</span> <span class="hljs-operator">?</span> nil : s.rate)          <span class="hljs-comment">// nil = nothing scheduled: grey cell</span>
+        }
+    }
+}
+</code></pre>
+<p>Two definitions you have to choose deliberately, and should explain on screen:</p>
+<ul>
+<li><strong>Skipped is not missed.</strong> If a doctor said "skip today", that dose shouldn't hurt the adherence score. Exclude skipped doses from <em>due</em>.</li>
+<li><strong>No dose scheduled ≠ 100%.</strong> A day with nothing due should render as empty, not as a perfect green square.</li>
+</ul>
+<p>Swift Charts' <code>RectangleMark</code> makes the calendar heat map straightforward, with <code>foregroundStyle(by:)</code> binned into three or four colour bands.</p>
+<hr>
+<h2 id="4-a-doctor-ready-pdf-with-ui-graphics-pdf-renderer" tabindex="-1"><a class="observablehq-header-anchor" href="#4-a-doctor-ready-pdf-with-ui-graphics-pdf-renderer">4. A doctor-ready PDF with UIGraphicsPDFRenderer</a></h2>
+<p>"Generate detailed medication reports… Share reports with healthcare providers… Printable format for medical records." <code>UIGraphicsPDFRenderer</code> (iOS 10+) turns drawing code into PDF data. A report is just text and table rows drawn page by page:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> UIKit
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">ReportRow</span> { <span class="hljs-keyword">let</span> name: <span class="hljs-type">String</span>; <span class="hljs-keyword">let</span> schedule: <span class="hljs-type">String</span>; <span class="hljs-keyword">let</span> adherence: <span class="hljs-type">String</span>; <span class="hljs-keyword">let</span> remaining: <span class="hljs-type">String</span> }
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">PDFReport</span> {
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">make</span>(<span class="hljs-params">title</span>: <span class="hljs-type">String</span>, <span class="hljs-params">period</span>: <span class="hljs-type">String</span>, <span class="hljs-params">rows</span>: [<span class="hljs-type">ReportRow</span>]) -&gt; <span class="hljs-type">Data</span> {
+        <span class="hljs-keyword">let</span> page <span class="hljs-operator">=</span> <span class="hljs-type">CGRect</span>(x: <span class="hljs-number">0</span>, y: <span class="hljs-number">0</span>, width: <span class="hljs-number">595</span>, height: <span class="hljs-number">842</span>)          <span class="hljs-comment">// A4 in points</span>
+        <span class="hljs-keyword">let</span> margin: <span class="hljs-type">CGFloat</span> <span class="hljs-operator">=</span> <span class="hljs-number">40</span>
+        <span class="hljs-keyword">let</span> format <span class="hljs-operator">=</span> <span class="hljs-type">UIGraphicsPDFRendererFormat</span>()
+        format.documentInfo <span class="hljs-operator">=</span> [kCGPDFContextTitle <span class="hljs-keyword">as</span> <span class="hljs-type">String</span>: title,
+                               kCGPDFContextCreator <span class="hljs-keyword">as</span> <span class="hljs-type">String</span>: <span class="hljs-string">"Track Your Pills"</span>]
+        <span class="hljs-keyword">let</span> renderer <span class="hljs-operator">=</span> <span class="hljs-type">UIGraphicsPDFRenderer</span>(bounds: page, format: format)
+
+        <span class="hljs-keyword">let</span> titleAttrs: [<span class="hljs-type">NSAttributedString</span>.<span class="hljs-type">Key</span>: <span class="hljs-keyword">Any</span>] <span class="hljs-operator">=</span> [.font: <span class="hljs-type">UIFont</span>.boldSystemFont(ofSize: <span class="hljs-number">20</span>)]
+        <span class="hljs-keyword">let</span> headAttrs: [<span class="hljs-type">NSAttributedString</span>.<span class="hljs-type">Key</span>: <span class="hljs-keyword">Any</span>] <span class="hljs-operator">=</span> [.font: <span class="hljs-type">UIFont</span>.boldSystemFont(ofSize: <span class="hljs-number">11</span>)]
+        <span class="hljs-keyword">let</span> bodyAttrs: [<span class="hljs-type">NSAttributedString</span>.<span class="hljs-type">Key</span>: <span class="hljs-keyword">Any</span>] <span class="hljs-operator">=</span> [.font: <span class="hljs-type">UIFont</span>.systemFont(ofSize: <span class="hljs-number">11</span>)]
+        <span class="hljs-keyword">let</span> columns: [<span class="hljs-type">CGFloat</span>] <span class="hljs-operator">=</span> [margin, <span class="hljs-number">230</span>, <span class="hljs-number">360</span>, <span class="hljs-number">460</span>]
+
+        <span class="hljs-keyword">return</span> renderer.pdfData { ctx <span class="hljs-keyword">in</span>
+            <span class="hljs-keyword">var</span> y: <span class="hljs-type">CGFloat</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>
+
+            <span class="hljs-keyword">func</span> <span class="hljs-title function_">newPage</span>() {
+                ctx.beginPage()
+                y <span class="hljs-operator">=</span> margin
+                (title <span class="hljs-keyword">as</span> <span class="hljs-type">NSString</span>).draw(at: <span class="hljs-type">CGPoint</span>(x: margin, y: y), withAttributes: titleAttrs)
+                y <span class="hljs-operator">+=</span> <span class="hljs-number">30</span>
+                (period <span class="hljs-keyword">as</span> <span class="hljs-type">NSString</span>).draw(at: <span class="hljs-type">CGPoint</span>(x: margin, y: y), withAttributes: bodyAttrs)
+                y <span class="hljs-operator">+=</span> <span class="hljs-number">28</span>
+                <span class="hljs-keyword">for</span> (i, h) <span class="hljs-keyword">in</span> [<span class="hljs-string">"Medication"</span>, <span class="hljs-string">"Schedule"</span>, <span class="hljs-string">"Adherence"</span>, <span class="hljs-string">"Remaining"</span>].enumerated() {
+                    (h <span class="hljs-keyword">as</span> <span class="hljs-type">NSString</span>).draw(at: <span class="hljs-type">CGPoint</span>(x: columns[i], y: y), withAttributes: headAttrs)
+                }
+                y <span class="hljs-operator">+=</span> <span class="hljs-number">20</span>
+            }
+
+            newPage()
+            <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> rows {
+                <span class="hljs-keyword">if</span> y <span class="hljs-operator">&gt;</span> page.height <span class="hljs-operator">-</span> margin <span class="hljs-operator">-</span> <span class="hljs-number">40</span> { newPage() }       <span class="hljs-comment">// paginate</span>
+                <span class="hljs-keyword">for</span> (i, text) <span class="hljs-keyword">in</span> [row.name, row.schedule, row.adherence, row.remaining].enumerated() {
+                    (text <span class="hljs-keyword">as</span> <span class="hljs-type">NSString</span>).draw(in: <span class="hljs-type">CGRect</span>(x: columns[i], y: y,
+                                                       width: (i <span class="hljs-operator">&lt;</span> <span class="hljs-number">3</span> <span class="hljs-operator">?</span> columns[i <span class="hljs-operator">+</span> <span class="hljs-number">1</span>] : page.width <span class="hljs-operator">-</span> margin) <span class="hljs-operator">-</span> columns[i] <span class="hljs-operator">-</span> <span class="hljs-number">8</span>,
+                                                       height: <span class="hljs-number">32</span>), withAttributes: bodyAttrs)
+                }
+                y <span class="hljs-operator">+=</span> <span class="hljs-number">34</span>
+            }
+
+            <span class="hljs-keyword">let</span> footer <span class="hljs-operator">=</span> <span class="hljs-string">"Generated on this device. Not medical advice; review with your clinician."</span>
+            (footer <span class="hljs-keyword">as</span> <span class="hljs-type">NSString</span>).draw(at: <span class="hljs-type">CGPoint</span>(x: margin, y: page.height <span class="hljs-operator">-</span> margin),
+                                      withAttributes: [.font: <span class="hljs-type">UIFont</span>.italicSystemFont(ofSize: <span class="hljs-number">9</span>)])
+        }
+    }
+}
+</code></pre>
+<p>To preview it, wrap <code>PDFView</code> (PDFKit, iOS 11+) in a <code>UIViewRepresentable</code>, set <code>document = PDFDocument(data: data)</code> and <code>autoScales = true</code>. To share or print, write the data to a temporary file named something human, like "Medication report – Oct 2026.pdf", and hand the URL to <code>ShareLink</code>. The system share sheet includes Print, Mail and Files, so you don't need any extra UI for "printable".</p>
+<hr>
+<h2 id="5-widgets-that-read-the-shared-store" tabindex="-1"><a class="observablehq-header-anchor" href="#5-widgets-that-read-the-shared-store">5. Widgets that read the shared store</a></h2>
+<p>"Home screen widgets for quick medication view… Upcoming medication reminders… Adherence at a glance." The widget's timeline provider opens the same App Group container and computes the next doses:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> WidgetKit
+<span class="hljs-keyword">import</span> SwiftData
+<span class="hljs-keyword">import</span> SwiftUI
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">NextDoseEntry</span>: <span class="hljs-title class_ inherited__">TimelineEntry</span> {
+    <span class="hljs-keyword">let</span> date: <span class="hljs-type">Date</span>
+    <span class="hljs-keyword">let</span> upcoming: [(name: <span class="hljs-type">String</span>, at: <span class="hljs-type">Date</span>)]
+    <span class="hljs-keyword">let</span> todayRate: <span class="hljs-type">Double</span>?
+}
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">NextDoseProvider</span>: <span class="hljs-title class_ inherited__">TimelineProvider</span> {
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">placeholder</span>(<span class="hljs-params">in</span> <span class="hljs-params">context</span>: <span class="hljs-type">Context</span>) -&gt; <span class="hljs-type">NextDoseEntry</span> {
+        <span class="hljs-type">NextDoseEntry</span>(date: .now, upcoming: [(<span class="hljs-string">"Vitamin D"</span>, .now)], todayRate: <span class="hljs-number">1</span>)
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">getSnapshot</span>(<span class="hljs-params">in</span> <span class="hljs-params">context</span>: <span class="hljs-type">Context</span>, <span class="hljs-params">completion</span>: <span class="hljs-keyword">@escaping</span> (<span class="hljs-type">NextDoseEntry</span>) -&gt; <span class="hljs-type">Void</span>) {
+        completion(makeEntry(at: .now))
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">getTimeline</span>(<span class="hljs-params">in</span> <span class="hljs-params">context</span>: <span class="hljs-type">Context</span>, <span class="hljs-params">completion</span>: <span class="hljs-keyword">@escaping</span> (<span class="hljs-type">Timeline</span>&lt;<span class="hljs-type">NextDoseEntry</span>&gt;) -&gt; <span class="hljs-type">Void</span>) {
+        <span class="hljs-keyword">let</span> entry <span class="hljs-operator">=</span> makeEntry(at: .now)
+        <span class="hljs-comment">// Refresh just after the next dose time, or in an hour if nothing is due.</span>
+        <span class="hljs-keyword">let</span> next <span class="hljs-operator">=</span> entry.upcoming.first<span class="hljs-operator">?</span>.at.addingTimeInterval(<span class="hljs-number">60</span>) <span class="hljs-operator">??</span> .now.addingTimeInterval(<span class="hljs-number">3600</span>)
+        completion(<span class="hljs-type">Timeline</span>(entries: [entry], policy: .after(next)))
+    }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">makeEntry</span>(<span class="hljs-params">at</span> <span class="hljs-params">now</span>: <span class="hljs-type">Date</span>) -&gt; <span class="hljs-type">NextDoseEntry</span> {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> container <span class="hljs-operator">=</span> <span class="hljs-keyword">try?</span> <span class="hljs-type">SharedStore</span>.makeContainer() <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">return</span> <span class="hljs-type">NextDoseEntry</span>(date: now, upcoming: [], todayRate: <span class="hljs-literal">nil</span>)
+        }
+        <span class="hljs-keyword">let</span> context <span class="hljs-operator">=</span> <span class="hljs-type">ModelContext</span>(container)
+        <span class="hljs-keyword">let</span> meds <span class="hljs-operator">=</span> (<span class="hljs-keyword">try?</span> context.fetch(<span class="hljs-type">FetchDescriptor</span>&lt;<span class="hljs-type">Medication</span>&gt;())) <span class="hljs-operator">??</span> []
+        <span class="hljs-keyword">let</span> cal <span class="hljs-operator">=</span> <span class="hljs-type">Calendar</span>.current
+        <span class="hljs-keyword">let</span> upcoming <span class="hljs-operator">=</span> meds.flatMap { med <span class="hljs-keyword">in</span>
+            med.scheduleTimes.compactMap { comps <span class="hljs-keyword">in</span>
+                cal.nextDate(after: now, matching: comps, matchingPolicy: .nextTime)
+                    .map { (name: med.name, at: <span class="hljs-variable">$0</span>) }
+            }
+        }
+        .sorted { <span class="hljs-variable">$0</span>.at <span class="hljs-operator">&lt;</span> <span class="hljs-variable">$1</span>.at }
+        .prefix(<span class="hljs-number">3</span>)
+        <span class="hljs-keyword">let</span> today <span class="hljs-operator">=</span> <span class="hljs-type">DateInterval</span>(start: cal.startOfDay(for: now), duration: <span class="hljs-number">86_400</span>)
+        <span class="hljs-keyword">let</span> stats <span class="hljs-operator">=</span> <span class="hljs-type">Adherence</span>.stats(for: meds.flatMap(\.intakes), in: today)
+        <span class="hljs-keyword">return</span> <span class="hljs-type">NextDoseEntry</span>(date: now, upcoming: <span class="hljs-type">Array</span>(upcoming),
+                             todayRate: stats.due <span class="hljs-operator">==</span> <span class="hljs-number">0</span> <span class="hljs-operator">?</span> nil : stats.rate)
+    }
+}
+</code></pre>
+<p>When the app logs a dose, call <code>WidgetCenter.shared.reloadTimelines(ofKind:)</code>, so the widget updates now rather than at its next scheduled refresh.</p>
+<p>Keep widget work small. Fetch, compute three items and return. Widgets have tight time and memory budgets.</p>
+<hr>
+<h2 id="6-export-backup-and-restore-without-a-server" tabindex="-1"><a class="observablehq-header-anchor" href="#6-export-backup-and-restore-without-a-server">6. Export, backup and restore without a server</a></h2>
+<p>"Export data in CSV or JSON formats… Complete backup and restore… Privacy-focused: all data stored locally." With no account and no cloud, export <em>is</em> the backup strategy, so treat it as a first-class feature.</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> Foundation
+<span class="hljs-keyword">import</span> CoreTransferable
+<span class="hljs-keyword">import</span> UniformTypeIdentifiers
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">BackupFile</span>: <span class="hljs-title class_ inherited__">Codable</span> {
+    <span class="hljs-keyword">struct</span> <span class="hljs-title class_">Med</span>: <span class="hljs-title class_ inherited__">Codable</span> {
+        <span class="hljs-keyword">let</span> name, form: <span class="hljs-type">String</span>; <span class="hljs-keyword">let</span> strength, barcode: <span class="hljs-type">String</span>?
+        <span class="hljs-keyword">let</span> quantityRemaining, dosePerIntake: <span class="hljs-type">Double</span>
+        <span class="hljs-keyword">let</span> scheduleTimes: [<span class="hljs-type">DateComponents</span>]; <span class="hljs-keyword">let</span> startDate: <span class="hljs-type">Date</span>; <span class="hljs-keyword">let</span> endDate: <span class="hljs-type">Date</span>?
+        <span class="hljs-keyword">let</span> intakes: [<span class="hljs-type">IntakeDTO</span>]
+    }
+    <span class="hljs-keyword">struct</span> <span class="hljs-title class_">IntakeDTO</span>: <span class="hljs-title class_ inherited__">Codable</span> { <span class="hljs-keyword">let</span> scheduledAt: <span class="hljs-type">Date</span>; <span class="hljs-keyword">let</span> loggedAt: <span class="hljs-type">Date</span>?; <span class="hljs-keyword">let</span> status: <span class="hljs-type">String</span> }
+
+    <span class="hljs-keyword">var</span> version <span class="hljs-operator">=</span> <span class="hljs-number">1</span>                 <span class="hljs-comment">// bump when the format changes; migrate on import</span>
+    <span class="hljs-keyword">let</span> exportedAt: <span class="hljs-type">Date</span>
+    <span class="hljs-keyword">let</span> medications: [<span class="hljs-type">Med</span>]
+}
+
+<span class="hljs-keyword">extension</span> <span class="hljs-title class_">BackupFile</span>: <span class="hljs-title class_ inherited__">Transferable</span> {
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">var</span> transferRepresentation: <span class="hljs-keyword">some</span> <span class="hljs-type">TransferRepresentation</span> {
+        <span class="hljs-type">DataRepresentation</span>(exportedContentType: .json) { backup <span class="hljs-keyword">in</span>
+            <span class="hljs-keyword">let</span> encoder <span class="hljs-operator">=</span> <span class="hljs-type">JSONEncoder</span>()
+            encoder.dateEncodingStrategy <span class="hljs-operator">=</span> .iso8601
+            encoder.outputFormatting <span class="hljs-operator">=</span> [.prettyPrinted, .sortedKeys]
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">try</span> encoder.encode(backup)
+        }
+        .suggestedFileName(<span class="hljs-string">"TrackYourPills-backup.json"</span>)
+    }
+}
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">CSVExport</span> {
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">intakes</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">meds</span>: [<span class="hljs-type">Medication</span>]) -&gt; <span class="hljs-type">String</span> {
+        <span class="hljs-keyword">func</span> <span class="hljs-title function_">esc</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">s</span>: <span class="hljs-type">String</span>) -&gt; <span class="hljs-type">String</span> { <span class="hljs-string">"<span class="hljs-subst">\"</span><span class="hljs-subst">\(s.replacingOccurrences(of: <span class="hljs-string">"<span class="hljs-subst">\"</span>"</span>, with: <span class="hljs-string">"<span class="hljs-subst">\"</span><span class="hljs-subst">\"</span>"</span>))</span><span class="hljs-subst">\"</span>"</span> }
+        <span class="hljs-keyword">let</span> iso <span class="hljs-operator">=</span> <span class="hljs-type">ISO8601DateFormatter</span>()
+        <span class="hljs-keyword">var</span> lines <span class="hljs-operator">=</span> [<span class="hljs-string">"medication,scheduled_at,logged_at,status"</span>]
+        <span class="hljs-keyword">for</span> med <span class="hljs-keyword">in</span> meds {
+            <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> med.intakes.sorted(by: { <span class="hljs-variable">$0</span>.scheduledAt <span class="hljs-operator">&lt;</span> <span class="hljs-variable">$1</span>.scheduledAt }) {
+                lines.append([esc(med.name), iso.string(from: i.scheduledAt),
+                              i.loggedAt.map(iso.string(from:)) <span class="hljs-operator">??</span> <span class="hljs-string">""</span>, i.statusRaw].joined(separator: <span class="hljs-string">","</span>))
+            }
+        }
+        <span class="hljs-keyword">return</span> lines.joined(separator: <span class="hljs-string">"<span class="hljs-subst">\n</span>"</span>)
+    }
+}
+</code></pre>
+<p><code>ShareLink(item: backup, preview: SharePreview("Backup"))</code> (iOS 16+) then lets the user save to Files, AirDrop it to another device or email it to themselves, all under their control. For restore, <code>.fileImporter(isPresented:allowedContentTypes:onCompletion:)</code> with <code>[.json]</code> picks the file. Decode it, check <code>version</code>, and import inside a single <code>ModelContext</code> transaction, so a bad file can't leave half a database.</p>
+<p>A design rule I'd hold to: <strong>JSON is the backup, CSV is the report.</strong> CSV is for spreadsheets and doctors and loses structure; only JSON round-trips. Label them that way in the UI.</p>
+<p>If you use <code>fileExporter</code> instead of <code>ShareLink</code>, note that Apple's current docs mark the original <code>fileExporter(isPresented:document:contentType:defaultFilename:onCompletion:)</code> as deprecated in iOS 27.2, in favour of the overload that adds <code>onCancellation:</code>.</p>
+<hr>
+<h2 id="7-interaction-warnings-handle-with-great-care" tabindex="-1"><a class="observablehq-header-anchor" href="#7-interaction-warnings-handle-with-great-care">7. Interaction warnings: handle with great care</a></h2>
+<p>The listing includes a "Drug Interaction Checker" with "Safety alerts before adding new medications" and "Medical disclaimers and recommendations". The technical side is simple: a bundled table of known interacting pairs, checked when a medication is added. The responsibility side is not:</p>
+<ul>
+<li><strong>Offline data ages.</strong> Show the data's version date in the warning.</li>
+<li><strong>Absence of a warning isn't safety.</strong> Word it as "No interactions found <em>in this app's list</em>", never "safe to combine".</li>
+<li><strong>Never block, always refer.</strong> Warn, show the source and recommend checking with a pharmacist or doctor.</li>
+</ul>
+<p>I won't publish a table here; the content is the hard part, and it must come from a reliable, licensed source.</p>
+<hr>
+<h2 id="8-real-world-example-track-your-pills" tabindex="-1"><a class="observablehq-header-anchor" href="#8-real-world-example-track-your-pills">8. Real-world example: Track Your Pills</a></h2>
+<p>All of this describes the approach I'd use, and recommend, for <strong><a href="https://apps.apple.com/us/app/track-your-pills/id1660782134" target="_blank" rel="noopener noreferrer">Track Your Pills</a></strong>.</p>
+<p><img src="https://bestlatestapps.com/assets/blog/from-barcode-to-pdf/track-your-pills-screenshot-1.jpg" alt="Track Your Pills App Store screenshot 1"></p>
+<p>At the time of writing, its App Store listing shows:</p>
+<ul>
+<li><strong>Free</strong>, in <strong>Medical</strong> and <strong>Health &amp; Fitness</strong></li>
+<li>First released in <strong>February 2023</strong></li>
+<li><strong>7 ratings</strong> in the US store, averaging about <strong>4.7 stars</strong></li>
+<li>Supports <strong>iOS 17.6 and later</strong></li>
+</ul>
+<p>How the listing maps to this article:</p>
+<table>
+<thead>
+<tr>
+<th>What the listing says</th>
+<th>Where it's covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Add medications with photos, barcodes, or manual entry" / "Barcode scanning for instant medication lookup"</td>
+<td><code>DataScannerViewController</code> plus a bundled lookup, with manual fallback (section 2)</td>
+</tr>
+<tr>
+<td>"Support for tablets, capsules, syrups, and injections"</td>
+<td><code>form</code> and a <code>Double</code> quantity in the model (section 1)</td>
+</tr>
+<tr>
+<td>"Visual adherence calendar… Weekly and overall adherence statistics"</td>
+<td>Due vs taken, skipped excluded (section 3)</td>
+</tr>
+<tr>
+<td>"Generate detailed medication reports… Share reports with healthcare providers"</td>
+<td><code>UIGraphicsPDFRenderer</code>, <code>PDFView</code> preview, <code>ShareLink</code> (section 4)</td>
+</tr>
+<tr>
+<td>"Home screen widgets… Upcoming medication reminders… Adherence at a glance"</td>
+<td>App Group SwiftData store read by a <code>TimelineProvider</code> (sections 1, 5)</td>
+</tr>
+<tr>
+<td>"Export data in CSV or JSON formats… Complete backup and restore"</td>
+<td><code>Transferable</code> JSON backup, CSV report, versioned import (section 6)</td>
+</tr>
+<tr>
+<td>"All data stored locally… No cloud sync required… No account creation needed"</td>
+<td><code>cloudKitDatabase: .none</code>, no server, user-controlled export (sections 1, 6)</td>
+</tr>
+</tbody>
+</table>
+<p><img src="https://bestlatestapps.com/assets/blog/from-barcode-to-pdf/track-your-pills-screenshot-2.jpg" alt="Track Your Pills App Store screenshot 2"></p>
+<p>The reminder side of the listing (pre-alarms, quiet hours, escalating reminders) is local-notification work. The patterns in my Daily Pills article, deterministic identifiers and the 64-pending-notification budget, apply directly, and escalation makes that budget matter even more.</p>
+<hr>
+<h2 id="9-before-you-ship-a-medication-tracker-a-checklist" tabindex="-1"><a class="observablehq-header-anchor" href="#9-before-you-ship-a-medication-tracker-a-checklist">9. Before you ship a medication tracker: a checklist</a></h2>
+<ol>
+<li><strong>Scanning degrades gracefully.</strong> Unsupported devices and denied camera access both lead to manual entry.</li>
+<li><strong>Scanned data is always reviewed by the user</strong> before it's saved.</li>
+<li><strong>The store lives in an App Group</strong>, and widgets read it without crashing on first launch, before any data exists.</li>
+<li><strong>Adherence definitions are explicit</strong>: skipped vs missed, late threshold, and days with nothing due.</li>
+<li><strong>The PDF paginates</strong>, has a title, a date range and a disclaimer, and opens cleanly in Files and Mail.</li>
+<li><strong>The JSON backup round-trips.</strong> Export, delete the app, reinstall, import: every record comes back.</li>
+<li><strong>Backups are versioned</strong>, and import is all-or-nothing.</li>
+<li><strong>Privacy claims are literally true</strong>: no CloudKit, no analytics surprises, and accurate App Privacy details.</li>
+<li><strong>Interaction warnings are worded carefully</strong> and dated, and always refer the user to a professional.</li>
+</ol>
+<hr>
+<h2 id="wrapping-up" tabindex="-1"><a class="observablehq-header-anchor" href="#wrapping-up">Wrapping up</a></h2>
+<p>A medication tracker becomes trustworthy through small, careful pieces: input that's fast but always confirmed, a clear model of what happened, statistics with honest definitions, and reports and exports that keep the user in control of their own data. VisionKit, SwiftData, WidgetKit and a PDF renderer cover nearly all of it, without a single server.</p>
+<p>Try it, or explore my other apps:</p>
+<ul>
+<li><strong>Track Your Pills (iOS):</strong> <a href="https://apps.apple.com/us/app/track-your-pills/id1660782134" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/track-your-pills/id1660782134</a></li>
+<li><strong>Daily Pills | Reminder (iOS):</strong> <a href="https://apps.apple.com/us/app/daily-pills-reminder/id1510203960" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/daily-pills-reminder/id1510203960</a></li>
+<li><strong>All of my free iOS apps:</strong> <a href="https://apps.apple.com/us/developer/alok-singh/id1508795536" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/developer/alok-singh/id1508795536</a></li>
+<li><strong>My portfolio:</strong> <a href="https://bestlatestapps.com/alok/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/alok/</a></li>
+</ul>
+<p>If you've built health features with no backend, how did you handle backups? Tell me in the comments.</p>
+<p><em>— Alok Kumar Singh</em></p>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/from-barcode-to-pdf/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/from-barcode-to-pdf/</a></em></p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./medication-reminders-that-actually-fire"><span>Medication Reminders That Actually Fire</span></a><a rel="next" href="./drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game"><span>Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game,</span></a></nav>
+<div>Articles by Alok Kumar Singh. Originals at <a href="https://bestlatestapps.com/blog/" target="_blank" rel="noopener noreferrer">bestlatestapps.com/blog</a>.</div>
+</footer>
+</div>
+</body>
+</html>

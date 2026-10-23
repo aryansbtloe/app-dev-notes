@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>Building a Hashtag Copier for iOS: Clean Tags, Editable Lists, Clipboard Privacy and Instagram&#x27;s New Five-Hashtag Limit | Alok Singh, App Dev Notes</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="modulepreload" href="./_observablehq/client.097df403.js">
+<link rel="modulepreload" href="./_observablehq/runtime.fa9f71c0.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.60afab10.js">
+<link rel="canonical" href="https://bestlatestapps.com/blog/building-a-hashtag-copier-for-ios/"><meta name="description" content="How to normalise tags so they actually work, model bundled categories with user edits, copy to the pasteboard without tripping privacy prompts, and redesign…">
+<script type="module">
+
+import "./_observablehq/client.097df403.js";
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Alok Singh, App Dev Notes</a></li>
+  </ol>
+  <div id="observablehq-search"><input type="search" placeholder="Search"></div>
+  <div id="observablehq-search-results"></div>
+  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.755d897f.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
+  <ol>
+    <li class="observablehq-link"><a href="./tic-tac-toe-in-swiftui-done-properly">Tic Tac Toe in SwiftUI, Done Properly</a></li>
+    <li class="observablehq-link"><a href="./the-sending-side-of-apns">The Sending Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./the-device-side-of-apns">The Device Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./text-plus-audio-fully-offline">Text Plus Audio, Fully Offline</a></li>
+    <li class="observablehq-link"><a href="./stop-hand-rolling-unit-conversions">Stop Hand-Rolling Unit Conversions</a></li>
+    <li class="observablehq-link"><a href="./shipping-a-4k-wallpaper-app-without-running-out-of-memory">Shipping a 4K Wallpaper App Without Running Out of Memory</a></li>
+    <li class="observablehq-link"><a href="./medication-reminders-that-actually-fire">Medication Reminders That Actually Fire</a></li>
+    <li class="observablehq-link"><a href="./from-barcode-to-pdf">From Barcode to PDF</a></li>
+    <li class="observablehq-link"><a href="./drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game">Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game,</a></li>
+    <li class="observablehq-link"><a href="./convert-as-you-type-currency-conversion-in-swift">Convert-As-You-Type Currency Conversion in Swift</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-first-bible-reader-on-ios">Building an Offline-First Bible Reader on iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-ebook-reader-for-ios">Building an Offline eBook Reader for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-quotes-app-in-swiftui">Building an Offline Quotes App in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-an-admob-earnings-dashboard-for-ios">Building an AdMob Earnings Dashboard for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-tap-to-match-marble-game-with-spritekit-and-swiftui">Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine">Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine</a></li>
+    <li class="observablehq-link"><a href="./building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe">Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioE</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-ios-component-catalogue">Building a Live iOS Component Catalogue</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-temple-darshan-app-for-ios">Building a Live Temple Darshan App for iOS</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./building-a-hashtag-copier-for-ios">Building a Hashtag Copier for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-chromatic-guitar-tuner-on-ios">Building a Chromatic Guitar Tuner on iOS</a></li>
+    <li class="observablehq-link"><a href="./animating-algorithms-in-swiftui">Animating Algorithms in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./a-practical-guide-to-ios-haptics">A Practical Guide to iOS Haptics</a></li>
+    <li class="observablehq-link"><a href="./a-document-scanner-in-an-afternoon">A Document Scanner in an Afternoon</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#1-normalise-tags-so-they-actually-work">1. Normalise tags so they actually work</a></li>
+<li class="observablehq-secondary-link"><a href="#2-bundled-categories-plus-the-users-edits">2. Bundled categories plus the user&#x27;s edits</a></li>
+<li class="observablehq-secondary-link"><a href="#3-an-editable-list-in-swift-ui">3. An editable list in SwiftUI</a></li>
+<li class="observablehq-secondary-link"><a href="#4-copying-to-the-pasteboard-carefully">4. Copying to the pasteboard, carefully</a></li>
+<li class="observablehq-secondary-link"><a href="#5-reading-the-pasteboard-privacy-prompts-and-how-to-avoid-them">5. Reading the pasteboard: privacy prompts and how to avoid them</a></li>
+<li class="observablehq-secondary-link"><a href="#6-when-the-platform-changes-the-rules-five-hashtags">6. When the platform changes the rules: five hashtags</a></li>
+<li class="observablehq-secondary-link"><a href="#7-real-world-example-hashtags-creator">7. Real-world example: Hashtags Creator</a></li>
+<li class="observablehq-secondary-link"><a href="#8-before-you-ship-a-text-and-clipboard-utility-a-checklist">8. Before you ship a text-and-clipboard utility: a checklist</a></li>
+<li class="observablehq-secondary-link"><a href="#wrapping-up">Wrapping up</a></li>
+</ol>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="building-a-hashtag-copier-for-i-os-clean-tags-editable-lists-clipboard-privacy-and-instagrams-new-five-hashtag-limit" tabindex="-1"><a class="observablehq-header-anchor" href="#building-a-hashtag-copier-for-i-os-clean-tags-editable-lists-clipboard-privacy-and-instagrams-new-five-hashtag-limit">Building a Hashtag Copier for iOS: Clean Tags, Editable Lists, Clipboard Privacy and Instagram's New Five-Hashtag Limit</a></h1>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/building-a-hashtag-copier-for-ios/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/building-a-hashtag-copier-for-ios/</a></em></p>
+<p><em>How to normalise tags so they actually work, model bundled categories with user edits, copy to the pasteboard without tripping privacy prompts, and redesign a "copy 30 tags" app now that Instagram allows five</em></p>
+<p><img src="https://bestlatestapps.com/assets/blog/building-a-hashtag-copier-for-ios/hashtags-creator-icon-512.jpg" alt="Hashtags Creator app icon"></p>
+<p><strong>Hashtags Creator</strong> was one of my first App Store apps. The idea was simple: pick a category, and a list of popular hashtags is copied and ready to paste into Instagram. You can customise the lists, delete tags that don't fit, and copy them in one tap.</p>
+<p>It's a small utility, but it's a good lens on three things every iOS developer runs into sooner or later. The first is <strong>text that has rules</strong>: a hashtag with a space or a <code>$</code> in it silently stops being a hashtag. The second is <strong>the pasteboard</strong>, which has become one of iOS's most privacy-sensitive APIs. The third is <strong>platform rules that change under you</strong>: in December 2025, Instagram announced it would limit posts and reels to five hashtags, down from 30. Overnight, an app built around copying 30 tags needed a new design.</p>
+<p>This article covers all three, with Swift that I've checked against Apple's documentation, and Instagram's rule taken from its own Help Center. Where I'm describing how I'd build something rather than how the shipped app works, I say so.</p>
+<hr>
+<h2 id="1-normalise-tags-so-they-actually-work" tabindex="-1"><a class="observablehq-header-anchor" href="#1-normalise-tags-so-they-actually-work">1. Normalise tags so they actually work</a></h2>
+<p>Instagram's Help Center is explicit: "Numbers are allowed in hashtags. However, spaces and special characters, like $ or %, won't work." Users type all sorts of things into a tag editor, like <code>#Travel Photography</code>, <code>sunset!!</code> or <code>#café</code>. So every tag should pass through one normaliser before it's stored or copied:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> Foundation
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">Hashtag</span> {
+    <span class="hljs-comment">/// Turns user input into a usable tag, or nil if nothing usable remains.</span>
+    <span class="hljs-comment">/// "Travel Photography!" -&gt; "#travelphotography", "#café" -&gt; "#café", "$$$" -&gt; nil</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">normalize</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">raw</span>: <span class="hljs-type">String</span>) -&gt; <span class="hljs-type">String</span>? {
+        <span class="hljs-keyword">let</span> body <span class="hljs-operator">=</span> raw
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .drop(while: { <span class="hljs-variable">$0</span> <span class="hljs-operator">==</span> <span class="hljs-string">"#"</span> })                        <span class="hljs-comment">// tolerate a typed "#"</span>
+            .filter { <span class="hljs-variable">$0</span>.isLetter <span class="hljs-operator">||</span> <span class="hljs-variable">$0</span>.isNumber <span class="hljs-operator">||</span> <span class="hljs-variable">$0</span> <span class="hljs-operator">==</span> <span class="hljs-string">"_"</span> } <span class="hljs-comment">// letters in any script, digits, underscore</span>
+            .lowercased()
+        <span class="hljs-keyword">guard</span> <span class="hljs-operator">!</span>body.isEmpty, body.contains(where: \.isLetter) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span> }  <span class="hljs-comment">// "#2024" alone is rarely useful</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-string">"#"</span> <span class="hljs-operator">+</span> body
+    }
+
+    <span class="hljs-comment">/// Splits pasted text like "#a #b, c\n#d" into clean, de-duplicated tags, keeping order.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">parse</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">text</span>: <span class="hljs-type">String</span>) -&gt; [<span class="hljs-type">String</span>] {
+        <span class="hljs-keyword">var</span> seen <span class="hljs-operator">=</span> <span class="hljs-type">Set</span>&lt;<span class="hljs-type">String</span>&gt;()
+        <span class="hljs-keyword">return</span> text
+            .components(separatedBy: <span class="hljs-type">CharacterSet</span>.whitespacesAndNewlines.union(.<span class="hljs-keyword">init</span>(charactersIn: <span class="hljs-string">",;"</span>)))
+            .compactMap(normalize)
+            .filter { seen.insert(<span class="hljs-variable">$0</span>).inserted }
+    }
+}
+</code></pre>
+<p>Three decisions worth explaining:</p>
+<ul>
+<li><strong><code>Character.isLetter</code> instead of <code>[a-z]</code>.</strong> Hashtags work in Hindi, Japanese and Arabic, and an ASCII-only filter would quietly delete them. Swift's <code>Character</code> properties are Unicode-aware.</li>
+<li><strong>Lowercase for de-duplication.</strong> <code>#Travel</code> and <code>#travel</code> are the same tag to the platform, and keeping both wastes a slot. If you want to keep readable casing, like <code>#TravelTips</code>, store the display form and de-duplicate on the lowercased form.</li>
+<li><strong>Allowing underscores.</strong> These are widely used in tags. Instagram's help page only calls out spaces and symbols like <code>$</code> and <code>%</code>, so test any other character you allow.</li>
+</ul>
+<hr>
+<h2 id="2-bundled-categories-plus-the-users-edits" tabindex="-1"><a class="observablehq-header-anchor" href="#2-bundled-categories-plus-the-users-edits">2. Bundled categories plus the user's edits</a></h2>
+<p>The listing promises "customize your lists, delete irrelevant tags". The clean way to model that is <strong>bundled defaults + a per-user overlay</strong>. You can then ship updated categories in an app update without wiping anyone's edits:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> Foundation
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">TagCategory</span>: <span class="hljs-title class_ inherited__">Codable</span>, <span class="hljs-title class_ inherited__">Identifiable</span>, <span class="hljs-title class_ inherited__">Hashable</span> {
+    <span class="hljs-keyword">let</span> id: <span class="hljs-type">String</span>              <span class="hljs-comment">// stable: "travel", "food", "fitness"</span>
+    <span class="hljs-keyword">var</span> name: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">var</span> tags: [<span class="hljs-type">String</span>]
+}
+
+<span class="hljs-comment">/// What the user changed, keyed by category id.</span>
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">UserEdits</span>: <span class="hljs-title class_ inherited__">Codable</span> {
+    <span class="hljs-keyword">var</span> added: [<span class="hljs-type">String</span>: [<span class="hljs-type">String</span>]] <span class="hljs-operator">=</span> [:]
+    <span class="hljs-keyword">var</span> removed: [<span class="hljs-type">String</span>: <span class="hljs-type">Set</span>&lt;<span class="hljs-type">String</span>&gt;] <span class="hljs-operator">=</span> [:]
+    <span class="hljs-keyword">var</span> order: [<span class="hljs-type">String</span>: [<span class="hljs-type">String</span>]] <span class="hljs-operator">=</span> [:]     <span class="hljs-comment">// optional manual ordering</span>
+}
+
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TagLibrary</span>: <span class="hljs-title class_ inherited__">ObservableObject</span> {
+    <span class="hljs-meta">@Published</span> <span class="hljs-keyword">private(set)</span> <span class="hljs-keyword">var</span> categories: [<span class="hljs-type">TagCategory</span>] <span class="hljs-operator">=</span> []
+    <span class="hljs-meta">@Published</span> <span class="hljs-keyword">var</span> edits <span class="hljs-operator">=</span> <span class="hljs-type">UserEdits</span>() { <span class="hljs-keyword">didSet</span> { save() } }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> editsURL <span class="hljs-operator">=</span> <span class="hljs-type">URL</span>.applicationSupportDirectory.appending(path: <span class="hljs-string">"tag-edits.json"</span>)
+
+    <span class="hljs-keyword">init</span>() {
+        <span class="hljs-keyword">let</span> url <span class="hljs-operator">=</span> <span class="hljs-type">Bundle</span>.main.url(forResource: <span class="hljs-string">"categories"</span>, withExtension: <span class="hljs-string">"json"</span>)<span class="hljs-operator">!</span>
+        categories <span class="hljs-operator">=</span> (<span class="hljs-keyword">try?</span> <span class="hljs-type">JSONDecoder</span>().decode([<span class="hljs-type">TagCategory</span>].<span class="hljs-keyword">self</span>, from: <span class="hljs-type">Data</span>(contentsOf: url))) <span class="hljs-operator">??</span> []
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> data <span class="hljs-operator">=</span> <span class="hljs-keyword">try?</span> <span class="hljs-type">Data</span>(contentsOf: editsURL) {
+            edits <span class="hljs-operator">=</span> (<span class="hljs-keyword">try?</span> <span class="hljs-type">JSONDecoder</span>().decode(<span class="hljs-type">UserEdits</span>.<span class="hljs-keyword">self</span>, from: data)) <span class="hljs-operator">??</span> <span class="hljs-type">UserEdits</span>()
+        }
+    }
+
+    <span class="hljs-comment">/// Defaults minus removals, plus additions, in the user's order if they set one.</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">tags</span>(<span class="hljs-params">for</span> <span class="hljs-params">category</span>: <span class="hljs-type">TagCategory</span>) -&gt; [<span class="hljs-type">String</span>] {
+        <span class="hljs-keyword">let</span> removed <span class="hljs-operator">=</span> edits.removed[category.id] <span class="hljs-operator">??</span> []
+        <span class="hljs-keyword">var</span> merged <span class="hljs-operator">=</span> category.tags.filter { <span class="hljs-operator">!</span>removed.contains(<span class="hljs-variable">$0</span>) } <span class="hljs-operator">+</span> (edits.added[category.id] <span class="hljs-operator">??</span> [])
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> order <span class="hljs-operator">=</span> edits.order[category.id] {
+            merged.sort { (order.firstIndex(of: <span class="hljs-variable">$0</span>) <span class="hljs-operator">??</span> .max) <span class="hljs-operator">&lt;</span> (order.firstIndex(of: <span class="hljs-variable">$1</span>) <span class="hljs-operator">??</span> .max) }
+        }
+        <span class="hljs-keyword">return</span> merged
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">remove</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">tag</span>: <span class="hljs-type">String</span>, <span class="hljs-params">from</span> <span class="hljs-params">category</span>: <span class="hljs-type">TagCategory</span>) {
+        edits.added[category.id]<span class="hljs-operator">?</span>.removeAll { <span class="hljs-variable">$0</span> <span class="hljs-operator">==</span> tag }
+        edits.removed[category.id, <span class="hljs-keyword">default</span>: []].insert(tag)
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">add</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">raw</span>: <span class="hljs-type">String</span>, <span class="hljs-params">to</span> <span class="hljs-params">category</span>: <span class="hljs-type">TagCategory</span>) {
+        <span class="hljs-keyword">for</span> tag <span class="hljs-keyword">in</span> <span class="hljs-type">Hashtag</span>.parse(raw) <span class="hljs-keyword">where</span> <span class="hljs-operator">!</span>tags(for: category).contains(tag) {
+            edits.removed[category.id]<span class="hljs-operator">?</span>.remove(tag)
+            edits.added[category.id, <span class="hljs-keyword">default</span>: []].append(tag)
+        }
+    }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">save</span>() {
+        <span class="hljs-keyword">try?</span> <span class="hljs-type">FileManager</span>.default.createDirectory(at: editsURL.deletingLastPathComponent(),
+                                                 withIntermediateDirectories: <span class="hljs-literal">true</span>)
+        <span class="hljs-keyword">try?</span> <span class="hljs-type">JSONEncoder</span>().encode(edits).write(to: editsURL, options: .atomic)
+    }
+}
+</code></pre>
+<p>The overlay is tiny, a few kilobytes of JSON. It also survives any content update, because the edits refer to stable category IDs and tag strings rather than to positions in a list.</p>
+<hr>
+<h2 id="3-an-editable-list-in-swift-ui" tabindex="-1"><a class="observablehq-header-anchor" href="#3-an-editable-list-in-swift-ui">3. An editable list in SwiftUI</a></h2>
+<p>With the library in place, the editing screen is mostly built-in SwiftUI behaviour: swipe to delete, an <code>EditButton</code> for reordering, and a field that accepts one tag or a pasted batch.</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> SwiftUI
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">CategoryEditor</span>: <span class="hljs-title class_ inherited__">View</span> {
+    <span class="hljs-meta">@ObservedObject</span> <span class="hljs-keyword">var</span> library: <span class="hljs-type">TagLibrary</span>
+    <span class="hljs-keyword">let</span> category: <span class="hljs-type">TagCategory</span>
+    <span class="hljs-meta">@State</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> newTag <span class="hljs-operator">=</span> <span class="hljs-string">""</span>
+
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">View</span> {
+        <span class="hljs-type">List</span> {
+            <span class="hljs-type">Section</span> {
+                <span class="hljs-type">HStack</span> {
+                    <span class="hljs-type">TextField</span>(<span class="hljs-string">"Add tags (space or comma separated)"</span>, text: <span class="hljs-variable">$newTag</span>)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                        .onSubmit(addTags)
+                    <span class="hljs-type">Button</span>(<span class="hljs-string">"Add"</span>, action: addTags).disabled(<span class="hljs-type">Hashtag</span>.parse(newTag).isEmpty)
+                }
+            }
+            <span class="hljs-type">Section</span>(<span class="hljs-string">"<span class="hljs-subst">\(library.tags(for: category).count)</span> tags"</span>) {
+                <span class="hljs-type">ForEach</span>(library.tags(for: category), id: \.<span class="hljs-keyword">self</span>) { tag <span class="hljs-keyword">in</span>
+                    <span class="hljs-type">Text</span>(tag).textSelection(.enabled)
+                        .swipeActions {
+                            <span class="hljs-type">Button</span>(<span class="hljs-string">"Delete"</span>, role: .destructive) { library.remove(tag, from: category) }
+                        }
+                }
+                .onMove { from, to <span class="hljs-keyword">in</span>
+                    <span class="hljs-keyword">var</span> current <span class="hljs-operator">=</span> library.tags(for: category)
+                    current.move(fromOffsets: from, toOffset: to)
+                    library.edits.order[category.id] <span class="hljs-operator">=</span> current
+                }
+            }
+        }
+        .navigationTitle(category.name)
+        .toolbar { <span class="hljs-type">EditButton</span>() }
+    }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">addTags</span>() { library.add(newTag, to: category); newTag <span class="hljs-operator">=</span> <span class="hljs-string">""</span> }
+}
+</code></pre>
+<p>A note on versions. The shipped app supports <strong>iOS 12</strong>, which predates SwiftUI, so an app with that deployment target needs UIKit for its main screens. The SwiftUI here is the approach I'd use today; the model in section 2 works unchanged under either.</p>
+<hr>
+<h2 id="4-copying-to-the-pasteboard-carefully" tabindex="-1"><a class="observablehq-header-anchor" href="#4-copying-to-the-pasteboard-carefully">4. Copying to the pasteboard, carefully</a></h2>
+<p>Copying is one line, <code>UIPasteboard.general.string = text</code>, but <code>setItems(_:options:)</code> (iOS 10+) gives you two privacy options worth knowing about:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> UIKit
+<span class="hljs-keyword">import</span> UniformTypeIdentifiers
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">Clipboard</span> {
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">copy</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">tags</span>: [<span class="hljs-type">String</span>], <span class="hljs-params">expiresAfter</span> <span class="hljs-params">seconds</span>: <span class="hljs-type">TimeInterval</span>? <span class="hljs-operator">=</span> <span class="hljs-literal">nil</span>, <span class="hljs-params">localOnly</span>: <span class="hljs-type">Bool</span> <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>) {
+        <span class="hljs-keyword">let</span> text <span class="hljs-operator">=</span> tags.joined(separator: <span class="hljs-string">" "</span>)
+        <span class="hljs-keyword">var</span> options: [<span class="hljs-type">UIPasteboard</span>.<span class="hljs-type">OptionsKey</span>: <span class="hljs-keyword">Any</span>] <span class="hljs-operator">=</span> [:]
+        <span class="hljs-keyword">if</span> localOnly { options[.localOnly] <span class="hljs-operator">=</span> <span class="hljs-literal">true</span> }                 <span class="hljs-comment">// don't sync via Universal Clipboard</span>
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> seconds { options[.expirationDate] <span class="hljs-operator">=</span> <span class="hljs-type">Date</span>.now.addingTimeInterval(seconds) }
+
+        <span class="hljs-type">UIPasteboard</span>.general.setItems([[<span class="hljs-type">UTType</span>.plainText.identifier: text]], options: options)
+        <span class="hljs-type">UINotificationFeedbackGenerator</span>().notificationOccurred(.success)
+    }
+}
+</code></pre>
+<ul>
+<li><strong><code>.localOnly</code></strong> keeps the item off the user's other devices. For hashtags this hardly matters. For anything sensitive, like a one-time code, it should be the default.</li>
+<li><strong><code>.expirationDate</code></strong> makes the system clear the item later. It's useful when you copy something temporary and don't want it hanging around the clipboard all day.</li>
+<li><strong>Always confirm the copy.</strong> A haptic plus a brief "Copied 5 tags" banner. With no visual change, users tap "Copy" three times to be sure.</li>
+</ul>
+<hr>
+<h2 id="5-reading-the-pasteboard-privacy-prompts-and-how-to-avoid-them" tabindex="-1"><a class="observablehq-header-anchor" href="#5-reading-the-pasteboard-privacy-prompts-and-how-to-avoid-them">5. Reading the pasteboard: privacy prompts and how to avoid them</a></h2>
+<p><em>Writing</em> to the pasteboard is silent. <em>Reading</em> it is not. Since iOS 14 the system shows a banner when an app reads another app's pasteboard content, and since iOS 16 a programmatic read without a clear user action triggers a permission alert. Apple's <code>UIPasteboard</code> documentation lists the properties you can use to avoid those prompts when the user hasn't shown intent, such as <code>hasStrings</code>, along with the pattern-detection methods.</p>
+<p>So, for an "import tags from clipboard" feature:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> SwiftUI
+<span class="hljs-keyword">import</span> UniformTypeIdentifiers
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">ImportFromClipboard</span>: <span class="hljs-title class_ inherited__">View</span> {
+    <span class="hljs-meta">@ObservedObject</span> <span class="hljs-keyword">var</span> library: <span class="hljs-type">TagLibrary</span>
+    <span class="hljs-keyword">let</span> category: <span class="hljs-type">TagCategory</span>
+
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">View</span> {
+        <span class="hljs-comment">// iOS 16+: the system paste button is user intent by definition, so there's no alert.</span>
+        <span class="hljs-type">PasteButton</span>(payloadType: <span class="hljs-type">String</span>.<span class="hljs-keyword">self</span>) { strings <span class="hljs-keyword">in</span>
+            library.add(strings.joined(separator: <span class="hljs-string">" "</span>), to: category)
+        }
+        .labelStyle(.titleAndIcon)
+    }
+}
+
+<span class="hljs-comment">// UIKit equivalent (iOS 16+): UIPasteControl, configured as the target of a paste action.</span>
+<span class="hljs-comment">// To merely decide whether to *show* an import option, check</span>
+<span class="hljs-comment">// UIPasteboard.general.hasStrings, which doesn't read the contents.</span>
+</code></pre>
+<p>The design rule I follow: <strong>never read the pasteboard on launch or on appear.</strong> Plenty of apps once did that to "helpfully" detect a copied link, and the iOS 14 banner made it visible to everyone. Read only in response to a tap, and preferably through <code>PasteButton</code> or <code>UIPasteControl</code>, which carry the user's intent with them.</p>
+<hr>
+<h2 id="6-when-the-platform-changes-the-rules-five-hashtags" tabindex="-1"><a class="observablehq-header-anchor" href="#6-when-the-platform-changes-the-rules-five-hashtags">6. When the platform changes the rules: five hashtags</a></h2>
+<p>This is the part of the article I didn't expect to write. Instagram's Help Center now says: "You can use up to 5 tags on a post. If you include more than 5 tags on a single photo/video, your comment won't post." Instagram announced the change in December 2025, saying that "using fewer (up to 5), more targeted hashtags rather than many generic ones" helps performance. (Meta's developer documentation for publishing through its API still listed 30 when I checked. That's for scheduling tools, not for someone pasting into the app.)</p>
+<p>For a hashtag app, that changes the core interaction from "copy the whole category" to <strong>"choose your five"</strong>:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">PickFive</span>: <span class="hljs-title class_ inherited__">View</span> {
+    <span class="hljs-keyword">let</span> tags: [<span class="hljs-type">String</span>]
+    <span class="hljs-meta">@State</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> picked: [<span class="hljs-type">String</span>] <span class="hljs-operator">=</span> []
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> limit <span class="hljs-operator">=</span> <span class="hljs-number">5</span>
+
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">View</span> {
+        <span class="hljs-type">List</span>(tags, id: \.<span class="hljs-keyword">self</span>) { tag <span class="hljs-keyword">in</span>
+            <span class="hljs-type">Button</span> {
+                <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> i <span class="hljs-operator">=</span> picked.firstIndex(of: tag) { picked.remove(at: i) }
+                <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> picked.count <span class="hljs-operator">&lt;</span> <span class="hljs-keyword">Self</span>.limit { picked.append(tag) }
+            } label: {
+                <span class="hljs-type">HStack</span> {
+                    <span class="hljs-type">Text</span>(tag)
+                    <span class="hljs-type">Spacer</span>()
+                    <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> i <span class="hljs-operator">=</span> picked.firstIndex(of: tag) { <span class="hljs-type">Text</span>(<span class="hljs-string">"<span class="hljs-subst">\(i <span class="hljs-operator">+</span> <span class="hljs-number">1</span>)</span>"</span>).bold() }   <span class="hljs-comment">// show pick order</span>
+                }
+            }
+            .disabled(picked.count <span class="hljs-operator">&gt;=</span> <span class="hljs-keyword">Self</span>.limit <span class="hljs-operator">&amp;&amp;</span> <span class="hljs-operator">!</span>picked.contains(tag))
+        }
+        .safeAreaInset(edge: .bottom) {
+            <span class="hljs-type">Button</span>(<span class="hljs-string">"Copy <span class="hljs-subst">\(picked.count)</span> of <span class="hljs-subst">\(<span class="hljs-keyword">Self</span>.limit)</span>"</span>) { <span class="hljs-type">Clipboard</span>.copy(picked) }
+                .buttonStyle(.borderedProminent)
+                .disabled(picked.isEmpty)
+                .padding()
+        }
+        .sensoryFeedback(.selection, trigger: picked)
+    }
+}
+</code></pre>
+<p>Lessons that apply well beyond hashtags:</p>
+<ul>
+<li><strong>Keep platform limits in one constant</strong>, ideally one you can update from a small remote config, not scattered as <code>30</code>s through the code.</li>
+<li><strong>Make the limit visible.</strong> "Copy 3 of 5" teaches the rule without a tutorial.</li>
+<li><strong>Lean into the new guidance.</strong> "Fewer, more specific tags" is a better product anyway. A category list of the 50 most generic tags is now the wrong default; the approach I'd use puts specific, niche tags first.</li>
+</ul>
+<hr>
+<h2 id="7-real-world-example-hashtags-creator" tabindex="-1"><a class="observablehq-header-anchor" href="#7-real-world-example-hashtags-creator">7. Real-world example: Hashtags Creator</a></h2>
+<p>All of this is grounded in <strong><a href="https://apps.apple.com/us/app/hashtags-creator/id1522156509" target="_blank" rel="noopener noreferrer">Hashtags Creator</a></strong>. The code above is the approach I'd use, written for this article, not the app's source.</p>
+<p><img src="https://bestlatestapps.com/assets/blog/building-a-hashtag-copier-for-ios/hashtags-creator-screenshot-1.jpg" alt="Hashtags Creator App Store screenshot 1"></p>
+<p>At the time of writing, its App Store listing shows:</p>
+<ul>
+<li><strong>Free</strong>, in <strong>Social Networking</strong> and <strong>Photo &amp; Video</strong></li>
+<li>First released in <strong>July 2020</strong></li>
+<li><strong>2 ratings</strong> in the US store, both <strong>5 stars</strong></li>
+<li>Supports <strong>iOS 12.0 and later</strong></li>
+</ul>
+<p>How the listing maps to this article:</p>
+<table>
+<thead>
+<tr>
+<th>What the listing says</th>
+<th>Where it's covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"most popular tags that could help you gain likes and followers"</td>
+<td>Bundled categories (section 2)</td>
+</tr>
+<tr>
+<td>"You can customize your lists, delete irrelevant tags"</td>
+<td>User-edit overlay and an editable list (sections 2–3)</td>
+</tr>
+<tr>
+<td>"copy and paste tags quickly"</td>
+<td>Pasteboard writes with options (section 4)</td>
+</tr>
+<tr>
+<td>"Just select your category and tags are copied and ready to get posted in Instagram"</td>
+<td>The copy flow, and the five-tag redesign (sections 4 and 6)</td>
+</tr>
+</tbody>
+</table>
+<p><img src="https://bestlatestapps.com/assets/blog/building-a-hashtag-copier-for-ios/hashtags-creator-screenshot-2.jpg" alt="Hashtags Creator App Store screenshot 2"></p>
+<p>Note that the listing's "copy a whole category" flow was written when Instagram allowed 30 tags. Section 6 is how I'd adapt it.</p>
+<hr>
+<h2 id="8-before-you-ship-a-text-and-clipboard-utility-a-checklist" tabindex="-1"><a class="observablehq-header-anchor" href="#8-before-you-ship-a-text-and-clipboard-utility-a-checklist">8. Before you ship a text-and-clipboard utility: a checklist</a></h2>
+<ol>
+<li><strong>Every tag passes through one normaliser</strong>, which handles non-Latin scripts, emoji input and pasted batches.</li>
+<li><strong>De-duplication is case-insensitive.</strong></li>
+<li><strong>User edits live in an overlay</strong>, so content updates never wipe them.</li>
+<li><strong>There's no pasteboard read on launch or on appear.</strong> Imports use <code>PasteButton</code> or <code>UIPasteControl</code>.</li>
+<li><strong>Copies are confirmed</strong> with haptics and a visible message.</li>
+<li><strong>Platform limits are a single, updatable constant</strong>, and the UI shows them.</li>
+<li><strong>Test the real destination.</strong> Paste into Instagram (or wherever you target) on a current build, because platform rules move.</li>
+<li><strong>Accessibility.</strong> VoiceOver reads tags sensibly; consider camel-casing display forms like <code>#TravelTips</code> for readability.</li>
+</ol>
+<hr>
+<h2 id="wrapping-up" tabindex="-1"><a class="observablehq-header-anchor" href="#wrapping-up">Wrapping up</a></h2>
+<p>Tiny utilities are where craft shows. Clean the input, respect the clipboard and design for the rules as they are today, not as they were when you shipped. Hashtags Creator started as a "copy 30 tags" app. Today, the most useful version of it is a "help me choose five good ones" app, and that's a better product.</p>
+<p>Try the app, or explore my other work:</p>
+<ul>
+<li><strong>Hashtags Creator (iOS):</strong> <a href="https://apps.apple.com/us/app/hashtags-creator/id1522156509" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/hashtags-creator/id1522156509</a></li>
+<li><strong>All of my free iOS apps:</strong> <a href="https://apps.apple.com/us/developer/alok-singh/id1508795536" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/developer/alok-singh/id1508795536</a></li>
+<li><strong>My portfolio:</strong> <a href="https://bestlatestapps.com/alok/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/alok/</a></li>
+</ul>
+<p>Has a platform rule change ever forced a redesign of your app? Tell me about it in the comments.</p>
+<p><em>— Alok Kumar Singh</em></p>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/building-a-hashtag-copier-for-ios/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/building-a-hashtag-copier-for-ios/</a></em></p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./building-a-live-temple-darshan-app-for-ios"><span>Building a Live Temple Darshan App for iOS</span></a><a rel="next" href="./building-a-chromatic-guitar-tuner-on-ios"><span>Building a Chromatic Guitar Tuner on iOS</span></a></nav>
+<div>Articles by Alok Kumar Singh. Originals at <a href="https://bestlatestapps.com/blog/" target="_blank" rel="noopener noreferrer">bestlatestapps.com/blog</a>.</div>
+</footer>
+</div>
+</body>
+</html>

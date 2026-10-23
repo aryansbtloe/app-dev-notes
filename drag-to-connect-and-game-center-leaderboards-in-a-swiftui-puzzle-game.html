@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game, Updated for iOS 26 | Alok Singh, App Dev Notes</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="modulepreload" href="./_observablehq/client.097df403.js">
+<link rel="modulepreload" href="./_observablehq/runtime.fa9f71c0.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.60afab10.js">
+<link rel="canonical" href="https://bestlatestapps.com/blog/drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game/"><meta name="description" content="A dot-matching board drawn with Canvas and TimelineView, drag gestures that chain same-colour dots, speed-based scoring and rising difficulty, pause and…">
+<script type="module">
+
+import "./_observablehq/client.097df403.js";
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Alok Singh, App Dev Notes</a></li>
+  </ol>
+  <div id="observablehq-search"><input type="search" placeholder="Search"></div>
+  <div id="observablehq-search-results"></div>
+  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.755d897f.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
+  <ol>
+    <li class="observablehq-link"><a href="./tic-tac-toe-in-swiftui-done-properly">Tic Tac Toe in SwiftUI, Done Properly</a></li>
+    <li class="observablehq-link"><a href="./the-sending-side-of-apns">The Sending Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./the-device-side-of-apns">The Device Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./text-plus-audio-fully-offline">Text Plus Audio, Fully Offline</a></li>
+    <li class="observablehq-link"><a href="./stop-hand-rolling-unit-conversions">Stop Hand-Rolling Unit Conversions</a></li>
+    <li class="observablehq-link"><a href="./shipping-a-4k-wallpaper-app-without-running-out-of-memory">Shipping a 4K Wallpaper App Without Running Out of Memory</a></li>
+    <li class="observablehq-link"><a href="./medication-reminders-that-actually-fire">Medication Reminders That Actually Fire</a></li>
+    <li class="observablehq-link"><a href="./from-barcode-to-pdf">From Barcode to PDF</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game">Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game,</a></li>
+    <li class="observablehq-link"><a href="./convert-as-you-type-currency-conversion-in-swift">Convert-As-You-Type Currency Conversion in Swift</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-first-bible-reader-on-ios">Building an Offline-First Bible Reader on iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-ebook-reader-for-ios">Building an Offline eBook Reader for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-quotes-app-in-swiftui">Building an Offline Quotes App in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-an-admob-earnings-dashboard-for-ios">Building an AdMob Earnings Dashboard for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-tap-to-match-marble-game-with-spritekit-and-swiftui">Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine">Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine</a></li>
+    <li class="observablehq-link"><a href="./building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe">Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioE</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-ios-component-catalogue">Building a Live iOS Component Catalogue</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-temple-darshan-app-for-ios">Building a Live Temple Darshan App for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-hashtag-copier-for-ios">Building a Hashtag Copier for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-chromatic-guitar-tuner-on-ios">Building a Chromatic Guitar Tuner on iOS</a></li>
+    <li class="observablehq-link"><a href="./animating-algorithms-in-swiftui">Animating Algorithms in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./a-practical-guide-to-ios-haptics">A Practical Guide to iOS Haptics</a></li>
+    <li class="observablehq-link"><a href="./a-document-scanner-in-an-afternoon">A Document Scanner in an Afternoon</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#1-the-board-as-plain-data">1. The board as plain data</a></li>
+<li class="observablehq-secondary-link"><a href="#2-drawing-and-ticking-with-canvas-and-timeline-view">2. Drawing and ticking with Canvas and TimelineView</a></li>
+<li class="observablehq-secondary-link"><a href="#3-drag-to-connect">3. Drag to connect</a></li>
+<li class="observablehq-secondary-link"><a href="#4-scoring-speed">4. Scoring speed</a></li>
+<li class="observablehq-secondary-link"><a href="#5-signing-in-to-game-center">5. Signing in to Game Center</a></li>
+<li class="observablehq-secondary-link"><a href="#6-submitting-scores-the-modern-way">6. Submitting scores the modern way</a></li>
+<li class="observablehq-secondary-link"><a href="#7-showing-leaderboards-in-i-os-18-and-26">7. Showing leaderboards in iOS 18 and 26</a></li>
+<li class="observablehq-secondary-link"><a href="#8-real-world-example-speck-match">8. Real-world example: Speck Match</a></li>
+<li class="observablehq-secondary-link"><a href="#9-before-you-ship-a-game-center-game-a-checklist">9. Before you ship a Game Center game: a checklist</a></li>
+<li class="observablehq-secondary-link"><a href="#wrapping-up">Wrapping up</a></li>
+</ol>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="drag-to-connect-and-game-center-leaderboards-in-a-swift-ui-puzzle-game-updated-for-i-os-26" tabindex="-1"><a class="observablehq-header-anchor" href="#drag-to-connect-and-game-center-leaderboards-in-a-swift-ui-puzzle-game-updated-for-i-os-26">Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game, Updated for iOS 26</a></h1>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game/</a></em></p>
+<p><em>A dot-matching board drawn with Canvas and TimelineView, drag gestures that chain same-colour dots, speed-based scoring and rising difficulty, pause and resume, and modern Game Center: authentication, submitting scores, the access point, and what iOS 26 deprecates</em></p>
+<p><img src="https://bestlatestapps.com/assets/blog/drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game/speck-match-icon-512.jpg" alt="Speck Match app icon"></p>
+<p><strong>Speck Match</strong> is a puzzle game about speed. You tap and drag to connect matching coloured dots and clear them from the board, and the faster you match, the higher your score. New dots appear faster as you play, until the board is crowded and you're racing to keep up. Then you see where you rank on Game Center leaderboards against players worldwide.</p>
+<p>I wrote about tap-based gameplay in SpriteKit in my Marbles Popperz article. Speck Match lets me cover two different things. The first is a <strong>drag-to-connect mechanic built entirely in SwiftUI</strong>, with <code>Canvas</code> and <code>TimelineView</code> instead of a game engine. The second is <strong>Game Center leaderboards in depth</strong>, which have changed more in the last few iOS releases than most developers realise. The latest change: Apple's documentation now marks <code>GKGameCenterViewController</code> as <strong>deprecated in iOS 26</strong>.</p>
+<p>As always, the code is written for this article and checked against Apple's documentation. Gameplay rules beyond what the App Store listing says are labelled as the approach I'd use.</p>
+<hr>
+<h2 id="1-the-board-as-plain-data" tabindex="-1"><a class="observablehq-header-anchor" href="#1-the-board-as-plain-data">1. The board as plain data</a></h2>
+<p>Keep the game state free of SwiftUI, so you can unit-test it:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> Foundation
+<span class="hljs-keyword">import</span> CoreGraphics
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">SpeckColor</span>: <span class="hljs-title class_ inherited__">CaseIterable</span> { <span class="hljs-keyword">case</span> coral, mint, sky, lemon, violet }
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">Speck</span>: <span class="hljs-title class_ inherited__">Identifiable</span>, <span class="hljs-title class_ inherited__">Equatable</span> {
+    <span class="hljs-keyword">let</span> id <span class="hljs-operator">=</span> <span class="hljs-type">UUID</span>()
+    <span class="hljs-keyword">var</span> color: <span class="hljs-type">SpeckColor</span>
+    <span class="hljs-keyword">var</span> position: <span class="hljs-type">CGPoint</span>
+    <span class="hljs-keyword">let</span> bornAt: <span class="hljs-type">TimeInterval</span>            <span class="hljs-comment">// game time when it appeared, used for speed scoring</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> radius: <span class="hljs-type">CGFloat</span> <span class="hljs-operator">=</span> <span class="hljs-number">18</span>
+}
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">Board</span> {
+    <span class="hljs-keyword">var</span> specks: [<span class="hljs-type">Speck</span>] <span class="hljs-operator">=</span> []
+    <span class="hljs-keyword">var</span> score <span class="hljs-operator">=</span> <span class="hljs-number">0</span>
+    <span class="hljs-keyword">var</span> elapsed: <span class="hljs-type">TimeInterval</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>       <span class="hljs-comment">// game time only; doesn't advance while paused</span>
+    <span class="hljs-keyword">var</span> nextSpawn: <span class="hljs-type">TimeInterval</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>
+    <span class="hljs-keyword">var</span> difficulty: <span class="hljs-type">Difficulty</span>
+
+    <span class="hljs-comment">/// Seconds between new specks: starts relaxed, tightens as you play.</span>
+    <span class="hljs-keyword">var</span> spawnInterval: <span class="hljs-type">TimeInterval</span> {
+        <span class="hljs-built_in">max</span>(difficulty.minInterval, difficulty.startInterval <span class="hljs-operator">-</span> elapsed <span class="hljs-operator">*</span> difficulty.ramp)
+    }
+
+    <span class="hljs-keyword">var</span> isOverfull: <span class="hljs-type">Bool</span> { specks.count <span class="hljs-operator">&gt;=</span> difficulty.maxSpecks }
+}
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">Difficulty</span> {
+    <span class="hljs-keyword">let</span> startInterval: <span class="hljs-type">TimeInterval</span>, minInterval: <span class="hljs-type">TimeInterval</span>, ramp: <span class="hljs-type">Double</span>
+    <span class="hljs-keyword">let</span> maxSpecks: <span class="hljs-type">Int</span>, colors: <span class="hljs-type">Int</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> easy   <span class="hljs-operator">=</span> <span class="hljs-type">Difficulty</span>(startInterval: <span class="hljs-number">1.4</span>, minInterval: <span class="hljs-number">0.55</span>, ramp: <span class="hljs-number">0.004</span>, maxSpecks: <span class="hljs-number">40</span>, colors: <span class="hljs-number">3</span>)
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> normal <span class="hljs-operator">=</span> <span class="hljs-type">Difficulty</span>(startInterval: <span class="hljs-number">1.1</span>, minInterval: <span class="hljs-number">0.40</span>, ramp: <span class="hljs-number">0.006</span>, maxSpecks: <span class="hljs-number">36</span>, colors: <span class="hljs-number">4</span>)
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> hard   <span class="hljs-operator">=</span> <span class="hljs-type">Difficulty</span>(startInterval: <span class="hljs-number">0.9</span>, minInterval: <span class="hljs-number">0.28</span>, ramp: <span class="hljs-number">0.008</span>, maxSpecks: <span class="hljs-number">32</span>, colors: <span class="hljs-number">5</span>)
+}
+</code></pre>
+<p>"The game gets faster and more challenging as you progress" becomes one computed property, <code>spawnInterval</code>, and "Multiple difficulty levels" becomes three rows of numbers. The values are illustrative; tune them by playing.</p>
+<hr>
+<h2 id="2-drawing-and-ticking-with-canvas-and-timeline-view" tabindex="-1"><a class="observablehq-header-anchor" href="#2-drawing-and-ticking-with-canvas-and-timeline-view">2. Drawing and ticking with Canvas and TimelineView</a></h2>
+<p>For a few dozen circles, SwiftUI's <code>Canvas</code> (iOS 15+) is fast and simple. It's immediate-mode drawing, so you're not creating one view per dot. <code>TimelineView(.animation(minimumInterval:paused:))</code> (iOS 15+) gives you a frame clock that <strong>can be paused</strong>, which matters later:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> SwiftUI
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">BoardView</span>: <span class="hljs-title class_ inherited__">View</span> {
+    <span class="hljs-meta">@State</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> game <span class="hljs-operator">=</span> <span class="hljs-type">GameModel</span>(difficulty: .normal)
+    <span class="hljs-meta">@Environment</span>(\.scenePhase) <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> scenePhase
+
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">View</span> {
+        <span class="hljs-type">TimelineView</span>(.animation(minimumInterval: <span class="hljs-number">1.0</span> <span class="hljs-operator">/</span> <span class="hljs-number">60</span>, paused: game.isPaused)) { timeline <span class="hljs-keyword">in</span>
+            <span class="hljs-type">Canvas</span> { context, size <span class="hljs-keyword">in</span>
+                <span class="hljs-keyword">for</span> speck <span class="hljs-keyword">in</span> game.board.specks {
+                    <span class="hljs-keyword">let</span> rect <span class="hljs-operator">=</span> <span class="hljs-type">CGRect</span>(x: speck.position.x <span class="hljs-operator">-</span> <span class="hljs-type">Speck</span>.radius, y: speck.position.y <span class="hljs-operator">-</span> <span class="hljs-type">Speck</span>.radius,
+                                      width: <span class="hljs-type">Speck</span>.radius <span class="hljs-operator">*</span> <span class="hljs-number">2</span>, height: <span class="hljs-type">Speck</span>.radius <span class="hljs-operator">*</span> <span class="hljs-number">2</span>)
+                    context.fill(<span class="hljs-type">Path</span>(ellipseIn: rect), with: .color(speck.color.swiftUIColor))
+                }
+                <span class="hljs-keyword">if</span> game.chain.count <span class="hljs-operator">&gt;</span> <span class="hljs-number">1</span> {                       <span class="hljs-comment">// the line you're drawing</span>
+                    <span class="hljs-keyword">var</span> path <span class="hljs-operator">=</span> <span class="hljs-type">Path</span>()
+                    path.addLines(game.chain.compactMap { id <span class="hljs-keyword">in</span> game.board.specks.first { <span class="hljs-variable">$0</span>.id <span class="hljs-operator">==</span> id }<span class="hljs-operator">?</span>.position })
+                    context.stroke(path, with: .color(.white.opacity(<span class="hljs-number">0.8</span>)), lineWidth: <span class="hljs-number">6</span>)
+                }
+            }
+            .onChange(of: timeline.date) { <span class="hljs-keyword">_</span>, now <span class="hljs-keyword">in</span> game.tick(now: now) }
+        }
+        .gesture(dragGesture)
+        .onChange(of: scenePhase) { <span class="hljs-keyword">_</span>, phase <span class="hljs-keyword">in</span> <span class="hljs-keyword">if</span> phase <span class="hljs-operator">!=</span> .active { game.pause() } }
+    }
+}
+</code></pre>
+<p>This code uses iOS 17 conveniences (<code>@Observable</code> and the two-parameter <code>onChange</code>). For the app's iOS 15.6 minimum, the same model works as an <code>ObservableObject</code> with the single-parameter <code>onChange(of:perform:)</code>. Two more notes. Keep <code>tick</code> cheap: spawn when due, check the overfull condition, and nothing else. And auto-pause when the scene leaves <code>.active</code>. A phone call shouldn't cost a player their best run, and the listing promises "Pause and resume anytime".</p>
+<hr>
+<h2 id="3-drag-to-connect" tabindex="-1"><a class="observablehq-header-anchor" href="#3-drag-to-connect">3. Drag to connect</a></h2>
+<p>The listing's core loop is "Tap and drag dots to match them by color. Connect matching colored dots to clear them from the board." The approach I'd use: touching down on a dot starts a chain. Dragging over another dot of the same colour, close enough to the last one in the chain, adds it. Lifting your finger clears the chain if it has at least two dots.</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-meta">@Observable</span>
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">GameModel</span> {
+    <span class="hljs-keyword">var</span> board: <span class="hljs-type">Board</span>
+    <span class="hljs-keyword">var</span> chain: [<span class="hljs-type">UUID</span>] <span class="hljs-operator">=</span> []
+    <span class="hljs-keyword">var</span> isPaused <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> lastTick: <span class="hljs-type">Date</span>?
+
+    <span class="hljs-keyword">init</span>(<span class="hljs-params">difficulty</span>: <span class="hljs-type">Difficulty</span>) { board <span class="hljs-operator">=</span> <span class="hljs-type">Board</span>(difficulty: difficulty) }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">speck</span>(<span class="hljs-params">at</span> <span class="hljs-params">point</span>: <span class="hljs-type">CGPoint</span>) -&gt; <span class="hljs-type">Speck</span>? {
+        board.specks.first { hypot(<span class="hljs-variable">$0</span>.position.x <span class="hljs-operator">-</span> point.x, <span class="hljs-variable">$0</span>.position.y <span class="hljs-operator">-</span> point.y) <span class="hljs-operator">&lt;=</span> <span class="hljs-type">Speck</span>.radius <span class="hljs-operator">*</span> <span class="hljs-number">1.4</span> }
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">dragChanged</span>(<span class="hljs-params">to</span> <span class="hljs-params">point</span>: <span class="hljs-type">CGPoint</span>) {
+        <span class="hljs-keyword">guard</span> <span class="hljs-operator">!</span>isPaused, <span class="hljs-keyword">let</span> hit <span class="hljs-operator">=</span> speck(at: point) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+        <span class="hljs-keyword">if</span> chain.isEmpty { chain <span class="hljs-operator">=</span> [hit.id]; <span class="hljs-keyword">return</span> }
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> first <span class="hljs-operator">=</span> board.specks.first(where: { <span class="hljs-variable">$0</span>.id <span class="hljs-operator">==</span> chain[<span class="hljs-number">0</span>] }),
+              hit.color <span class="hljs-operator">==</span> first.color, <span class="hljs-operator">!</span>chain.contains(hit.id) <span class="hljs-keyword">else</span> {
+            <span class="hljs-comment">// Dragging back onto the previous dot undoes the last link, like most connect games.</span>
+            <span class="hljs-keyword">if</span> chain.count <span class="hljs-operator">&gt;=</span> <span class="hljs-number">2</span>, hit.id <span class="hljs-operator">==</span> chain[chain.count <span class="hljs-operator">-</span> <span class="hljs-number">2</span>] { chain.removeLast() }
+            <span class="hljs-keyword">return</span>
+        }
+        chain.append(hit.id)
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">pause</span>() { isPaused <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>; lastTick <span class="hljs-operator">=</span> <span class="hljs-literal">nil</span> }
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">resume</span>() { isPaused <span class="hljs-operator">=</span> <span class="hljs-literal">false</span> }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">tick</span>(<span class="hljs-params">now</span>: <span class="hljs-type">Date</span>) {
+        <span class="hljs-keyword">defer</span> { lastTick <span class="hljs-operator">=</span> now }
+        <span class="hljs-keyword">guard</span> <span class="hljs-operator">!</span>isPaused, <span class="hljs-keyword">let</span> last <span class="hljs-operator">=</span> lastTick <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+        board.elapsed <span class="hljs-operator">+=</span> <span class="hljs-built_in">min</span>(now.timeIntervalSince(last), <span class="hljs-number">0.05</span>)     <span class="hljs-comment">// clamp hitches and resumes</span>
+        <span class="hljs-keyword">if</span> board.elapsed <span class="hljs-operator">&gt;=</span> board.nextSpawn {
+            spawn()
+            board.nextSpawn <span class="hljs-operator">=</span> board.elapsed <span class="hljs-operator">+</span> board.spawnInterval
+        }
+        <span class="hljs-keyword">if</span> board.isOverfull { pause() <span class="hljs-comment">/* game over: submit score, show results */</span> }
+    }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">spawn</span>() {
+        <span class="hljs-keyword">let</span> palette <span class="hljs-operator">=</span> <span class="hljs-type">Array</span>(<span class="hljs-type">SpeckColor</span>.allCases.prefix(board.difficulty.colors))
+        board.specks.append(<span class="hljs-type">Speck</span>(color: palette.randomElement()<span class="hljs-operator">!</span>,
+                                  position: <span class="hljs-type">CGPoint</span>(x: .random(in: <span class="hljs-number">30</span><span class="hljs-operator">...</span><span class="hljs-number">360</span>), y: .random(in: <span class="hljs-number">120</span><span class="hljs-operator">...</span><span class="hljs-number">700</span>)),
+                                  bornAt: board.elapsed))
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">dragEnded</span>() {
+        <span class="hljs-keyword">defer</span> { chain <span class="hljs-operator">=</span> [] }
+        <span class="hljs-keyword">guard</span> chain.count <span class="hljs-operator">&gt;=</span> <span class="hljs-number">2</span> <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+        <span class="hljs-keyword">let</span> cleared <span class="hljs-operator">=</span> board.specks.filter { chain.contains(<span class="hljs-variable">$0</span>.id) }
+        board.specks.removeAll { chain.contains(<span class="hljs-variable">$0</span>.id) }
+        board.score <span class="hljs-operator">+=</span> <span class="hljs-type">Scoring</span>.points(for: cleared, now: board.elapsed)
+    }
+}
+
+<span class="hljs-keyword">extension</span> <span class="hljs-title class_">BoardView</span> {
+    <span class="hljs-keyword">var</span> dragGesture: <span class="hljs-keyword">some</span> <span class="hljs-type">Gesture</span> {
+        <span class="hljs-type">DragGesture</span>(minimumDistance: <span class="hljs-number">0</span>)                 <span class="hljs-comment">// 0 so a touch-down starts the chain immediately</span>
+            .onChanged { game.dragChanged(to: <span class="hljs-variable">$0</span>.location) }
+            .onEnded { <span class="hljs-keyword">_</span> <span class="hljs-keyword">in</span> game.dragEnded() }
+    }
+}
+</code></pre>
+<p><code>DragGesture(minimumDistance: 0)</code> is the important detail. The default minimum distance means the first few points of a drag are swallowed, which feels laggy in a speed game. Make the hit radius a bit larger than the drawn dot (1.4× here). Fingers are bigger than dots, and fair hit areas are most of what "Smooth, responsive controls" means in practice.</p>
+<hr>
+<h2 id="4-scoring-speed" tabindex="-1"><a class="observablehq-header-anchor" href="#4-scoring-speed">4. Scoring speed</a></h2>
+<p>"Speed matters – faster matches = higher scores." There are many ways to express that. The approach I'd use rewards <strong>how fresh the dots were</strong> when you cleared them, plus a bonus for longer chains:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">enum</span> <span class="hljs-title class_">Scoring</span> {
+    <span class="hljs-comment">/// Each dot: 10 points, plus up to 10 more if cleared within 3 seconds of appearing.</span>
+    <span class="hljs-comment">/// Chains: +25% per dot beyond two.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">points</span>(<span class="hljs-params">for</span> <span class="hljs-params">specks</span>: [<span class="hljs-type">Speck</span>], <span class="hljs-params">now</span>: <span class="hljs-type">TimeInterval</span>) -&gt; <span class="hljs-type">Int</span> {
+        <span class="hljs-keyword">let</span> perDot <span class="hljs-operator">=</span> specks.map { speck -&gt; <span class="hljs-type">Double</span> <span class="hljs-keyword">in</span>
+            <span class="hljs-keyword">let</span> age <span class="hljs-operator">=</span> now <span class="hljs-operator">-</span> speck.bornAt
+            <span class="hljs-keyword">let</span> freshness <span class="hljs-operator">=</span> <span class="hljs-built_in">max</span>(<span class="hljs-number">0</span>, <span class="hljs-number">1</span> <span class="hljs-operator">-</span> age <span class="hljs-operator">/</span> <span class="hljs-number">3</span>)           <span class="hljs-comment">// 1.0 when brand new, 0 after 3 s</span>
+            <span class="hljs-keyword">return</span> <span class="hljs-number">10</span> <span class="hljs-operator">+</span> <span class="hljs-number">10</span> <span class="hljs-operator">*</span> freshness
+        }
+        <span class="hljs-keyword">let</span> chainBonus <span class="hljs-operator">=</span> <span class="hljs-number">1</span> <span class="hljs-operator">+</span> <span class="hljs-number">0.25</span> <span class="hljs-operator">*</span> <span class="hljs-type">Double</span>(<span class="hljs-built_in">max</span>(<span class="hljs-number">0</span>, specks.count <span class="hljs-operator">-</span> <span class="hljs-number">2</span>))
+        <span class="hljs-keyword">return</span> <span class="hljs-type">Int</span>((perDot.reduce(<span class="hljs-number">0</span>, <span class="hljs-operator">+</span>) <span class="hljs-operator">*</span> chainBonus).rounded())
+    }
+}
+</code></pre>
+<p>The <code>bornAt</code> timestamp uses <strong>game time</strong> (<code>board.elapsed</code>), not wall-clock time. Otherwise pausing would make every dot on screen "old", and the player would be punished for taking a break.</p>
+<hr>
+<h2 id="5-signing-in-to-game-center" tabindex="-1"><a class="observablehq-header-anchor" href="#5-signing-in-to-game-center">5. Signing in to Game Center</a></h2>
+<p>Leaderboards start with authentication. On iOS, you set <code>GKLocalPlayer.local.authenticateHandler</code> once, early. GameKit calls it, possibly more than once, with either a view controller to present or the result:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> GameKit
+<span class="hljs-keyword">import</span> UIKit
+
+<span class="hljs-meta">@MainActor</span>
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">GameCenter</span>: <span class="hljs-title class_ inherited__">ObservableObject</span> {
+    <span class="hljs-meta">@Published</span> <span class="hljs-keyword">private(set)</span> <span class="hljs-keyword">var</span> isAuthenticated <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">authenticate</span>() {
+        <span class="hljs-type">GKLocalPlayer</span>.local.authenticateHandler <span class="hljs-operator">=</span> { [<span class="hljs-keyword">weak</span> <span class="hljs-keyword">self</span>] viewController, error <span class="hljs-keyword">in</span>
+            <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> viewController {
+                <span class="hljs-comment">// GameKit needs to show its sign-in UI.</span>
+                <span class="hljs-type">UIApplication</span>.shared.connectedScenes
+                    .compactMap { (<span class="hljs-variable">$0</span> <span class="hljs-keyword">as?</span> <span class="hljs-type">UIWindowScene</span>)<span class="hljs-operator">?</span>.keyWindow<span class="hljs-operator">?</span>.rootViewController }
+                    .first<span class="hljs-operator">?</span>.present(viewController, animated: <span class="hljs-literal">true</span>)
+                <span class="hljs-keyword">return</span>
+            }
+            <span class="hljs-keyword">self</span><span class="hljs-operator">?</span>.isAuthenticated <span class="hljs-operator">=</span> <span class="hljs-type">GKLocalPlayer</span>.local.isAuthenticated
+            <span class="hljs-keyword">if</span> <span class="hljs-keyword">self</span><span class="hljs-operator">?</span>.isAuthenticated <span class="hljs-operator">==</span> <span class="hljs-literal">true</span> {
+                <span class="hljs-type">GKAccessPoint</span>.shared.location <span class="hljs-operator">=</span> .topLeading
+                <span class="hljs-type">GKAccessPoint</span>.shared.isActive <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>        <span class="hljs-comment">// show it on menus, not during play</span>
+            }
+            <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> error { <span class="hljs-built_in">print</span>(<span class="hljs-string">"Game Center unavailable: <span class="hljs-subst">\(error.localizedDescription)</span>"</span>) }
+        }
+    }
+}
+</code></pre>
+<p>Rules I follow:</p>
+<ul>
+<li><strong>Never block the game on Game Center.</strong> If the player declines or is offline, the game plays normally and leaderboards just aren't offered.</li>
+<li><strong>Present the sign-in view controller from a real, visible controller.</strong> Presenting from a controller that isn't in the window is a classic "Game Center never shows" bug.</li>
+<li><strong>Show the access point only on menus.</strong> <code>GKAccessPoint</code> (iOS 14+) is a small Game Center badge that the system draws. Set <code>isActive = false</code> during play so it doesn't overlap the board.</li>
+</ul>
+<hr>
+<h2 id="6-submitting-scores-the-modern-way" tabindex="-1"><a class="observablehq-header-anchor" href="#6-submitting-scores-the-modern-way">6. Submitting scores the modern way</a></h2>
+<p>The old <code>GKScore</code> class is <strong>deprecated since iOS 14</strong>. The current API is a single class method on <code>GKLeaderboard</code>:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">extension</span> <span class="hljs-title class_">GameCenter</span> {
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> leaderboardID <span class="hljs-operator">=</span> <span class="hljs-string">"speck.highscores.normal"</span>   <span class="hljs-comment">// as configured in App Store Connect</span>
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">submit</span>(<span class="hljs-params">score</span>: <span class="hljs-type">Int</span>, <span class="hljs-params">difficulty</span>: <span class="hljs-type">String</span>) {
+        <span class="hljs-keyword">guard</span> <span class="hljs-type">GKLocalPlayer</span>.local.isAuthenticated <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+        <span class="hljs-type">GKLeaderboard</span>.submitScore(score, context: <span class="hljs-number">0</span>, player: <span class="hljs-type">GKLocalPlayer</span>.local,
+                                  leaderboardIDs: [<span class="hljs-string">"speck.highscores.<span class="hljs-subst">\(difficulty)</span>"</span>]) { error <span class="hljs-keyword">in</span>
+            <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> error { <span class="hljs-built_in">print</span>(<span class="hljs-string">"Score submit failed: <span class="hljs-subst">\(error.localizedDescription)</span>"</span>) }
+        }
+    }
+}
+</code></pre>
+<p>Design choices:</p>
+<ul>
+<li><strong>One leaderboard per difficulty.</strong> An easy-mode score and a hard-mode score aren't comparable, and mixing them makes the board meaningless. Each needs its own ID in App Store Connect.</li>
+<li><strong>Submit at game over, not per match.</strong> One call per run is plenty. Game Center keeps each player's best score according to the leaderboard's settings.</li>
+<li><strong>Configure the sort order and format in App Store Connect</strong> (high to low, integer). The client just sends numbers.</li>
+</ul>
+<hr>
+<h2 id="7-showing-leaderboards-in-i-os-18-and-26" tabindex="-1"><a class="observablehq-header-anchor" href="#7-showing-leaderboards-in-i-os-18-and-26">7. Showing leaderboards in iOS 18 and 26</a></h2>
+<p>This is where things have moved. For years the answer was "present a <code>GKGameCenterViewController</code>". Apple's documentation now marks <strong><code>GKGameCenterViewController</code> deprecated in iOS 26</strong>. Meanwhile, <code>GKAccessPoint</code> gained <code>trigger(leaderboardID:playerScope:timeScope:handler:)</code> in <strong>iOS 18</strong>, which opens the system Game Center UI straight to one leaderboard.</p>
+<p>Since Speck Match supports iOS 15.6 and later, the approach I'd use branches:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> GameKit
+<span class="hljs-keyword">import</span> SwiftUI
+
+<span class="hljs-keyword">extension</span> <span class="hljs-title class_">GameCenter</span> {
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">showLeaderboard</span>(<span class="hljs-params">id</span>: <span class="hljs-type">String</span>, <span class="hljs-params">from</span> <span class="hljs-params">presenter</span>: <span class="hljs-type">UIViewController</span>) {
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">#available</span>(<span class="hljs-keyword">iOS</span> <span class="hljs-number">18</span>, <span class="hljs-operator">*</span>) {
+            <span class="hljs-type">GKAccessPoint</span>.shared.trigger(leaderboardID: id, playerScope: .global, timeScope: .allTime) { }
+        } <span class="hljs-keyword">else</span> {
+            <span class="hljs-comment">// iOS 14–17: the dashboard view controller (deprecated in iOS 26, fine on older systems).</span>
+            <span class="hljs-keyword">let</span> vc <span class="hljs-operator">=</span> <span class="hljs-type">GKGameCenterViewController</span>(leaderboardID: id, playerScope: .global, timeScope: .allTime)
+            vc.gameCenterDelegate <span class="hljs-operator">=</span> presenter <span class="hljs-keyword">as?</span> <span class="hljs-type">GKGameCenterControllerDelegate</span>
+            presenter.present(vc, animated: <span class="hljs-literal">true</span>)
+        }
+    }
+
+    <span class="hljs-comment">/// In-game "Top 10" without leaving the app (iOS 14+).</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">topTen</span>(<span class="hljs-params">id</span>: <span class="hljs-type">String</span>) <span class="hljs-keyword">async</span> <span class="hljs-keyword">throws</span> -&gt; [(rank: <span class="hljs-type">Int</span>, name: <span class="hljs-type">String</span>, score: <span class="hljs-type">String</span>)] {
+        <span class="hljs-keyword">let</span> boards <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> <span class="hljs-type">GKLeaderboard</span>.loadLeaderboards(IDs: [id])
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> board <span class="hljs-operator">=</span> boards.first <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> [] }
+        <span class="hljs-keyword">let</span> (<span class="hljs-keyword">_</span>, entries, <span class="hljs-keyword">_</span>) <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> board.loadEntries(for: .global, timeScope: .allTime,
+                                                         range: <span class="hljs-type">NSRange</span>(location: <span class="hljs-number">1</span>, length: <span class="hljs-number">10</span>))
+        <span class="hljs-keyword">return</span> entries.map { (<span class="hljs-variable">$0</span>.rank, <span class="hljs-variable">$0</span>.player.displayName, <span class="hljs-variable">$0</span>.formattedScore) }
+    }
+}
+</code></pre>
+<p><code>loadEntries(for:timeScope:range:)</code> returns the local player's entry, the requested range and the total count. Use <code>formattedScore</code> rather than formatting the raw value yourself, so the display matches what Game Center shows everywhere else.</p>
+<p>The app's most recent release notes include "Fixed Game Center leaderboard display issue". That's a reminder that the leaderboard <em>display</em> path is the fragile part. Test it on every iOS version you support, and especially on both sides of the iOS 18 branch.</p>
+<hr>
+<h2 id="8-real-world-example-speck-match" tabindex="-1"><a class="observablehq-header-anchor" href="#8-real-world-example-speck-match">8. Real-world example: Speck Match</a></h2>
+<p>This walkthrough is grounded in building <strong><a href="https://apps.apple.com/us/app/speck-match/id1600688336" target="_blank" rel="noopener noreferrer">Speck Match</a></strong>. The code is the approach I'd use, written for this article, not the shipped source.</p>
+<p><img src="https://bestlatestapps.com/assets/blog/drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game/speck-match-screenshot-1.jpg" alt="Speck Match App Store screenshot"></p>
+<p>At the time of writing, its App Store listing shows:</p>
+<ul>
+<li><strong>Free to play</strong> ("with optional ads that can be removed"), in <strong>Games</strong> (Board, Strategy)</li>
+<li>First released in <strong>December 2021</strong></li>
+<li><strong>1 rating</strong> in the US store, <strong>5 stars</strong></li>
+<li>Supports <strong>iOS 15.6 and later</strong></li>
+</ul>
+<p>How the listing maps to this article:</p>
+<table>
+<thead>
+<tr>
+<th>What the listing says</th>
+<th>Where it's covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Tap and drag to connect matching dots"</td>
+<td><code>DragGesture</code> chains (section 3)</td>
+</tr>
+<tr>
+<td>"Game gets faster and more challenging as you progress" / "Multiple difficulty levels"</td>
+<td><code>spawnInterval</code> and difficulty presets (section 1)</td>
+</tr>
+<tr>
+<td>"Speed matters - faster matches = higher scores"</td>
+<td>Freshness-based scoring (section 4)</td>
+</tr>
+<tr>
+<td>"Pause and resume anytime"</td>
+<td>A pausable <code>TimelineView</code> and game time (sections 2 and 4)</td>
+</tr>
+<tr>
+<td>"Game Center integration" / "Global leaderboards"</td>
+<td>Authentication, submitting and display (sections 5–7)</td>
+</tr>
+<tr>
+<td>Release notes: "Fixed Game Center leaderboard display issue"</td>
+<td>Version-branching the display path (section 7)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="9-before-you-ship-a-game-center-game-a-checklist" tabindex="-1"><a class="observablehq-header-anchor" href="#9-before-you-ship-a-game-center-game-a-checklist">9. Before you ship a Game Center game: a checklist</a></h2>
+<ol>
+<li><strong>The game plays fully without Game Center.</strong> Declined sign-in and offline are both tested.</li>
+<li><strong><code>authenticateHandler</code> is set once, early</strong>, and presents from a visible view controller.</li>
+<li><strong>There's no <code>GKScore</code>.</strong> Use <code>GKLeaderboard.submitScore</code>, once per run.</li>
+<li><strong>There's one leaderboard per difficulty</strong>, with IDs matching App Store Connect exactly.</li>
+<li><strong>The display path is branched.</strong> <code>GKAccessPoint.trigger(leaderboardID:…)</code> on iOS 18+, the view controller on older systems, and both tested.</li>
+<li><strong>The access point is hidden during play.</strong></li>
+<li><strong>Scores use game time.</strong> Pausing never changes the outcome.</li>
+<li><strong>Hit areas are generous</strong>, and <code>minimumDistance: 0</code> is set for instant drags.</li>
+<li><strong>Colour isn't the only cue.</strong> Consider shapes for colour-blind players.</li>
+</ol>
+<hr>
+<h2 id="wrapping-up" tabindex="-1"><a class="observablehq-header-anchor" href="#wrapping-up">Wrapping up</a></h2>
+<p>A drag-to-connect game shows how far plain SwiftUI goes. <code>Canvas</code> draws the board, <code>TimelineView</code> ticks it, <code>DragGesture</code> drives it, and nothing needs a game engine. Game Center is the part that keeps evolving. Use the iOS 14 <code>GKLeaderboard</code> APIs, adopt the iOS 18 access-point trigger, and plan for the iOS 26 deprecation of the old dashboard controller.</p>
+<p>Play the game, or explore my other work:</p>
+<ul>
+<li><strong>Speck Match (iOS):</strong> <a href="https://apps.apple.com/us/app/speck-match/id1600688336" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/speck-match/id1600688336</a></li>
+<li><strong>All of my free iOS apps:</strong> <a href="https://apps.apple.com/us/developer/alok-singh/id1508795536" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/developer/alok-singh/id1508795536</a></li>
+<li><strong>My portfolio:</strong> <a href="https://bestlatestapps.com/alok/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/alok/</a></li>
+</ul>
+<p>Think you can top the leaderboard? Let me know your score in the comments.</p>
+<p><em>— Alok Kumar Singh</em></p>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game/</a></em></p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./from-barcode-to-pdf"><span>From Barcode to PDF</span></a><a rel="next" href="./convert-as-you-type-currency-conversion-in-swift"><span>Convert-As-You-Type Currency Conversion in Swift</span></a></nav>
+<div>Articles by Alok Kumar Singh. Originals at <a href="https://bestlatestapps.com/blog/" target="_blank" rel="noopener noreferrer">bestlatestapps.com/blog</a>.</div>
+</footer>
+</div>
+</body>
+</html>

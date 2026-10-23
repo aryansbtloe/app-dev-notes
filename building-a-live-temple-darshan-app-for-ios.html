@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>Building a Live Temple Darshan App for iOS: HLS Streaming, Picture-in-Picture, Time-Zone-Correct Aarti Reminders and Notification Actions | Alok Singh, App Dev Notes</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="modulepreload" href="./_observablehq/client.097df403.js">
+<link rel="modulepreload" href="./_observablehq/runtime.fa9f71c0.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.60afab10.js">
+<link rel="canonical" href="https://bestlatestapps.com/blog/building-a-live-temple-darshan-app-for-ios/"><meta name="description" content="Playing live and recorded video with AVPlayer, keeping darshan going in picture-in-picture, falling back gracefully when a stream is down, scheduling aarti…">
+<script type="module">
+
+import "./_observablehq/client.097df403.js";
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Alok Singh, App Dev Notes</a></li>
+  </ol>
+  <div id="observablehq-search"><input type="search" placeholder="Search"></div>
+  <div id="observablehq-search-results"></div>
+  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.755d897f.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
+  <ol>
+    <li class="observablehq-link"><a href="./tic-tac-toe-in-swiftui-done-properly">Tic Tac Toe in SwiftUI, Done Properly</a></li>
+    <li class="observablehq-link"><a href="./the-sending-side-of-apns">The Sending Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./the-device-side-of-apns">The Device Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./text-plus-audio-fully-offline">Text Plus Audio, Fully Offline</a></li>
+    <li class="observablehq-link"><a href="./stop-hand-rolling-unit-conversions">Stop Hand-Rolling Unit Conversions</a></li>
+    <li class="observablehq-link"><a href="./shipping-a-4k-wallpaper-app-without-running-out-of-memory">Shipping a 4K Wallpaper App Without Running Out of Memory</a></li>
+    <li class="observablehq-link"><a href="./medication-reminders-that-actually-fire">Medication Reminders That Actually Fire</a></li>
+    <li class="observablehq-link"><a href="./from-barcode-to-pdf">From Barcode to PDF</a></li>
+    <li class="observablehq-link"><a href="./drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game">Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game,</a></li>
+    <li class="observablehq-link"><a href="./convert-as-you-type-currency-conversion-in-swift">Convert-As-You-Type Currency Conversion in Swift</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-first-bible-reader-on-ios">Building an Offline-First Bible Reader on iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-ebook-reader-for-ios">Building an Offline eBook Reader for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-quotes-app-in-swiftui">Building an Offline Quotes App in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-an-admob-earnings-dashboard-for-ios">Building an AdMob Earnings Dashboard for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-tap-to-match-marble-game-with-spritekit-and-swiftui">Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine">Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine</a></li>
+    <li class="observablehq-link"><a href="./building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe">Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioE</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-ios-component-catalogue">Building a Live iOS Component Catalogue</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./building-a-live-temple-darshan-app-for-ios">Building a Live Temple Darshan App for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-hashtag-copier-for-ios">Building a Hashtag Copier for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-chromatic-guitar-tuner-on-ios">Building a Chromatic Guitar Tuner on iOS</a></li>
+    <li class="observablehq-link"><a href="./animating-algorithms-in-swiftui">Animating Algorithms in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./a-practical-guide-to-ios-haptics">A Practical Guide to iOS Haptics</a></li>
+    <li class="observablehq-link"><a href="./a-document-scanner-in-an-afternoon">A Document Scanner in an Afternoon</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#1-model-temples-around-their-own-time-zone">1. Model temples around their own time zone</a></li>
+<li class="observablehq-secondary-link"><a href="#2-playing-live-darshan-with-av-player">2. Playing live darshan with AVPlayer</a></li>
+<li class="observablehq-secondary-link"><a href="#3-bringing-the-app-back-from-picture-in-picture">3. Bringing the app back from picture-in-picture</a></li>
+<li class="observablehq-secondary-link"><a href="#4-when-the-live-stream-is-down-recorded-darshan-and-playback-speed">4. When the live stream is down: recorded darshan and playback speed</a></li>
+<li class="observablehq-secondary-link"><a href="#5-aarti-reminders-that-are-right-everywhere">5. Aarti reminders that are right everywhere</a></li>
+<li class="observablehq-secondary-link"><a href="#6-watch-now-and-remind-later">6. &quot;Watch Now&quot; and &quot;Remind Later&quot;</a></li>
+<li class="observablehq-secondary-link"><a href="#7-a-next-aarti-widget-and-opening-maps">7. A next-aarti widget and opening Maps</a></li>
+<li class="observablehq-secondary-link"><a href="#8-real-world-example-mandir-darshan">8. Real-world example: Mandir Darshan</a></li>
+<li class="observablehq-secondary-link"><a href="#9-before-you-ship-a-live-streaming-devotional-app-a-checklist">9. Before you ship a live-streaming devotional app: a checklist</a></li>
+<li class="observablehq-secondary-link"><a href="#wrapping-up">Wrapping up</a></li>
+</ol>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="building-a-live-temple-darshan-app-for-i-os-hls-streaming-picture-in-picture-time-zone-correct-aarti-reminders-and-notification-actions" tabindex="-1"><a class="observablehq-header-anchor" href="#building-a-live-temple-darshan-app-for-i-os-hls-streaming-picture-in-picture-time-zone-correct-aarti-reminders-and-notification-actions">Building a Live Temple Darshan App for iOS: HLS Streaming, Picture-in-Picture, Time-Zone-Correct Aarti Reminders and Notification Actions</a></h1>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/building-a-live-temple-darshan-app-for-ios/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/building-a-live-temple-darshan-app-for-ios/</a></em></p>
+<p><em>Playing live and recorded video with AVPlayer, keeping darshan going in picture-in-picture, falling back gracefully when a stream is down, scheduling aarti reminders in the temple's time zone for devotees anywhere in the world, "Watch Now" and "Remind Later" actions, a next-aarti widget, and opening a temple in Maps the iOS 26 way</em></p>
+<p><img src="https://bestlatestapps.com/assets/blog/building-a-live-temple-darshan-app-for-ios/mandir-darshan-icon-512.jpg" alt="Mandir Darshan app icon"></p>
+<p>For many people, a daily visit to the temple is no longer a walk down the road. There are elderly parents who can't travel, and families abroad who miss the aarti they grew up with. That's the reason behind <strong>Mandir Darshan</strong>, my app for watching live darshan from India's temples, including Siddhivinayak, Kashi Vishwanath and Somnath. It sets aarti reminders, and it carries the Bhagavad Gita, chalisas, Panchang and more, with no sign-in.</p>
+<p>I've written before about the offline audio side of devotional apps, in my Hanuman Chalisa article. This one is about the <strong>live</strong> side, which turns out to be a tour of some of the most practical media and notification APIs on iOS:</p>
+<ul>
+<li>streaming HLS video with <code>AVPlayer</code></li>
+<li><strong>picture-in-picture</strong>, so darshan keeps playing while you use other apps</li>
+<li>falling back to recorded video when a live stream is unavailable</li>
+<li><strong>aarti reminders that fire at the right moment wherever the devotee lives</strong></li>
+<li>notification actions, a next-aarti widget, and opening a temple in Apple Maps with the new iOS 26 MapKit initialisers</li>
+</ul>
+<p>The APIs are checked against Apple's documentation. Where I describe how I'd build something rather than the shipped code, I say so.</p>
+<hr>
+<h2 id="1-model-temples-around-their-own-time-zone" tabindex="-1"><a class="observablehq-header-anchor" href="#1-model-temples-around-their-own-time-zone">1. Model temples around their own time zone</a></h2>
+<p>The most important design decision isn't about video at all. <strong>Aarti times belong to the temple, not the phone.</strong> A 7:00 a.m. aarti in Varanasi is 7:00 a.m. India time, whether the person watching is in Pune, London or New Jersey. So the model stores times as wall-clock components <em>plus</em> the temple's time zone:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> Foundation
+<span class="hljs-keyword">import</span> CoreLocation
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">AartiTime</span>: <span class="hljs-title class_ inherited__">Codable</span>, <span class="hljs-title class_ inherited__">Hashable</span> {
+    <span class="hljs-keyword">let</span> name: <span class="hljs-type">String</span>              <span class="hljs-comment">// "Mangala Aarti"</span>
+    <span class="hljs-keyword">let</span> hour: <span class="hljs-type">Int</span>, minute: <span class="hljs-type">Int</span>    <span class="hljs-comment">// wall-clock time at the temple</span>
+}
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">Temple</span>: <span class="hljs-title class_ inherited__">Codable</span>, <span class="hljs-title class_ inherited__">Identifiable</span>, <span class="hljs-title class_ inherited__">Hashable</span> {
+    <span class="hljs-keyword">let</span> id: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">let</span> name: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">let</span> city: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">let</span> latitude: <span class="hljs-type">Double</span>, longitude: <span class="hljs-type">Double</span>
+    <span class="hljs-keyword">let</span> timeZoneID: <span class="hljs-type">String</span>        <span class="hljs-comment">// "Asia/Kolkata"</span>
+    <span class="hljs-keyword">let</span> liveStreamURL: <span class="hljs-type">URL</span>?       <span class="hljs-comment">// HLS (.m3u8) when a live feed is available</span>
+    <span class="hljs-keyword">let</span> recordedVideos: [<span class="hljs-type">URL</span>]
+    <span class="hljs-keyword">let</span> aartis: [<span class="hljs-type">AartiTime</span>]
+
+    <span class="hljs-keyword">var</span> timeZone: <span class="hljs-type">TimeZone</span> { <span class="hljs-type">TimeZone</span>(identifier: timeZoneID) <span class="hljs-operator">??</span> .current }
+    <span class="hljs-keyword">var</span> coordinate: <span class="hljs-type">CLLocationCoordinate2D</span> { .<span class="hljs-keyword">init</span>(latitude: latitude, longitude: longitude) }
+}
+
+<span class="hljs-keyword">extension</span> <span class="hljs-title class_">Temple</span> {
+    <span class="hljs-comment">/// The next occurrence of an aarti, as an absolute Date, computed in the temple's calendar.</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">nextOccurrence</span>(<span class="hljs-params">of</span> <span class="hljs-params">aarti</span>: <span class="hljs-type">AartiTime</span>, <span class="hljs-params">after</span> <span class="hljs-params">now</span>: <span class="hljs-type">Date</span> <span class="hljs-operator">=</span> .now) -&gt; <span class="hljs-type">Date</span>? {
+        <span class="hljs-keyword">var</span> calendar <span class="hljs-operator">=</span> <span class="hljs-type">Calendar</span>(identifier: .gregorian)
+        calendar.timeZone <span class="hljs-operator">=</span> timeZone
+        <span class="hljs-keyword">return</span> calendar.nextDate(after: now,
+                                 matching: <span class="hljs-type">DateComponents</span>(hour: aarti.hour, minute: aarti.minute),
+                                 matchingPolicy: .nextTime)
+    }
+}
+</code></pre>
+<p>With this in place, displaying "Mangala Aarti, 7:00 a.m. IST (9:30 p.m. your time)" is a formatting job, and every reminder in section 5 is correct by construction.</p>
+<hr>
+<h2 id="2-playing-live-darshan-with-av-player" tabindex="-1"><a class="observablehq-header-anchor" href="#2-playing-live-darshan-with-av-player">2. Playing live darshan with AVPlayer</a></h2>
+<p>Live temple streams are typically delivered as <strong>HLS</strong>, which <code>AVPlayer</code> plays natively. <code>AVPlayerViewController</code> gives you the system controls, AirPlay and picture-in-picture support for free:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> AVKit
+<span class="hljs-keyword">import</span> SwiftUI
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">DarshanPlayer</span>: <span class="hljs-title class_ inherited__">UIViewControllerRepresentable</span> {
+    <span class="hljs-keyword">let</span> player: <span class="hljs-type">AVPlayer</span>
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">makeUIViewController</span>(<span class="hljs-params">context</span>: <span class="hljs-type">Context</span>) -&gt; <span class="hljs-type">AVPlayerViewController</span> {
+        <span class="hljs-keyword">let</span> vc <span class="hljs-operator">=</span> <span class="hljs-type">AVPlayerViewController</span>()
+        vc.player <span class="hljs-operator">=</span> player
+        vc.allowsPictureInPicturePlayback <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>                    <span class="hljs-comment">// iOS 9+</span>
+        vc.canStartPictureInPictureAutomaticallyFromInline <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>   <span class="hljs-comment">// iOS 14.2+: PiP when the app goes to background</span>
+        <span class="hljs-keyword">return</span> vc
+    }
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">updateUIViewController</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">vc</span>: <span class="hljs-type">AVPlayerViewController</span>, <span class="hljs-params">context</span>: <span class="hljs-type">Context</span>) {}
+}
+
+<span class="hljs-meta">@MainActor</span>
+<span class="hljs-keyword">func</span> <span class="hljs-title function_">makeLivePlayer</span>(<span class="hljs-params">for</span> <span class="hljs-params">url</span>: <span class="hljs-type">URL</span>) -&gt; <span class="hljs-type">AVPlayer</span> {
+    <span class="hljs-comment">// Playback category: audio continues with the silent switch on, and PiP is allowed.</span>
+    <span class="hljs-keyword">try?</span> <span class="hljs-type">AVAudioSession</span>.sharedInstance().setCategory(.playback, mode: .moviePlayback)
+    <span class="hljs-keyword">try?</span> <span class="hljs-type">AVAudioSession</span>.sharedInstance().setActive(<span class="hljs-literal">true</span>)
+
+    <span class="hljs-keyword">let</span> item <span class="hljs-operator">=</span> <span class="hljs-type">AVPlayerItem</span>(url: url)
+    item.preferredForwardBufferDuration <span class="hljs-operator">=</span> <span class="hljs-number">6</span>       <span class="hljs-comment">// a little cushion against weak connections</span>
+    <span class="hljs-keyword">let</span> player <span class="hljs-operator">=</span> <span class="hljs-type">AVPlayer</span>(playerItem: item)
+    player.automaticallyWaitsToMinimizeStalling <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>
+    <span class="hljs-keyword">return</span> player
+}
+</code></pre>
+<p>Three things are essential for picture-in-picture to work at all:</p>
+<ol>
+<li><strong>The audio session category is <code>.playback</code>.</strong> With the default category, PiP won't start.</li>
+<li><strong>The Background Modes capability includes "Audio, AirPlay, and Picture in Picture".</strong> Without it, the video stops when the app leaves the foreground.</li>
+<li><strong>The player is shown in <code>AVPlayerViewController</code></strong> (or an <code>AVPlayerLayer</code> managed by <code>AVPictureInPictureController</code>, iOS 9+, if you build custom controls).</li>
+</ol>
+<p><code>canStartPictureInPictureAutomaticallyFromInline</code> is the one that makes PiP feel effortless. Swipe home during darshan, and the video floats instead of stopping.</p>
+<hr>
+<h2 id="3-bringing-the-app-back-from-picture-in-picture" tabindex="-1"><a class="observablehq-header-anchor" href="#3-bringing-the-app-back-from-picture-in-picture">3. Bringing the app back from picture-in-picture</a></h2>
+<p>When the user taps the "return" button on the PiP window, iOS asks your app to restore its interface. If you don't, the video goes back into a screen that's no longer showing, and the experience breaks. The delegate method is where you navigate back:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">PlayerCoordinator</span>: <span class="hljs-title class_ inherited__">NSObject</span>, <span class="hljs-title class_ inherited__">AVPlayerViewControllerDelegate</span> {
+    <span class="hljs-keyword">var</span> restore: (() -&gt; <span class="hljs-type">Void</span>)<span class="hljs-operator">?</span>
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">playerViewController</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">playerViewController</span>: <span class="hljs-type">AVPlayerViewController</span>,
+        <span class="hljs-params">restoreUserInterfaceForPictureInPictureStopWithCompletionHandler</span> <span class="hljs-params">completionHandler</span>: <span class="hljs-keyword">@escaping</span> (<span class="hljs-type">Bool</span>) -&gt; <span class="hljs-type">Void</span>) {
+        restore<span class="hljs-operator">?</span>()                 <span class="hljs-comment">// e.g. push the temple's darshan screen back onto the navigation stack</span>
+        completionHandler(<span class="hljs-literal">true</span>)
+    }
+
+    <span class="hljs-comment">// Keep the player alive while PiP runs even if the user navigates away.</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">playerViewControllerShouldAutomaticallyDismissAtPictureInPictureStart</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">vc</span>: <span class="hljs-type">AVPlayerViewController</span>) -&gt; <span class="hljs-type">Bool</span> {
+        <span class="hljs-literal">false</span>
+    }
+}
+</code></pre>
+<p>The approach I'd use is to keep the active <code>AVPlayer</code> in an app-level object, not in the darshan screen's state. Then PiP survives navigation, and "return to app" can rebuild the screen around the <em>same</em> player without a reload.</p>
+<hr>
+<h2 id="4-when-the-live-stream-is-down-recorded-darshan-and-playback-speed" tabindex="-1"><a class="observablehq-header-anchor" href="#4-when-the-live-stream-is-down-recorded-darshan-and-playback-speed">4. When the live stream is down: recorded darshan and playback speed</a></h2>
+<p>Live streams go offline: maintenance, network issues at the temple, or outside darshan hours. The listing promises "Recorded videos when live is unavailable", so failure has to be a planned state, not an error alert. I'd watch the item's <code>status</code> and fall back:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> AVFoundation
+<span class="hljs-keyword">import</span> Combine
+
+<span class="hljs-meta">@MainActor</span>
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DarshanSession</span>: <span class="hljs-title class_ inherited__">ObservableObject</span> {
+    <span class="hljs-meta">@Published</span> <span class="hljs-keyword">private(set)</span> <span class="hljs-keyword">var</span> isLive <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>
+    <span class="hljs-keyword">let</span> player <span class="hljs-operator">=</span> <span class="hljs-type">AVPlayer</span>()
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> statusObservation: <span class="hljs-type">NSKeyValueObservation</span>?
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">start</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">temple</span>: <span class="hljs-type">Temple</span>) {
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> live <span class="hljs-operator">=</span> temple.liveStreamURL {
+            play(live, isLive: <span class="hljs-literal">true</span>, fallback: temple.recordedVideos.first)
+        } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> recorded <span class="hljs-operator">=</span> temple.recordedVideos.first {
+            play(recorded, isLive: <span class="hljs-literal">false</span>, fallback: <span class="hljs-literal">nil</span>)
+        }
+    }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">play</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">url</span>: <span class="hljs-type">URL</span>, <span class="hljs-params">isLive</span>: <span class="hljs-type">Bool</span>, <span class="hljs-params">fallback</span>: <span class="hljs-type">URL</span>?) {
+        <span class="hljs-keyword">let</span> item <span class="hljs-operator">=</span> <span class="hljs-type">AVPlayerItem</span>(url: url)
+        statusObservation <span class="hljs-operator">=</span> item.observe(\.status) { [<span class="hljs-keyword">weak</span> <span class="hljs-keyword">self</span>] item, <span class="hljs-keyword">_</span> <span class="hljs-keyword">in</span>
+            <span class="hljs-type">Task</span> { <span class="hljs-meta">@MainActor</span> <span class="hljs-keyword">in</span>
+                <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> <span class="hljs-keyword">self</span> <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+                <span class="hljs-keyword">switch</span> item.status {
+                <span class="hljs-keyword">case</span> .readyToPlay: <span class="hljs-keyword">self</span>.isLive <span class="hljs-operator">=</span> isLive; <span class="hljs-keyword">self</span>.player.play()
+                <span class="hljs-keyword">case</span> .failed: <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> fallback { <span class="hljs-keyword">self</span>.play(fallback, isLive: <span class="hljs-literal">false</span>, fallback: <span class="hljs-literal">nil</span>) }
+                <span class="hljs-keyword">default</span>: <span class="hljs-keyword">break</span>
+                }
+            }
+        }
+        player.replaceCurrentItem(with: item)
+    }
+}
+</code></pre>
+<p>Playback speed only makes sense for recorded video. On iOS 16+, <code>AVPlayerViewController.speeds</code> (an array of <code>AVPlaybackSpeed</code>) controls the speed menu, and <code>AVPlayer.defaultRate</code> sets the rate that <code>play()</code> uses. For a live stream, I'd set <code>speeds = []</code> so the menu disappears. Fast-forwarding past "now" isn't possible, and showing the control would only confuse.</p>
+<hr>
+<h2 id="5-aarti-reminders-that-are-right-everywhere" tabindex="-1"><a class="observablehq-header-anchor" href="#5-aarti-reminders-that-are-right-everywhere">5. Aarti reminders that are right everywhere</a></h2>
+<p>"Aarti schedules with reminders 5, 10, 15, or 30 minutes before." This is where the temple-time-zone model pays off. <code>UNCalendarNotificationTrigger</code> (iOS 10+) matches date components, and those components can carry their own time zone:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> UserNotifications
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">AartiReminders</span> {
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> category <span class="hljs-operator">=</span> <span class="hljs-string">"AARTI_REMINDER"</span>
+
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">schedule</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">aarti</span>: <span class="hljs-type">AartiTime</span>, <span class="hljs-params">at</span> <span class="hljs-params">temple</span>: <span class="hljs-type">Temple</span>, <span class="hljs-params">minutesBefore</span> <span class="hljs-params">lead</span>: <span class="hljs-type">Int</span>) <span class="hljs-keyword">async</span> <span class="hljs-keyword">throws</span> {
+        <span class="hljs-comment">// Subtract the lead time in the temple's own calendar (handles 6:05 - 10 min = 5:55).</span>
+        <span class="hljs-keyword">var</span> calendar <span class="hljs-operator">=</span> <span class="hljs-type">Calendar</span>(identifier: .gregorian)
+        calendar.timeZone <span class="hljs-operator">=</span> temple.timeZone
+        <span class="hljs-keyword">let</span> aartiToday <span class="hljs-operator">=</span> calendar.date(from: <span class="hljs-type">DateComponents</span>(hour: aarti.hour, minute: aarti.minute))<span class="hljs-operator">!</span>
+        <span class="hljs-keyword">let</span> reminder <span class="hljs-operator">=</span> calendar.date(byAdding: .minute, value: <span class="hljs-operator">-</span>lead, to: aartiToday)<span class="hljs-operator">!</span>
+
+        <span class="hljs-keyword">var</span> components <span class="hljs-operator">=</span> calendar.dateComponents([.hour, .minute], from: reminder)
+        components.timeZone <span class="hljs-operator">=</span> temple.timeZone            <span class="hljs-comment">// fire at temple time, wherever the phone is</span>
+
+        <span class="hljs-keyword">let</span> content <span class="hljs-operator">=</span> <span class="hljs-type">UNMutableNotificationContent</span>()
+        content.title <span class="hljs-operator">=</span> <span class="hljs-string">"<span class="hljs-subst">\(aarti.name)</span> at <span class="hljs-subst">\(temple.name)</span>"</span>
+        content.body <span class="hljs-operator">=</span> <span class="hljs-string">"Begins in <span class="hljs-subst">\(lead)</span> minutes. Tap to join the darshan."</span>
+        content.categoryIdentifier <span class="hljs-operator">=</span> category
+        content.userInfo <span class="hljs-operator">=</span> [<span class="hljs-string">"templeID"</span>: temple.id]
+        content.sound <span class="hljs-operator">=</span> .default
+
+        <span class="hljs-keyword">let</span> request <span class="hljs-operator">=</span> <span class="hljs-type">UNNotificationRequest</span>(
+            identifier: <span class="hljs-string">"aarti.<span class="hljs-subst">\(temple.id)</span>.<span class="hljs-subst">\(aarti.name)</span>"</span>,          <span class="hljs-comment">// stable: rescheduling replaces it</span>
+            content: content,
+            trigger: <span class="hljs-type">UNCalendarNotificationTrigger</span>(dateMatching: components, repeats: <span class="hljs-literal">true</span>))
+        <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> <span class="hljs-type">UNUserNotificationCenter</span>.current().add(request)
+    }
+}
+</code></pre>
+<p>Why this works for a devotee in New Jersey: the trigger's components say "05:55 in Asia/Kolkata", so iOS fires it at the correct absolute moment, which locally is the previous evening. No manual offset maths, and no breakage when daylight saving starts or ends in the user's country (India doesn't observe it, but the US does).</p>
+<p>Practical limits:</p>
+<ul>
+<li><strong>Use stable identifiers.</strong> Changing the lead time from 10 to 15 minutes re-adds a request with the same ID, which replaces the old one instead of duplicating it.</li>
+<li><strong>Watch the pending-notification cap.</strong> iOS keeps a limited number of scheduled local notifications per app (commonly cited as 64). Repeating daily triggers use one slot per aarti, which is why I'd prefer them over scheduling individual dates.</li>
+<li><strong>Time-sensitive interruption</strong> (<code>interruptionLevel = .timeSensitive</code>, iOS 15+) can break through Focus modes, but it requires the Time Sensitive Notifications capability and should be the user's choice.</li>
+</ul>
+<hr>
+<h2 id="6-watch-now-and-remind-later" tabindex="-1"><a class="observablehq-header-anchor" href="#6-watch-now-and-remind-later">6. "Watch Now" and "Remind Later"</a></h2>
+<p>The listing mentions two notification actions, "Watch Now" and "Remind Later". Both are a <code>UNNotificationCategory</code> registered at launch, plus a delegate that handles the response:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> UserNotifications
+
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">NotificationRouter</span>: <span class="hljs-title class_ inherited__">NSObject</span>, <span class="hljs-title class_ inherited__">UNUserNotificationCenterDelegate</span> {
+    <span class="hljs-keyword">var</span> openTemple: ((<span class="hljs-type">String</span>) -&gt; <span class="hljs-type">Void</span>)<span class="hljs-operator">?</span>
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">register</span>() {
+        <span class="hljs-keyword">let</span> watch <span class="hljs-operator">=</span> <span class="hljs-type">UNNotificationAction</span>(identifier: <span class="hljs-string">"WATCH_NOW"</span>, title: <span class="hljs-string">"Watch Now"</span>, options: [.foreground])
+        <span class="hljs-keyword">let</span> later <span class="hljs-operator">=</span> <span class="hljs-type">UNNotificationAction</span>(identifier: <span class="hljs-string">"REMIND_LATER"</span>, title: <span class="hljs-string">"Remind Later"</span>, options: [])
+        <span class="hljs-keyword">let</span> category <span class="hljs-operator">=</span> <span class="hljs-type">UNNotificationCategory</span>(identifier: <span class="hljs-type">AartiReminders</span>.category,
+                                              actions: [watch, later], intentIdentifiers: [])
+        <span class="hljs-keyword">let</span> center <span class="hljs-operator">=</span> <span class="hljs-type">UNUserNotificationCenter</span>.current()
+        center.setNotificationCategories([category])
+        center.delegate <span class="hljs-operator">=</span> <span class="hljs-keyword">self</span>
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">userNotificationCenter</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">center</span>: <span class="hljs-type">UNUserNotificationCenter</span>,
+                                <span class="hljs-params">didReceive</span> <span class="hljs-params">response</span>: <span class="hljs-type">UNNotificationResponse</span>) <span class="hljs-keyword">async</span> {
+        <span class="hljs-keyword">let</span> content <span class="hljs-operator">=</span> response.notification.request.content
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> templeID <span class="hljs-operator">=</span> content.userInfo[<span class="hljs-string">"templeID"</span>] <span class="hljs-keyword">as?</span> <span class="hljs-type">String</span> <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+
+        <span class="hljs-keyword">switch</span> response.actionIdentifier {
+        <span class="hljs-keyword">case</span> <span class="hljs-string">"WATCH_NOW"</span>, <span class="hljs-type">UNNotificationDefaultActionIdentifier</span>:
+            <span class="hljs-keyword">await</span> <span class="hljs-type">MainActor</span>.run { openTemple<span class="hljs-operator">?</span>(templeID) }        <span class="hljs-comment">// deep-link straight into the player</span>
+        <span class="hljs-keyword">case</span> <span class="hljs-string">"REMIND_LATER"</span>:
+            <span class="hljs-keyword">let</span> again <span class="hljs-operator">=</span> <span class="hljs-type">UNNotificationRequest</span>(
+                identifier: <span class="hljs-string">"later.<span class="hljs-subst">\(templeID)</span>.<span class="hljs-subst">\(UUID().uuidString)</span>"</span>,
+                content: content,
+                trigger: <span class="hljs-type">UNTimeIntervalNotificationTrigger</span>(timeInterval: <span class="hljs-number">5</span> <span class="hljs-operator">*</span> <span class="hljs-number">60</span>, repeats: <span class="hljs-literal">false</span>))
+            <span class="hljs-keyword">try?</span> <span class="hljs-keyword">await</span> center.add(again)
+        <span class="hljs-keyword">default</span>: <span class="hljs-keyword">break</span>
+        }
+    }
+
+    <span class="hljs-comment">// Show reminders even while the app is open (e.g. while reading the Gita).</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">userNotificationCenter</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">center</span>: <span class="hljs-type">UNUserNotificationCenter</span>,
+                                <span class="hljs-params">willPresent</span> <span class="hljs-params">notification</span>: <span class="hljs-type">UNNotification</span>) <span class="hljs-keyword">async</span> -&gt; <span class="hljs-type">UNNotificationPresentationOptions</span> {
+        [.banner, .sound]
+    }
+}
+</code></pre>
+<p><code>.foreground</code> on "Watch Now" opens the app; "Remind Later" works without opening it. Set the delegate <strong>before</strong> the app finishes launching (in the app delegate), or the response to a notification that launched the app can be missed.</p>
+<hr>
+<h2 id="7-a-next-aarti-widget-and-opening-maps" tabindex="-1"><a class="observablehq-header-anchor" href="#7-a-next-aarti-widget-and-opening-maps">7. A next-aarti widget and opening Maps</a></h2>
+<p>The same <code>nextOccurrence(of:)</code> function from section 1 powers a "next aarti" widget. A WidgetKit <code>TimelineProvider</code> (iOS 14+) can return one entry per upcoming aarti, so the widget updates itself at each one without the app running:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> WidgetKit
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">NextAartiEntry</span>: <span class="hljs-title class_ inherited__">TimelineEntry</span> { <span class="hljs-keyword">let</span> date: <span class="hljs-type">Date</span>; <span class="hljs-keyword">let</span> temple: <span class="hljs-type">String</span>; <span class="hljs-keyword">let</span> aarti: <span class="hljs-type">String</span>; <span class="hljs-keyword">let</span> at: <span class="hljs-type">Date</span> }
+
+<span class="hljs-keyword">func</span> <span class="hljs-title function_">timeline</span>(<span class="hljs-params">for</span> <span class="hljs-params">temples</span>: [<span class="hljs-type">Temple</span>], <span class="hljs-params">now</span>: <span class="hljs-type">Date</span> <span class="hljs-operator">=</span> .now) -&gt; <span class="hljs-type">Timeline</span>&lt;<span class="hljs-type">NextAartiEntry</span>&gt; {
+    <span class="hljs-keyword">let</span> upcoming <span class="hljs-operator">=</span> temples.flatMap { temple <span class="hljs-keyword">in</span>
+        temple.aartis.compactMap { a <span class="hljs-keyword">in</span> temple.nextOccurrence(of: a, after: now).map { (temple.name, a.name, <span class="hljs-variable">$0</span>) } }
+    }.sorted { <span class="hljs-variable">$0</span>.<span class="hljs-number">2</span> <span class="hljs-operator">&lt;</span> <span class="hljs-variable">$1</span>.<span class="hljs-number">2</span> }.prefix(<span class="hljs-number">6</span>)
+
+    <span class="hljs-keyword">var</span> entries: [<span class="hljs-type">NextAartiEntry</span>] <span class="hljs-operator">=</span> []
+    <span class="hljs-keyword">var</span> shownFrom <span class="hljs-operator">=</span> now
+    <span class="hljs-keyword">for</span> (temple, aarti, at) <span class="hljs-keyword">in</span> upcoming {
+        entries.append(<span class="hljs-type">NextAartiEntry</span>(date: shownFrom, temple: temple, aarti: aarti, at: at))
+        shownFrom <span class="hljs-operator">=</span> at                                    <span class="hljs-comment">// switch to the next one once this begins</span>
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-type">Timeline</span>(entries: entries, policy: .after(shownFrom))
+}
+</code></pre>
+<p>"Open in Maps" changed in iOS 26. Apple's documentation marks <code>MKMapItem.init(placemark:)</code> as <strong>deprecated in iOS 26</strong>, with new initialisers built on <code>CLLocation</code> and the new <code>MKAddress</code> type. Since the app supports iOS 17.6, I'd branch:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> MapKit
+
+<span class="hljs-keyword">func</span> <span class="hljs-title function_">openInMaps</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">temple</span>: <span class="hljs-type">Temple</span>) {
+    <span class="hljs-keyword">let</span> item: <span class="hljs-type">MKMapItem</span>
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">#available</span>(<span class="hljs-keyword">iOS</span> <span class="hljs-number">26</span>, <span class="hljs-operator">*</span>) {
+        <span class="hljs-keyword">let</span> location <span class="hljs-operator">=</span> <span class="hljs-type">CLLocation</span>(latitude: temple.latitude, longitude: temple.longitude)
+        item <span class="hljs-operator">=</span> <span class="hljs-type">MKMapItem</span>(location: location, address: <span class="hljs-type">MKAddress</span>(fullAddress: <span class="hljs-string">"<span class="hljs-subst">\(temple.name)</span>, <span class="hljs-subst">\(temple.city)</span>"</span>, shortAddress: temple.city))
+    } <span class="hljs-keyword">else</span> {
+        item <span class="hljs-operator">=</span> <span class="hljs-type">MKMapItem</span>(placemark: <span class="hljs-type">MKPlacemark</span>(coordinate: temple.coordinate))
+    }
+    item.name <span class="hljs-operator">=</span> temple.name
+    item.openInMaps(launchOptions: <span class="hljs-literal">nil</span>)                   <span class="hljs-comment">// iOS 6+</span>
+}
+</code></pre>
+<hr>
+<h2 id="8-real-world-example-mandir-darshan" tabindex="-1"><a class="observablehq-header-anchor" href="#8-real-world-example-mandir-darshan">8. Real-world example: Mandir Darshan</a></h2>
+<p>This article comes from building <strong><a href="https://apps.apple.com/us/app/mandir-darshan/id6756669016" target="_blank" rel="noopener noreferrer">Mandir Darshan</a></strong>. The code above is the approach I'd use, written for this article, not a copy of the app's source.</p>
+<p><img src="https://bestlatestapps.com/assets/blog/building-a-live-temple-darshan-app-for-ios/mandir-darshan-screenshot-1.jpg" alt="Mandir Darshan App Store screenshot 1"></p>
+<p>At the time of writing, its App Store listing shows:</p>
+<ul>
+<li><strong>Free</strong>, in <strong>Lifestyle</strong> and <strong>Utilities</strong></li>
+<li>First released in <strong>February 2026</strong></li>
+<li><strong>1 rating</strong> in the US store, <strong>5 stars</strong></li>
+<li>Supports <strong>iOS 17.6 and later</strong></li>
+</ul>
+<p>How the listing maps to this article:</p>
+<table>
+<thead>
+<tr>
+<th>What the listing says</th>
+<th>Where it's covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Watch live streaming from famous temples across India"</td>
+<td>HLS with <code>AVPlayer</code> (section 2)</td>
+</tr>
+<tr>
+<td>"picture-in-picture so you can keep darshan while using other apps"</td>
+<td>PiP setup and UI restore (sections 2–3)</td>
+</tr>
+<tr>
+<td>"Recorded videos when live is unavailable; playback speed control"</td>
+<td>Status-based fallback and <code>speeds</code> (section 4)</td>
+</tr>
+<tr>
+<td>"Aarti schedules with reminders 5, 10, 15, or 30 minutes before"</td>
+<td>Time-zone-aware calendar triggers (section 5)</td>
+</tr>
+<tr>
+<td>"Notification actions: Watch Now or Remind Later"</td>
+<td>Categories and the delegate (section 6)</td>
+</tr>
+<tr>
+<td>"Home Screen widgets: Live Darshan (live count/next aarti)…"</td>
+<td>A next-aarti timeline (section 7)</td>
+</tr>
+<tr>
+<td>"Share temple or open in Maps"</td>
+<td><code>MKMapItem</code> with the iOS 26 branch (section 7)</td>
+</tr>
+<tr>
+<td>"Data stored on your device; no sign-in required"</td>
+<td>Everything here is local: notifications, favourites, widget data</td>
+</tr>
+</tbody>
+</table>
+<p><img src="https://bestlatestapps.com/assets/blog/building-a-live-temple-darshan-app-for-ios/mandir-darshan-screenshot-2.jpg" alt="Mandir Darshan App Store screenshot 2"></p>
+<p>The listing covers much more than this article does: the full Bhagavad Gita with Sanskrit, transliteration and translation, chalisas, Sunderkand, a Japa Mala counter, Panchang and festivals, English and Hindi, and voice search. Each of those could be its own article.</p>
+<hr>
+<h2 id="9-before-you-ship-a-live-streaming-devotional-app-a-checklist" tabindex="-1"><a class="observablehq-header-anchor" href="#9-before-you-ship-a-live-streaming-devotional-app-a-checklist">9. Before you ship a live-streaming devotional app: a checklist</a></h2>
+<ol>
+<li><strong>Times belong to the temple.</strong> Every schedule stores its own time zone, and reminders are tested with the phone set to the US and UK.</li>
+<li><strong>PiP works.</strong> The audio session is <code>.playback</code>, the background mode is on, automatic PiP from inline is set, and UI restore is implemented.</li>
+<li><strong>Stream failure is a state, not an error.</strong> There's a recorded fallback and a clear "Live" or "Recorded" badge.</li>
+<li><strong>There's no speed control on live.</strong></li>
+<li><strong>Reminders use stable IDs and repeating triggers</strong>, and stay under the pending limit.</li>
+<li><strong>The notification delegate is set at launch</strong>, and "Watch Now" deep-links into the right temple.</li>
+<li><strong>The widget timeline advances at each aarti</strong> and has a sensible refresh policy.</li>
+<li><strong>MapKit is branched for iOS 26.</strong> No deprecated initialisers on new systems.</li>
+<li><strong>Respect and accuracy.</strong> Temple names, deity information and aarti times are checked, and the app never shows a stream it doesn't have the right to show.</li>
+<li><strong>Be mindful of data use.</strong> Live video on cellular can be expensive; consider a Wi-Fi-only option.</li>
+</ol>
+<hr>
+<h2 id="wrapping-up" tabindex="-1"><a class="observablehq-header-anchor" href="#wrapping-up">Wrapping up</a></h2>
+<p>The technology in a darshan app is ordinary: AVPlayer, local notifications, WidgetKit and MapKit. What makes it work for real people is getting the human details right. An aarti happens at temple time, a stream can be down, and a devotee might be watching from the other side of the world in a floating window while they do something else. Model those details first, and the APIs fall into place.</p>
+<p>Try the app, or explore my other work:</p>
+<ul>
+<li><strong>Mandir Darshan (iOS):</strong> <a href="https://apps.apple.com/us/app/mandir-darshan/id6756669016" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/mandir-darshan/id6756669016</a></li>
+<li><strong>All of my free iOS apps:</strong> <a href="https://apps.apple.com/us/developer/alok-singh/id1508795536" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/developer/alok-singh/id1508795536</a></li>
+<li><strong>My portfolio:</strong> <a href="https://bestlatestapps.com/alok/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/alok/</a></li>
+</ul>
+<p>Which temple's darshan would you most like to see in the app? Let me know in the comments.</p>
+<p><em>— Alok Kumar Singh</em></p>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/building-a-live-temple-darshan-app-for-ios/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/building-a-live-temple-darshan-app-for-ios/</a></em></p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./building-a-live-ios-component-catalogue"><span>Building a Live iOS Component Catalogue</span></a><a rel="next" href="./building-a-hashtag-copier-for-ios"><span>Building a Hashtag Copier for iOS</span></a></nav>
+<div>Articles by Alok Kumar Singh. Originals at <a href="https://bestlatestapps.com/blog/" target="_blank" rel="noopener noreferrer">bestlatestapps.com/blog</a>.</div>
+</footer>
+</div>
+</body>
+</html>

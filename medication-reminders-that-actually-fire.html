@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>Medication Reminders That Actually Fire: Local Notifications, the 64-Notification Limit and Supply Math | Alok Singh, App Dev Notes</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="modulepreload" href="./_observablehq/client.097df403.js">
+<link rel="modulepreload" href="./_observablehq/runtime.fa9f71c0.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.60afab10.js">
+<link rel="canonical" href="https://bestlatestapps.com/blog/medication-reminders-that-actually-fire/"><meta name="description" content="Repeating calendar triggers, a notification budget, 'Taken' and 'Snooze' actions, run-out dates and on-device privacy, from building a pill reminder app">
+<script type="module">
+
+import "./_observablehq/client.097df403.js";
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Alok Singh, App Dev Notes</a></li>
+  </ol>
+  <div id="observablehq-search"><input type="search" placeholder="Search"></div>
+  <div id="observablehq-search-results"></div>
+  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.755d897f.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
+  <ol>
+    <li class="observablehq-link"><a href="./tic-tac-toe-in-swiftui-done-properly">Tic Tac Toe in SwiftUI, Done Properly</a></li>
+    <li class="observablehq-link"><a href="./the-sending-side-of-apns">The Sending Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./the-device-side-of-apns">The Device Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./text-plus-audio-fully-offline">Text Plus Audio, Fully Offline</a></li>
+    <li class="observablehq-link"><a href="./stop-hand-rolling-unit-conversions">Stop Hand-Rolling Unit Conversions</a></li>
+    <li class="observablehq-link"><a href="./shipping-a-4k-wallpaper-app-without-running-out-of-memory">Shipping a 4K Wallpaper App Without Running Out of Memory</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./medication-reminders-that-actually-fire">Medication Reminders That Actually Fire</a></li>
+    <li class="observablehq-link"><a href="./from-barcode-to-pdf">From Barcode to PDF</a></li>
+    <li class="observablehq-link"><a href="./drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game">Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game,</a></li>
+    <li class="observablehq-link"><a href="./convert-as-you-type-currency-conversion-in-swift">Convert-As-You-Type Currency Conversion in Swift</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-first-bible-reader-on-ios">Building an Offline-First Bible Reader on iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-ebook-reader-for-ios">Building an Offline eBook Reader for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-quotes-app-in-swiftui">Building an Offline Quotes App in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-an-admob-earnings-dashboard-for-ios">Building an AdMob Earnings Dashboard for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-tap-to-match-marble-game-with-spritekit-and-swiftui">Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine">Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine</a></li>
+    <li class="observablehq-link"><a href="./building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe">Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioE</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-ios-component-catalogue">Building a Live iOS Component Catalogue</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-temple-darshan-app-for-ios">Building a Live Temple Darshan App for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-hashtag-copier-for-ios">Building a Hashtag Copier for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-chromatic-guitar-tuner-on-ios">Building a Chromatic Guitar Tuner on iOS</a></li>
+    <li class="observablehq-link"><a href="./animating-algorithms-in-swiftui">Animating Algorithms in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./a-practical-guide-to-ios-haptics">A Practical Guide to iOS Haptics</a></li>
+    <li class="observablehq-link"><a href="./a-document-scanner-in-an-afternoon">A Document Scanner in an Afternoon</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#1-the-model-keep-it-boring">1. The model: keep it boring</a></li>
+<li class="observablehq-secondary-link"><a href="#2-repeating-reminders-with-un-calendar-notification-trigger">2. Repeating reminders with UNCalendarNotificationTrigger</a></li>
+<li class="observablehq-secondary-link"><a href="#3-the-64-notification-limit-and-a-budget">3. The 64-notification limit, and a budget</a></li>
+<li class="observablehq-secondary-link"><a href="#4-taken-and-snooze-right-from-the-notification">4. &quot;Taken&quot; and &quot;Snooze&quot; right from the notification</a></li>
+<li class="observablehq-secondary-link"><a href="#5-supply-maths-pills-left-run-out-date-and-a-warning">5. Supply maths: pills left, run-out date and a warning</a></li>
+<li class="observablehq-secondary-link"><a href="#6-private-on-device-storage-that-works-on-a-locked-phone">6. Private, on-device storage that works on a locked phone</a></li>
+<li class="observablehq-secondary-link"><a href="#7-real-world-example-daily-pills-reminder">7. Real-world example: Daily Pills | Reminder</a></li>
+<li class="observablehq-secondary-link"><a href="#8-before-you-ship-a-reminder-app-a-checklist">8. Before you ship a reminder app: a checklist</a></li>
+<li class="observablehq-secondary-link"><a href="#wrapping-up">Wrapping up</a></li>
+</ol>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="medication-reminders-that-actually-fire-local-notifications-the-64-notification-limit-and-supply-math" tabindex="-1"><a class="observablehq-header-anchor" href="#medication-reminders-that-actually-fire-local-notifications-the-64-notification-limit-and-supply-math">Medication Reminders That Actually Fire: Local Notifications, the 64-Notification Limit and Supply Math</a></h1>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/medication-reminders-that-actually-fire/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/medication-reminders-that-actually-fire/</a></em></p>
+<p><em>Repeating calendar triggers, a notification budget, "Taken" and "Snooze" actions, run-out dates and on-device privacy, from building a pill reminder app</em></p>
+<p><img src="https://bestlatestapps.com/assets/blog/medication-reminders-that-actually-fire/daily-pills-icon-512.jpg" alt="Daily Pills | Reminder app icon"></p>
+<p>Most apps can afford a missed notification. A medication reminder can't. If the 9 p.m. reminder silently doesn't arrive, someone misses a dose, and they stop trusting the app the same evening.</p>
+<p><strong>Daily Pills | Reminder</strong> is my take on the simplest version of this problem, live since May 2020: set the times you take your pills, get reminded, see how many you have left and know when you'll run out. The listing sums it up as "Never miss your medication again!" and promises that "your medication data stays private on your device."</p>
+<p>That combination, reliable reminders with no server, rests entirely on <strong>local notifications</strong>, and they have more sharp edges than most developers expect: a hard cap on pending notifications, time-zone behaviour, actions that run while the phone is locked, and data that must be readable at that moment. This article covers how I'd build the core: the data model, repeating triggers, a notification budget, actionable notifications, supply maths and on-device storage. API names and availability are checked against Apple's documentation, and this is the approach I'd use rather than the app's exact source.</p>
+<hr>
+<h2 id="1-the-model-keep-it-boring" tabindex="-1"><a class="observablehq-header-anchor" href="#1-the-model-keep-it-boring">1. The model: keep it boring</a></h2>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> Foundation
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">ReminderTime</span>: <span class="hljs-title class_ inherited__">Codable</span>, <span class="hljs-title class_ inherited__">Hashable</span>, <span class="hljs-title class_ inherited__">Identifiable</span> {
+    <span class="hljs-keyword">var</span> hour: <span class="hljs-type">Int</span>          <span class="hljs-comment">// 0...23, local wall-clock time</span>
+    <span class="hljs-keyword">var</span> minute: <span class="hljs-type">Int</span>
+    <span class="hljs-keyword">var</span> id: <span class="hljs-type">String</span> { <span class="hljs-type">String</span>(format: <span class="hljs-string">"%02d%02d"</span>, hour, minute) }
+}
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">Medication</span>: <span class="hljs-title class_ inherited__">Codable</span>, <span class="hljs-title class_ inherited__">Identifiable</span> {
+    <span class="hljs-keyword">var</span> id <span class="hljs-operator">=</span> <span class="hljs-type">UUID</span>()
+    <span class="hljs-keyword">var</span> name: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">var</span> pillsPerDose: <span class="hljs-type">Int</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>
+    <span class="hljs-keyword">var</span> times: [<span class="hljs-type">ReminderTime</span>]                 <span class="hljs-comment">// multiple reminders per day</span>
+    <span class="hljs-keyword">var</span> pillsRemaining: <span class="hljs-type">Int</span>
+    <span class="hljs-keyword">var</span> lowSupplyWarningDays: <span class="hljs-type">Int</span> <span class="hljs-operator">=</span> <span class="hljs-number">5</span>
+    <span class="hljs-keyword">var</span> log: [<span class="hljs-type">DoseEvent</span>] <span class="hljs-operator">=</span> []
+}
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">DoseEvent</span>: <span class="hljs-title class_ inherited__">Codable</span>, <span class="hljs-title class_ inherited__">Hashable</span> {
+    <span class="hljs-keyword">enum</span> <span class="hljs-title class_">Kind</span>: <span class="hljs-title class_ inherited__">String</span>, <span class="hljs-title class_ inherited__">Codable</span> { <span class="hljs-keyword">case</span> taken, missed, skipped }
+    <span class="hljs-keyword">var</span> date: <span class="hljs-type">Date</span>
+    <span class="hljs-keyword">var</span> kind: <span class="hljs-type">Kind</span>
+}
+</code></pre>
+<p>Two choices to notice:</p>
+<ul>
+<li><strong>Reminder times are an hour and a minute, not a <code>Date</code>.</strong> "8:00 every morning" is a wall-clock intention. Storing it as a <code>Date</code> bakes in a time zone, and the reminder drifts when the user travels or when daylight saving changes.</li>
+<li><strong>The log is append-only.</strong> Missed and taken doses are facts. Supply and adherence are computed from them, never stored separately where they could disagree.</li>
+</ul>
+<hr>
+<h2 id="2-repeating-reminders-with-un-calendar-notification-trigger" tabindex="-1"><a class="observablehq-header-anchor" href="#2-repeating-reminders-with-un-calendar-notification-trigger">2. Repeating reminders with UNCalendarNotificationTrigger</a></h2>
+<p>For "every day at 08:00", a single repeating calendar trigger is exactly right:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> UserNotifications
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">ReminderScheduler</span> {
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> doseCategory <span class="hljs-operator">=</span> <span class="hljs-string">"DOSE_REMINDER"</span>
+
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">identifier</span>(<span class="hljs-params">for</span> <span class="hljs-params">med</span>: <span class="hljs-type">Medication</span>, <span class="hljs-params">time</span>: <span class="hljs-type">ReminderTime</span>) -&gt; <span class="hljs-type">String</span> {
+        <span class="hljs-string">"dose.<span class="hljs-subst">\(med.id.uuidString)</span>.<span class="hljs-subst">\(time.id)</span>"</span>
+    }
+
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">schedule</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">med</span>: <span class="hljs-type">Medication</span>) <span class="hljs-keyword">async</span> <span class="hljs-keyword">throws</span> {
+        <span class="hljs-keyword">let</span> center <span class="hljs-operator">=</span> <span class="hljs-type">UNUserNotificationCenter</span>.current()
+        <span class="hljs-comment">// Start clean for this medication so edits never leave stale reminders behind.</span>
+        <span class="hljs-keyword">await</span> cancel(med)
+
+        <span class="hljs-keyword">for</span> time <span class="hljs-keyword">in</span> med.times {
+            <span class="hljs-keyword">let</span> content <span class="hljs-operator">=</span> <span class="hljs-type">UNMutableNotificationContent</span>()
+            content.title <span class="hljs-operator">=</span> <span class="hljs-string">"Time for <span class="hljs-subst">\(med.name)</span>"</span>
+            content.body <span class="hljs-operator">=</span> med.pillsPerDose <span class="hljs-operator">==</span> <span class="hljs-number">1</span> <span class="hljs-operator">?</span> <span class="hljs-string">"Take 1 pill."</span> : <span class="hljs-string">"Take <span class="hljs-subst">\(med.pillsPerDose)</span> pills."</span>
+            content.sound <span class="hljs-operator">=</span> .default
+            content.categoryIdentifier <span class="hljs-operator">=</span> doseCategory
+            content.userInfo <span class="hljs-operator">=</span> [<span class="hljs-string">"medID"</span>: med.id.uuidString, <span class="hljs-string">"time"</span>: time.id]
+            <span class="hljs-keyword">if</span> <span class="hljs-keyword">#available</span>(<span class="hljs-keyword">iOS</span> <span class="hljs-number">15.0</span>, <span class="hljs-operator">*</span>) {
+                content.interruptionLevel <span class="hljs-operator">=</span> .timeSensitive   <span class="hljs-comment">// needs the Time Sensitive capability</span>
+            }
+
+            <span class="hljs-comment">// Only hour and minute: fires every day at that local wall-clock time.</span>
+            <span class="hljs-keyword">var</span> components <span class="hljs-operator">=</span> <span class="hljs-type">DateComponents</span>()
+            components.hour <span class="hljs-operator">=</span> time.hour
+            components.minute <span class="hljs-operator">=</span> time.minute
+            <span class="hljs-keyword">let</span> trigger <span class="hljs-operator">=</span> <span class="hljs-type">UNCalendarNotificationTrigger</span>(dateMatching: components, repeats: <span class="hljs-literal">true</span>)
+
+            <span class="hljs-keyword">let</span> request <span class="hljs-operator">=</span> <span class="hljs-type">UNNotificationRequest</span>(identifier: identifier(for: med, time: time),
+                                                content: content, trigger: trigger)
+            <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> center.add(request)
+        }
+    }
+
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">cancel</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">med</span>: <span class="hljs-type">Medication</span>) <span class="hljs-keyword">async</span> {
+        <span class="hljs-keyword">let</span> center <span class="hljs-operator">=</span> <span class="hljs-type">UNUserNotificationCenter</span>.current()
+        <span class="hljs-keyword">let</span> ids <span class="hljs-operator">=</span> <span class="hljs-keyword">await</span> center.pendingNotificationRequests()
+            .map(\.identifier)
+            .filter { <span class="hljs-variable">$0</span>.hasPrefix(<span class="hljs-string">"dose.<span class="hljs-subst">\(med.id.uuidString)</span>."</span>) }
+        center.removePendingNotificationRequests(withIdentifiers: ids)
+    }
+}
+</code></pre>
+<p>What makes this reliable:</p>
+<ul>
+<li><strong>Deterministic identifiers.</strong> <code>dose.&lt;medID&gt;.&lt;HHmm&gt;</code> means rescheduling replaces rather than duplicates, and cancelling one medication can't touch another's reminders.</li>
+<li><strong>Date components without a time zone</strong> fire at local wall-clock time. If the user flies from Delhi to London, "08:00" stays 08:00 local, which is usually what a daily pill means. (For medications that must be taken at strict <em>intervals</em> regardless of time zone, that's a different design: talk to the user, and consider fixed-interval triggers.)</li>
+<li><strong><code>.timeSensitive</code> (iOS 15+)</strong> lets the reminder break through Focus modes, if the user allows it. It requires adding the Time Sensitive Notifications capability. Use it only for genuinely time-sensitive content, which a dose reminder is.</li>
+</ul>
+<p>And of course, ask permission first, at the moment the user adds their first reminder, with <code>requestAuthorization(options: [.alert, .sound, .badge])</code>.</p>
+<hr>
+<h2 id="3-the-64-notification-limit-and-a-budget" tabindex="-1"><a class="observablehq-header-anchor" href="#3-the-64-notification-limit-and-a-budget">3. The 64-notification limit, and a budget</a></h2>
+<p>Here's the trap. iOS keeps only a limited number of pending local notifications per app. Apple's documentation for the older <code>UILocalNotification</code> API states it plainly: the system keeps the soonest-firing <strong>64</strong> notifications and <strong>discards the rest</strong>. Automatically repeating notifications count as a single notification. The same cap is widely observed with <code>UserNotifications</code>, and it fails <em>silently</em>: <code>add(_:)</code> succeeds and the 65th reminder just never fires.</p>
+<p>With repeating triggers, one per medication per time, you're usually fine: 5 medications × 3 times a day is 15 requests. The trouble starts when you schedule <strong>one-off</strong> notifications: a different message per day ("Day 12 of 30"), weekly schedules built from individual dates, snoozes or low-supply warnings. Each of those is its own slot.</p>
+<p>So treat the pending queue as a budget, and check it:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">enum</span> <span class="hljs-title class_">NotificationBudget</span> {
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> systemLimit <span class="hljs-operator">=</span> <span class="hljs-number">64</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> safetyMargin <span class="hljs-operator">=</span> <span class="hljs-number">4</span>          <span class="hljs-comment">// room for snoozes and low-supply warnings</span>
+
+    <span class="hljs-comment">/// How many requests we'd have after scheduling `meds`.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">projected</span>(<span class="hljs-params">for</span> <span class="hljs-params">meds</span>: [<span class="hljs-type">Medication</span>], <span class="hljs-params">extraOneOffs</span>: <span class="hljs-type">Int</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>) -&gt; <span class="hljs-type">Int</span> {
+        meds.reduce(<span class="hljs-number">0</span>) { <span class="hljs-variable">$0</span> <span class="hljs-operator">+</span> <span class="hljs-variable">$1</span>.times.count } <span class="hljs-operator">+</span> extraOneOffs
+    }
+
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">canSchedule</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">meds</span>: [<span class="hljs-type">Medication</span>], <span class="hljs-params">extraOneOffs</span>: <span class="hljs-type">Int</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>) -&gt; <span class="hljs-type">Bool</span> {
+        projected(for: meds, extraOneOffs: extraOneOffs) <span class="hljs-operator">&lt;=</span> systemLimit <span class="hljs-operator">-</span> safetyMargin
+    }
+
+    <span class="hljs-comment">/// Debug helper: compare what you *think* is scheduled with what the system has.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">audit</span>() <span class="hljs-keyword">async</span> {
+        <span class="hljs-keyword">let</span> pending <span class="hljs-operator">=</span> <span class="hljs-keyword">await</span> <span class="hljs-type">UNUserNotificationCenter</span>.current().pendingNotificationRequests()
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">"Pending: <span class="hljs-subst">\(pending.count)</span> / <span class="hljs-subst">\(systemLimit)</span>"</span>)
+        pending.forEach { <span class="hljs-built_in">print</span>(<span class="hljs-string">" •"</span>, <span class="hljs-variable">$0</span>.identifier, <span class="hljs-variable">$0</span>.trigger.map(<span class="hljs-type">String</span>.<span class="hljs-keyword">init</span>(describing:)) <span class="hljs-operator">??</span> <span class="hljs-string">"-"</span>) }
+    }
+}
+</code></pre>
+<p>If you genuinely need more than the budget allows, for example non-repeating schedules, schedule a <strong>rolling window</strong> (the next N days) and top it up whenever the app becomes active. Never assume "scheduled once" means "scheduled forever".</p>
+<hr>
+<h2 id="4-taken-and-snooze-right-from-the-notification" tabindex="-1"><a class="observablehq-header-anchor" href="#4-taken-and-snooze-right-from-the-notification">4. "Taken" and "Snooze" right from the notification</a></h2>
+<p>A reminder you have to unlock the phone and open the app to acknowledge is a reminder people ignore. Register a category with actions:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> UserNotifications
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">DoseActions</span> {
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> taken <span class="hljs-operator">=</span> <span class="hljs-string">"TAKEN"</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> snooze <span class="hljs-operator">=</span> <span class="hljs-string">"SNOOZE_10"</span>
+
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">register</span>() {
+        <span class="hljs-keyword">let</span> takenAction <span class="hljs-operator">=</span> <span class="hljs-type">UNNotificationAction</span>(identifier: taken, title: <span class="hljs-string">"Taken"</span>, options: [])
+        <span class="hljs-keyword">let</span> snoozeAction <span class="hljs-operator">=</span> <span class="hljs-type">UNNotificationAction</span>(identifier: snooze, title: <span class="hljs-string">"Snooze 10 min"</span>, options: [])
+        <span class="hljs-keyword">let</span> category <span class="hljs-operator">=</span> <span class="hljs-type">UNNotificationCategory</span>(identifier: <span class="hljs-type">ReminderScheduler</span>.doseCategory,
+                                              actions: [takenAction, snoozeAction],
+                                              intentIdentifiers: [], options: [])
+        <span class="hljs-type">UNUserNotificationCenter</span>.current().setNotificationCategories([category])
+    }
+}
+
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">NotificationHandler</span>: <span class="hljs-title class_ inherited__">NSObject</span>, <span class="hljs-title class_ inherited__">UNUserNotificationCenterDelegate</span> {
+    <span class="hljs-keyword">let</span> store: <span class="hljs-type">MedicationStore</span>
+    <span class="hljs-keyword">init</span>(<span class="hljs-params">store</span>: <span class="hljs-type">MedicationStore</span>) { <span class="hljs-keyword">self</span>.store <span class="hljs-operator">=</span> store }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">userNotificationCenter</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">center</span>: <span class="hljs-type">UNUserNotificationCenter</span>,
+                                <span class="hljs-params">didReceive</span> <span class="hljs-params">response</span>: <span class="hljs-type">UNNotificationResponse</span>) <span class="hljs-keyword">async</span> {
+        <span class="hljs-keyword">let</span> info <span class="hljs-operator">=</span> response.notification.request.content.userInfo
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> idString <span class="hljs-operator">=</span> info[<span class="hljs-string">"medID"</span>] <span class="hljs-keyword">as?</span> <span class="hljs-type">String</span>, <span class="hljs-keyword">let</span> id <span class="hljs-operator">=</span> <span class="hljs-type">UUID</span>(uuidString: idString) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+
+        <span class="hljs-keyword">switch</span> response.actionIdentifier {
+        <span class="hljs-keyword">case</span> <span class="hljs-type">DoseActions</span>.taken, <span class="hljs-type">UNNotificationDefaultActionIdentifier</span>:
+            store.recordDose(for: id, kind: .taken, at: <span class="hljs-type">Date</span>())
+
+        <span class="hljs-keyword">case</span> <span class="hljs-type">DoseActions</span>.snooze:
+            <span class="hljs-keyword">let</span> content <span class="hljs-operator">=</span> response.notification.request.content.mutableCopy() <span class="hljs-keyword">as!</span> <span class="hljs-type">UNMutableNotificationContent</span>
+            <span class="hljs-keyword">let</span> trigger <span class="hljs-operator">=</span> <span class="hljs-type">UNTimeIntervalNotificationTrigger</span>(timeInterval: <span class="hljs-number">10</span> <span class="hljs-operator">*</span> <span class="hljs-number">60</span>, repeats: <span class="hljs-literal">false</span>)
+            <span class="hljs-keyword">let</span> request <span class="hljs-operator">=</span> <span class="hljs-type">UNNotificationRequest</span>(identifier: <span class="hljs-string">"snooze.<span class="hljs-subst">\(idString)</span>"</span>,   <span class="hljs-comment">// one snooze per med</span>
+                                                content: content, trigger: trigger)
+            <span class="hljs-keyword">try?</span> <span class="hljs-keyword">await</span> center.add(request)
+
+        <span class="hljs-keyword">default</span>:
+            <span class="hljs-keyword">break</span>
+        }
+    }
+}
+</code></pre>
+<p>Register the categories and set the delegate early, in <code>application(_:didFinishLaunchingWithOptions:)</code> or your <code>App</code> initialiser, because the system may launch your app in the background specifically to handle an action.</p>
+<p>Notice the action options are empty: no <code>.foreground</code> (which would open the app) and no <code>.authenticationRequired</code> (which forces an unlock). "Taken" works straight from the Lock Screen. That has a consequence for storage, which section 6 covers.</p>
+<p>Using one fixed identifier per medication for snoozes means repeated snoozes <em>replace</em> each other instead of filling your 64-slot budget.</p>
+<hr>
+<h2 id="5-supply-maths-pills-left-run-out-date-and-a-warning" tabindex="-1"><a class="observablehq-header-anchor" href="#5-supply-maths-pills-left-run-out-date-and-a-warning">5. Supply maths: pills left, run-out date and a warning</a></h2>
+<p>The listing promises you'll "know when your supply will run out" and "get notified before you run out". That's arithmetic on the model, plus one more scheduled notification:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> Foundation
+
+<span class="hljs-keyword">extension</span> <span class="hljs-title class_">Medication</span> {
+    <span class="hljs-keyword">var</span> pillsPerDay: <span class="hljs-type">Int</span> { pillsPerDose <span class="hljs-operator">*</span> times.count }
+
+    <span class="hljs-keyword">var</span> daysOfSupplyLeft: <span class="hljs-type">Int</span> {
+        <span class="hljs-keyword">guard</span> pillsPerDay <span class="hljs-operator">&gt;</span> <span class="hljs-number">0</span> <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> .max }
+        <span class="hljs-keyword">return</span> pillsRemaining <span class="hljs-operator">/</span> pillsPerDay
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">runOutDate</span>(<span class="hljs-params">from</span> <span class="hljs-params">now</span>: <span class="hljs-type">Date</span> <span class="hljs-operator">=</span> <span class="hljs-type">Date</span>(), <span class="hljs-params">calendar</span>: <span class="hljs-type">Calendar</span> <span class="hljs-operator">=</span> .current) -&gt; <span class="hljs-type">Date</span>? {
+        <span class="hljs-keyword">guard</span> pillsPerDay <span class="hljs-operator">&gt;</span> <span class="hljs-number">0</span> <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span> }
+        <span class="hljs-keyword">return</span> calendar.date(byAdding: .day, value: daysOfSupplyLeft, to: calendar.startOfDay(for: now))
+    }
+
+    <span class="hljs-keyword">var</span> missedCount: <span class="hljs-type">Int</span> { log.filter { <span class="hljs-variable">$0</span>.kind <span class="hljs-operator">==</span> .missed }.count }
+}
+
+<span class="hljs-keyword">extension</span> <span class="hljs-title class_">ReminderScheduler</span> {
+    <span class="hljs-comment">/// One-off "running low" reminder at 09:00, `lowSupplyWarningDays` before run-out.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">scheduleLowSupplyWarning</span>(<span class="hljs-params">for</span> <span class="hljs-params">med</span>: <span class="hljs-type">Medication</span>, <span class="hljs-params">calendar</span>: <span class="hljs-type">Calendar</span> <span class="hljs-operator">=</span> .current) <span class="hljs-keyword">async</span> <span class="hljs-keyword">throws</span> {
+        <span class="hljs-keyword">let</span> id <span class="hljs-operator">=</span> <span class="hljs-string">"supply.<span class="hljs-subst">\(med.id.uuidString)</span>"</span>
+        <span class="hljs-keyword">let</span> center <span class="hljs-operator">=</span> <span class="hljs-type">UNUserNotificationCenter</span>.current()
+        center.removePendingNotificationRequests(withIdentifiers: [id])
+
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> runOut <span class="hljs-operator">=</span> med.runOutDate(),
+              <span class="hljs-keyword">let</span> warnDay <span class="hljs-operator">=</span> calendar.date(byAdding: .day, value: <span class="hljs-operator">-</span>med.lowSupplyWarningDays, to: runOut),
+              warnDay <span class="hljs-operator">&gt;</span> <span class="hljs-type">Date</span>() <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+
+        <span class="hljs-keyword">var</span> components <span class="hljs-operator">=</span> calendar.dateComponents([.year, .month, .day], from: warnDay)
+        components.hour <span class="hljs-operator">=</span> <span class="hljs-number">9</span>
+        <span class="hljs-keyword">let</span> content <span class="hljs-operator">=</span> <span class="hljs-type">UNMutableNotificationContent</span>()
+        content.title <span class="hljs-operator">=</span> <span class="hljs-string">"Running low on <span class="hljs-subst">\(med.name)</span>"</span>
+        content.body <span class="hljs-operator">=</span> <span class="hljs-string">"About <span class="hljs-subst">\(med.lowSupplyWarningDays)</span> days left. Time to refill."</span>
+        content.sound <span class="hljs-operator">=</span> .default
+
+        <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> center.add(<span class="hljs-type">UNNotificationRequest</span>(
+            identifier: id, content: content,
+            trigger: <span class="hljs-type">UNCalendarNotificationTrigger</span>(dateMatching: components, repeats: <span class="hljs-literal">false</span>)))
+    }
+}
+</code></pre>
+<p>Recalculate and reschedule the warning whenever supply changes: when a dose is taken, when pills are added, or when the schedule is edited. It's one slot per medication, kept accurate by a fixed identifier.</p>
+<p><strong>Missed doses.</strong> The system can't tell you a reminder was <em>ignored</em>. When the app becomes active, compare each scheduled time since the last check against the log, and record <code>.missed</code> for any slot without a <code>.taken</code> event within a grace window (say, 2 hours). Then show it honestly and let the user correct it ("I took it, I just didn't tap").</p>
+<hr>
+<h2 id="6-private-on-device-storage-that-works-on-a-locked-phone" tabindex="-1"><a class="observablehq-header-anchor" href="#6-private-on-device-storage-that-works-on-a-locked-phone">6. Private, on-device storage that works on a locked phone</a></h2>
+<p>The listing makes a clear promise: "Your medication data stays private on your device. We don't collect or share your personal health information." The simplest way to keep that promise is to have no server at all: a small <code>Codable</code> file in Application Support.</p>
+<p>There's one subtlety. The "Taken" action from section 4 can run <strong>while the device is locked</strong>. If you save with the strongest file protection (<code>.completeFileProtection</code>), the file is unreadable while locked, and the write fails exactly when the user taps "Taken" on the Lock Screen.</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> Foundation
+
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MedicationStore</span> {
+    <span class="hljs-keyword">private(set)</span> <span class="hljs-keyword">var</span> medications: [<span class="hljs-type">Medication</span>] <span class="hljs-operator">=</span> []
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> url: <span class="hljs-type">URL</span>
+
+    <span class="hljs-keyword">init</span>() {
+        <span class="hljs-keyword">let</span> dir <span class="hljs-operator">=</span> <span class="hljs-type">FileManager</span>.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[<span class="hljs-number">0</span>]
+        <span class="hljs-keyword">try?</span> <span class="hljs-type">FileManager</span>.default.createDirectory(at: dir, withIntermediateDirectories: <span class="hljs-literal">true</span>)
+        url <span class="hljs-operator">=</span> dir.appendingPathComponent(<span class="hljs-string">"medications.json"</span>)
+        load()
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">load</span>() {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> data <span class="hljs-operator">=</span> <span class="hljs-keyword">try?</span> <span class="hljs-type">Data</span>(contentsOf: url) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+        medications <span class="hljs-operator">=</span> (<span class="hljs-keyword">try?</span> <span class="hljs-type">JSONDecoder</span>().decode([<span class="hljs-type">Medication</span>].<span class="hljs-keyword">self</span>, from: data)) <span class="hljs-operator">??</span> []
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">save</span>() {
+        <span class="hljs-keyword">do</span> {
+            <span class="hljs-keyword">let</span> data <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> <span class="hljs-type">JSONEncoder</span>().encode(medications)
+            <span class="hljs-comment">// Encrypted at rest, but readable after the first unlock since boot,</span>
+            <span class="hljs-comment">// so Lock Screen actions can update it.</span>
+            <span class="hljs-keyword">try</span> data.write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+        } <span class="hljs-keyword">catch</span> {
+            <span class="hljs-built_in">print</span>(<span class="hljs-string">"Save failed: <span class="hljs-subst">\(error)</span>"</span>)
+        }
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">recordDose</span>(<span class="hljs-params">for</span> <span class="hljs-params">id</span>: <span class="hljs-type">UUID</span>, <span class="hljs-params">kind</span>: <span class="hljs-type">DoseEvent</span>.<span class="hljs-type">Kind</span>, <span class="hljs-params">at</span> <span class="hljs-params">date</span>: <span class="hljs-type">Date</span>) {
+        <span class="hljs-keyword">guard</span> <span class="hljs-keyword">let</span> i <span class="hljs-operator">=</span> medications.firstIndex(where: { <span class="hljs-variable">$0</span>.id <span class="hljs-operator">==</span> id }) <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+        medications[i].log.append(<span class="hljs-type">DoseEvent</span>(date: date, kind: kind))
+        <span class="hljs-keyword">if</span> kind <span class="hljs-operator">==</span> .taken {
+            medications[i].pillsRemaining <span class="hljs-operator">=</span> <span class="hljs-built_in">max</span>(<span class="hljs-number">0</span>, medications[i].pillsRemaining <span class="hljs-operator">-</span> medications[i].pillsPerDose)
+        }
+        save()
+    }
+}
+</code></pre>
+<p><code>.completeFileProtectionUntilFirstUserAuthentication</code> (iOS 5+) is the trade-off I'd choose: encrypted when the phone has just rebooted and never been unlocked, and accessible afterwards, so background actions work. Also keep the App Privacy section of your App Store listing consistent with "data not collected", and don't add an analytics SDK that quietly breaks that promise.</p>
+<hr>
+<h2 id="7-real-world-example-daily-pills-reminder" tabindex="-1"><a class="observablehq-header-anchor" href="#7-real-world-example-daily-pills-reminder">7. Real-world example: Daily Pills | Reminder</a></h2>
+<p>These are the techniques I'd use, and recommend, for <strong><a href="https://apps.apple.com/us/app/daily-pills-reminder/id1510203960" target="_blank" rel="noopener noreferrer">Daily Pills | Reminder</a></strong>.</p>
+<p><img src="https://bestlatestapps.com/assets/blog/medication-reminders-that-actually-fire/daily-pills-screenshot-1.jpg" alt="Daily Pills App Store screenshot 1"></p>
+<p>At the time of writing, its App Store listing shows:</p>
+<ul>
+<li><strong>Free</strong>, in <strong>Health &amp; Fitness</strong> and <strong>Medical</strong></li>
+<li>First released in <strong>May 2020</strong></li>
+<li><strong>8 ratings</strong> in the US store, averaging about <strong>4.4 stars</strong></li>
+<li>Supports <strong>iOS 16.0 and later</strong></li>
+</ul>
+<p>How the listing maps to this article:</p>
+<table>
+<thead>
+<tr>
+<th>What the listing says</th>
+<th>Where it's covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Set daily reminder times that work for you" / "Multiple reminders per day"</td>
+<td>One repeating calendar trigger per time, deterministic IDs (section 2)</td>
+</tr>
+<tr>
+<td>"Never miss a dose"</td>
+<td>Time-sensitive delivery, a notification budget, a rolling window if needed (sections 2–3)</td>
+</tr>
+<tr>
+<td>"Add pills with one tap" / "Mark missed pills instantly"</td>
+<td>An append-only dose log; Lock Screen actions (sections 1, 4)</td>
+</tr>
+<tr>
+<td>"See how many pills you have left" / "Know when your supply will run out" / "Get notified before you run out"</td>
+<td>Supply maths and a one-off low-supply warning (section 5)</td>
+</tr>
+<tr>
+<td>"Your medication data stays private on your device"</td>
+<td>Local <code>Codable</code> storage with the right file protection, no server (section 6)</td>
+</tr>
+</tbody>
+</table>
+<p><img src="https://bestlatestapps.com/assets/blog/medication-reminders-that-actually-fire/daily-pills-screenshot-2.jpg" alt="Daily Pills App Store screenshot 2"></p>
+<p>I also have a second, more feature-rich medication app, <strong>Track Your Pills</strong>, with barcode scanning, PDF reports for doctors and widgets. I'm writing that one up separately, because its technical story is quite different.</p>
+<p>A necessary note for anyone building in this space: a reminder app is a convenience tool, not medical advice. Say so in the app, and never let a bug in your scheduling be the only thing between someone and their medication. Clear, honest UI about what's scheduled helps a lot.</p>
+<hr>
+<h2 id="8-before-you-ship-a-reminder-app-a-checklist" tabindex="-1"><a class="observablehq-header-anchor" href="#8-before-you-ship-a-reminder-app-a-checklist">8. Before you ship a reminder app: a checklist</a></h2>
+<ol>
+<li><strong>Permission is requested at the moment of need</strong>, and a denied state shows how to enable notifications in Settings.</li>
+<li><strong>Identifiers are deterministic</strong>, and edits cancel and reschedule only what they own.</li>
+<li><strong>The pending count is audited.</strong> You know how many of the 64 slots you use, with a safety margin.</li>
+<li><strong>Times are wall-clock components</strong>, tested across a time-zone change and a daylight-saving change.</li>
+<li><strong>Actions work from the Lock Screen</strong>, including right after a reboot, once the phone has been unlocked once.</li>
+<li><strong>Supply and run-out dates are recomputed</strong> on every change, and the warning is rescheduled.</li>
+<li><strong>Missed doses are detected on launch</strong> and are easy to correct.</li>
+<li><strong>Privacy claims match reality.</strong> No hidden analytics, and the App Privacy details are accurate.</li>
+<li><strong>You've tested on a real device over several days.</strong> The Simulator won't show you what happens after a week of real use.</li>
+</ol>
+<hr>
+<h2 id="wrapping-up" tabindex="-1"><a class="observablehq-header-anchor" href="#wrapping-up">Wrapping up</a></h2>
+<p>Reliable reminders on iOS come down to a few disciplined habits: repeating calendar triggers with deterministic identifiers, a budget for the 64-notification cap, actions that work from the Lock Screen, and storage that can be written while the phone is locked. Add simple, honest supply maths and you have an app people can rely on.</p>
+<p>Try it, or explore my other apps:</p>
+<ul>
+<li><strong>Daily Pills | Reminder (iOS):</strong> <a href="https://apps.apple.com/us/app/daily-pills-reminder/id1510203960" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/daily-pills-reminder/id1510203960</a></li>
+<li><strong>All of my free iOS apps:</strong> <a href="https://apps.apple.com/us/developer/alok-singh/id1508795536" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/developer/alok-singh/id1508795536</a></li>
+<li><strong>My portfolio:</strong> <a href="https://bestlatestapps.com/alok/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/alok/</a></li>
+</ul>
+<p>Have you hit the 64-notification limit in production? I'd love to hear how you discovered it. Tell me in the comments.</p>
+<p><em>— Alok Kumar Singh</em></p>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/medication-reminders-that-actually-fire/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/medication-reminders-that-actually-fire/</a></em></p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./shipping-a-4k-wallpaper-app-without-running-out-of-memory"><span>Shipping a 4K Wallpaper App Without Running Out of Memory</span></a><a rel="next" href="./from-barcode-to-pdf"><span>From Barcode to PDF</span></a></nav>
+<div>Articles by Alok Kumar Singh. Originals at <a href="https://bestlatestapps.com/blog/" target="_blank" rel="noopener noreferrer">bestlatestapps.com/blog</a>.</div>
+</footer>
+</div>
+</body>
+</html>

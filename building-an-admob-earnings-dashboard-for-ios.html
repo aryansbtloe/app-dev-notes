@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>Building an AdMob Earnings Dashboard for iOS: Google OAuth with PKCE, the AdMob Reporting API, Pacific-Time &#x27;Today&#x27;, and Offline Caching | Alok Singh, App Dev Notes</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="modulepreload" href="./_observablehq/client.097df403.js">
+<link rel="modulepreload" href="./_observablehq/runtime.fa9f71c0.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.60afab10.js">
+<link rel="canonical" href="https://bestlatestapps.com/blog/building-an-admob-earnings-dashboard-for-ios/"><meta name="description" content="Signing in with ASWebAuthenticationSession and PKCE, storing tokens safely in the Keychain, calling networkReport:generate, decoding a streamed report,…">
+<script type="module">
+
+import "./_observablehq/client.097df403.js";
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Alok Singh, App Dev Notes</a></li>
+  </ol>
+  <div id="observablehq-search"><input type="search" placeholder="Search"></div>
+  <div id="observablehq-search-results"></div>
+  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.755d897f.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
+  <ol>
+    <li class="observablehq-link"><a href="./tic-tac-toe-in-swiftui-done-properly">Tic Tac Toe in SwiftUI, Done Properly</a></li>
+    <li class="observablehq-link"><a href="./the-sending-side-of-apns">The Sending Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./the-device-side-of-apns">The Device Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./text-plus-audio-fully-offline">Text Plus Audio, Fully Offline</a></li>
+    <li class="observablehq-link"><a href="./stop-hand-rolling-unit-conversions">Stop Hand-Rolling Unit Conversions</a></li>
+    <li class="observablehq-link"><a href="./shipping-a-4k-wallpaper-app-without-running-out-of-memory">Shipping a 4K Wallpaper App Without Running Out of Memory</a></li>
+    <li class="observablehq-link"><a href="./medication-reminders-that-actually-fire">Medication Reminders That Actually Fire</a></li>
+    <li class="observablehq-link"><a href="./from-barcode-to-pdf">From Barcode to PDF</a></li>
+    <li class="observablehq-link"><a href="./drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game">Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game,</a></li>
+    <li class="observablehq-link"><a href="./convert-as-you-type-currency-conversion-in-swift">Convert-As-You-Type Currency Conversion in Swift</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-first-bible-reader-on-ios">Building an Offline-First Bible Reader on iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-ebook-reader-for-ios">Building an Offline eBook Reader for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-quotes-app-in-swiftui">Building an Offline Quotes App in SwiftUI</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./building-an-admob-earnings-dashboard-for-ios">Building an AdMob Earnings Dashboard for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-tap-to-match-marble-game-with-spritekit-and-swiftui">Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine">Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine</a></li>
+    <li class="observablehq-link"><a href="./building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe">Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioE</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-ios-component-catalogue">Building a Live iOS Component Catalogue</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-temple-darshan-app-for-ios">Building a Live Temple Darshan App for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-hashtag-copier-for-ios">Building a Hashtag Copier for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-chromatic-guitar-tuner-on-ios">Building a Chromatic Guitar Tuner on iOS</a></li>
+    <li class="observablehq-link"><a href="./animating-algorithms-in-swiftui">Animating Algorithms in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./a-practical-guide-to-ios-haptics">A Practical Guide to iOS Haptics</a></li>
+    <li class="observablehq-link"><a href="./a-document-scanner-in-an-afternoon">A Document Scanner in an Afternoon</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#1-the-shape-of-the-app-no-middleman">1. The shape of the app: no middleman</a></li>
+<li class="observablehq-secondary-link"><a href="#2-o-auth-for-a-native-app-system-browser-pkce-no-embedded-web-views">2. OAuth for a native app: system browser, PKCE, no embedded web views</a></li>
+<li class="observablehq-secondary-link"><a href="#3-exchanging-the-code-and-keeping-tokens-safe">3. Exchanging the code and keeping tokens safe</a></li>
+<li class="observablehq-secondary-link"><a href="#4-asking-ad-mob-for-a-report">4. Asking AdMob for a report</a></li>
+<li class="observablehq-secondary-link"><a href="#5-decoding-a-streamed-report">5. Decoding a streamed report</a></li>
+<li class="observablehq-secondary-link"><a href="#6-why-today-is-a-los-angeles-day">6. Why &quot;today&quot; is a Los Angeles day</a></li>
+<li class="observablehq-secondary-link"><a href="#7-pull-to-refresh-offline-cache-and-the-weekly-view">7. Pull to refresh, offline cache and the weekly view</a></li>
+<li class="observablehq-secondary-link"><a href="#8-real-world-example-ad-earnings-pro">8. Real-world example: AdEarnings Pro</a></li>
+<li class="observablehq-secondary-link"><a href="#9-before-you-ship-an-o-auth-powered-dashboard-a-checklist">9. Before you ship an OAuth-powered dashboard: a checklist</a></li>
+<li class="observablehq-secondary-link"><a href="#wrapping-up">Wrapping up</a></li>
+</ol>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="building-an-ad-mob-earnings-dashboard-for-i-os-google-o-auth-with-pkce-the-ad-mob-reporting-api-pacific-time-today-and-offline-caching" tabindex="-1"><a class="observablehq-header-anchor" href="#building-an-ad-mob-earnings-dashboard-for-i-os-google-o-auth-with-pkce-the-ad-mob-reporting-api-pacific-time-today-and-offline-caching">Building an AdMob Earnings Dashboard for iOS: Google OAuth with PKCE, the AdMob Reporting API, Pacific-Time 'Today', and Offline Caching</a></h1>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/building-an-admob-earnings-dashboard-for-ios/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/building-an-admob-earnings-dashboard-for-ios/</a></em></p>
+<p><em>Signing in with ASWebAuthenticationSession and PKCE, storing tokens safely in the Keychain, calling networkReport:generate, decoding a streamed report, turning micros into money, why "today" is a Los Angeles day, live earning rates, and caching for offline use</em></p>
+<p><img src="https://bestlatestapps.com/assets/blog/building-an-admob-earnings-dashboard-for-ios/adearnings-pro-icon-512.jpg" alt="AdEarnings Pro app icon"></p>
+<p>If you have apps with ads, you know the habit: open the AdMob website on your phone, pinch, zoom, wait for the dashboard, then do it again an hour later. I wanted a native, fast, glanceable view of my AdMob earnings, so I built <strong>AdEarnings Pro</strong>. It's a dashboard for today's earnings, yesterday's comparison, earning rates per second, minute and hour, weekly averages for earnings and clicks, six months of history and currency conversion. It uses Google Sign-In, and the listing states plainly: "Your AdMob data is not saved, shared, or accessible to us."</p>
+<p>That promise shapes the whole architecture. There's no server of mine in the middle. The app talks <strong>directly</strong> to Google's AdMob API using the user's own OAuth token, and everything is cached on the device.</p>
+<p>This article walks through how to build that: OAuth for a native app done properly, the AdMob Reporting API's actual request and response format, and a few surprises from Google's documentation. The biggest is that the report time zone currently supports only <code>America/Los_Angeles</code>, which changes what "today" means for everyone outside California. Apple APIs are checked against Apple's documentation and Google APIs against Google's. Where I describe my approach rather than the shipped code, I say so.</p>
+<hr>
+<h2 id="1-the-shape-of-the-app-no-middleman" tabindex="-1"><a class="observablehq-header-anchor" href="#1-the-shape-of-the-app-no-middleman">1. The shape of the app: no middleman</a></h2>
+<p>The data flow is deliberately short:</p>
+<ol>
+<li>The user signs in with Google and grants a <strong>read-only reporting scope</strong>.</li>
+<li>The app stores the refresh token in the <strong>Keychain</strong>, on the device.</li>
+<li>The app calls <code>admob.googleapis.com</code> <strong>directly</strong> with a short-lived access token.</li>
+<li>Results are cached locally for offline viewing.</li>
+</ol>
+<p>Google's AdMob API getting-started guide lists two scopes. <code>admob.readonly</code> lets an app "See all AdMob data", and Google notes that this "doesn't include sensitive data, such as payments or campaign details". <code>admob.report</code> lets it "See ad performance and earnings reports. See publisher ID, timezone, and default currency code." For an earnings dashboard, <strong><code>admob.report</code> is the narrowest scope that works</strong>, and asking for the minimum is both good privacy and good for consent rates. Google's OAuth guide makes the same point: the fewer scopes you request, the more likely users are to grant them.</p>
+<p>The listing also notes "This app requires access to your existing Google AdMob account". The API reads accounts; it can't create one.</p>
+<hr>
+<h2 id="2-o-auth-for-a-native-app-system-browser-pkce-no-embedded-web-views" tabindex="-1"><a class="observablehq-header-anchor" href="#2-o-auth-for-a-native-app-system-browser-pkce-no-embedded-web-views">2. OAuth for a native app: system browser, PKCE, no embedded web views</a></h2>
+<p>Google's OAuth documentation is blunt about embedded web views. Opening the authorization page in <code>WKWebView</code> produces a <code>disallowed_useragent</code> error, and Google recommends its Google Sign-In for iOS library or AppAuth instead. Both are built on the same standard flow: the <strong>system browser</strong> plus <strong>PKCE</strong> (Proof Key for Code Exchange). Here's that flow with Apple's own <code>ASWebAuthenticationSession</code> (iOS 12+), so you can see every step:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> AuthenticationServices
+<span class="hljs-keyword">import</span> UIKit
+<span class="hljs-keyword">import</span> CryptoKit
+<span class="hljs-keyword">import</span> Foundation
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">PKCE</span> {
+    <span class="hljs-keyword">let</span> verifier: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">let</span> challenge: <span class="hljs-type">String</span>
+
+    <span class="hljs-comment">/// Google: verifier is 43–128 chars of [A-Z a-z 0-9 - . _ ~]; S256 challenge = BASE64URL(SHA256(verifier)).</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">make</span>() -&gt; <span class="hljs-type">PKCE</span> {
+        <span class="hljs-keyword">var</span> bytes <span class="hljs-operator">=</span> [<span class="hljs-type">UInt8</span>](repeating: <span class="hljs-number">0</span>, count: <span class="hljs-number">32</span>)
+        <span class="hljs-keyword">_</span> <span class="hljs-operator">=</span> <span class="hljs-type">SecRandomCopyBytes</span>(kSecRandomDefault, bytes.count, <span class="hljs-operator">&amp;</span>bytes)
+        <span class="hljs-keyword">let</span> verifier <span class="hljs-operator">=</span> <span class="hljs-type">Data</span>(bytes).base64URLEncoded()                     <span class="hljs-comment">// 43 chars</span>
+        <span class="hljs-keyword">let</span> challenge <span class="hljs-operator">=</span> <span class="hljs-type">Data</span>(<span class="hljs-type">SHA256</span>.hash(data: <span class="hljs-type">Data</span>(verifier.utf8))).base64URLEncoded()
+        <span class="hljs-keyword">return</span> <span class="hljs-type">PKCE</span>(verifier: verifier, challenge: challenge)
+    }
+}
+
+<span class="hljs-keyword">extension</span> <span class="hljs-title class_">Data</span> {
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">base64URLEncoded</span>() -&gt; <span class="hljs-type">String</span> {
+        base64EncodedString().replacingOccurrences(of: <span class="hljs-string">"+"</span>, with: <span class="hljs-string">"-"</span>)
+            .replacingOccurrences(of: <span class="hljs-string">"/"</span>, with: <span class="hljs-string">"_"</span>).replacingOccurrences(of: <span class="hljs-string">"="</span>, with: <span class="hljs-string">""</span>)
+    }
+}
+
+<span class="hljs-meta">@MainActor</span>
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">GoogleAuth</span>: <span class="hljs-title class_ inherited__">NSObject</span>, <span class="hljs-title class_ inherited__">ASWebAuthenticationPresentationContextProviding</span> {
+    <span class="hljs-comment">// An iOS OAuth client in Google Cloud; its redirect uses the reversed client ID as the scheme.</span>
+    <span class="hljs-keyword">let</span> clientID <span class="hljs-operator">=</span> <span class="hljs-string">"1234-abc.apps.googleusercontent.com"</span>
+    <span class="hljs-keyword">var</span> redirectScheme: <span class="hljs-type">String</span> { <span class="hljs-string">"com.googleusercontent.apps.1234-abc"</span> }
+    <span class="hljs-keyword">var</span> redirectURI: <span class="hljs-type">String</span> { <span class="hljs-string">"<span class="hljs-subst">\(redirectScheme)</span>:/oauth2redirect"</span> }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">signIn</span>() <span class="hljs-keyword">async</span> <span class="hljs-keyword">throws</span> -&gt; (code: <span class="hljs-type">String</span>, pkce: <span class="hljs-type">PKCE</span>) {
+        <span class="hljs-keyword">let</span> pkce <span class="hljs-operator">=</span> <span class="hljs-type">PKCE</span>.make()
+        <span class="hljs-keyword">let</span> state <span class="hljs-operator">=</span> <span class="hljs-type">UUID</span>().uuidString
+        <span class="hljs-keyword">var</span> url <span class="hljs-operator">=</span> <span class="hljs-type">URLComponents</span>(string: <span class="hljs-string">"https://accounts.google.com/o/oauth2/v2/auth"</span>)<span class="hljs-operator">!</span>
+        url.queryItems <span class="hljs-operator">=</span> [
+            .<span class="hljs-keyword">init</span>(name: <span class="hljs-string">"client_id"</span>, value: clientID),
+            .<span class="hljs-keyword">init</span>(name: <span class="hljs-string">"redirect_uri"</span>, value: redirectURI),
+            .<span class="hljs-keyword">init</span>(name: <span class="hljs-string">"response_type"</span>, value: <span class="hljs-string">"code"</span>),
+            .<span class="hljs-keyword">init</span>(name: <span class="hljs-string">"scope"</span>, value: <span class="hljs-string">"https://www.googleapis.com/auth/admob.report"</span>),
+            .<span class="hljs-keyword">init</span>(name: <span class="hljs-string">"code_challenge"</span>, value: pkce.challenge),
+            .<span class="hljs-keyword">init</span>(name: <span class="hljs-string">"code_challenge_method"</span>, value: <span class="hljs-string">"S256"</span>),
+            .<span class="hljs-keyword">init</span>(name: <span class="hljs-string">"state"</span>, value: state)
+        ]
+
+        <span class="hljs-keyword">let</span> callback: <span class="hljs-type">URL</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> withCheckedThrowingContinuation { cont <span class="hljs-keyword">in</span>
+            <span class="hljs-keyword">let</span> session <span class="hljs-operator">=</span> <span class="hljs-type">ASWebAuthenticationSession</span>(url: url.url<span class="hljs-operator">!</span>, callbackURLScheme: redirectScheme) { url, error <span class="hljs-keyword">in</span>
+                <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> url { cont.resume(returning: url) } <span class="hljs-keyword">else</span> { cont.resume(throwing: error <span class="hljs-operator">??</span> <span class="hljs-type">URLError</span>(.cancelled)) }
+            }
+            session.presentationContextProvider <span class="hljs-operator">=</span> <span class="hljs-keyword">self</span>
+            session.prefersEphemeralWebBrowserSession <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>   <span class="hljs-comment">// reuse an existing Google session if there is one</span>
+            session.start()
+        }
+
+        <span class="hljs-keyword">let</span> items <span class="hljs-operator">=</span> <span class="hljs-type">URLComponents</span>(url: callback, resolvingAgainstBaseURL: <span class="hljs-literal">false</span>)<span class="hljs-operator">?</span>.queryItems <span class="hljs-operator">??</span> []
+        <span class="hljs-keyword">guard</span> items.first(where: { <span class="hljs-variable">$0</span>.name <span class="hljs-operator">==</span> <span class="hljs-string">"state"</span> })<span class="hljs-operator">?</span>.value <span class="hljs-operator">==</span> state,       <span class="hljs-comment">// CSRF check</span>
+              <span class="hljs-keyword">let</span> code <span class="hljs-operator">=</span> items.first(where: { <span class="hljs-variable">$0</span>.name <span class="hljs-operator">==</span> <span class="hljs-string">"code"</span> })<span class="hljs-operator">?</span>.value <span class="hljs-keyword">else</span> { <span class="hljs-keyword">throw</span> <span class="hljs-type">URLError</span>(.userAuthenticationRequired) }
+        <span class="hljs-keyword">return</span> (code, pkce)
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">presentationAnchor</span>(<span class="hljs-params">for</span> <span class="hljs-params">session</span>: <span class="hljs-type">ASWebAuthenticationSession</span>) -&gt; <span class="hljs-type">ASPresentationAnchor</span> {
+        <span class="hljs-type">UIApplication</span>.shared.connectedScenes.compactMap { (<span class="hljs-variable">$0</span> <span class="hljs-keyword">as?</span> <span class="hljs-type">UIWindowScene</span>)<span class="hljs-operator">?</span>.keyWindow }.first <span class="hljs-operator">??</span> <span class="hljs-type">ASPresentationAnchor</span>()
+    }
+}
+</code></pre>
+<p>Every parameter here comes from Google's OAuth documentation for installed apps:</p>
+<ul>
+<li><strong>The authorization endpoint</strong> is <code>accounts.google.com/o/oauth2/v2/auth</code>.</li>
+<li><strong><code>response_type=code</code></strong> is required.</li>
+<li><strong>The challenge is S256</strong>, which Google recommends.</li>
+<li><strong>The verifier is 43 to 128 characters.</strong> Thirty-two random bytes, base64url-encoded, gives exactly 43.</li>
+<li><strong><code>state</code></strong> protects against cross-site request forgery. Google calls it out as important, and the code checks it.</li>
+</ul>
+<p>On iOS 17.4 and later, <code>ASWebAuthenticationSession</code> also accepts a <code>Callback</code> object (<code>ASWebAuthenticationSession.Callback</code>). SwiftUI has a <code>webAuthenticationSession</code> environment value from iOS 16.4. Either is a tidier wrapper around the same flow.</p>
+<hr>
+<h2 id="3-exchanging-the-code-and-keeping-tokens-safe" tabindex="-1"><a class="observablehq-header-anchor" href="#3-exchanging-the-code-and-keeping-tokens-safe">3. Exchanging the code and keeping tokens safe</a></h2>
+<p>Next, swap the code for tokens at <code>oauth2.googleapis.com/token</code>, sending the PKCE <strong>verifier</strong> (not the challenge). Google's docs note that <code>client_secret</code> doesn't apply to iOS clients:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">TokenResponse</span>: <span class="hljs-title class_ inherited__">Decodable</span> {
+    <span class="hljs-keyword">let</span> access_token: <span class="hljs-type">String</span>
+    <span class="hljs-keyword">let</span> expires_in: <span class="hljs-type">Int</span>
+    <span class="hljs-keyword">let</span> refresh_token: <span class="hljs-type">String</span>?
+    <span class="hljs-keyword">let</span> scope: <span class="hljs-type">String</span>
+}
+
+<span class="hljs-keyword">extension</span> <span class="hljs-title class_">GoogleAuth</span> {
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">exchange</span>(<span class="hljs-params">code</span>: <span class="hljs-type">String</span>, <span class="hljs-params">pkce</span>: <span class="hljs-type">PKCE</span>) <span class="hljs-keyword">async</span> <span class="hljs-keyword">throws</span> -&gt; <span class="hljs-type">TokenResponse</span> {
+        <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> tokenRequest([
+            <span class="hljs-string">"client_id"</span>: clientID, <span class="hljs-string">"code"</span>: code, <span class="hljs-string">"code_verifier"</span>: pkce.verifier,
+            <span class="hljs-string">"grant_type"</span>: <span class="hljs-string">"authorization_code"</span>, <span class="hljs-string">"redirect_uri"</span>: redirectURI
+        ])
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">refresh</span>(<span class="hljs-params">using</span> <span class="hljs-params">refreshToken</span>: <span class="hljs-type">String</span>) <span class="hljs-keyword">async</span> <span class="hljs-keyword">throws</span> -&gt; <span class="hljs-type">TokenResponse</span> {
+        <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> tokenRequest([<span class="hljs-string">"client_id"</span>: clientID, <span class="hljs-string">"grant_type"</span>: <span class="hljs-string">"refresh_token"</span>, <span class="hljs-string">"refresh_token"</span>: refreshToken])
+    }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">tokenRequest</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">form</span>: [<span class="hljs-params">String</span>: <span class="hljs-type">String</span>]) <span class="hljs-keyword">async</span> <span class="hljs-keyword">throws</span> -&gt; <span class="hljs-type">TokenResponse</span> {
+        <span class="hljs-keyword">var</span> request <span class="hljs-operator">=</span> <span class="hljs-type">URLRequest</span>(url: <span class="hljs-type">URL</span>(string: <span class="hljs-string">"https://oauth2.googleapis.com/token"</span>)<span class="hljs-operator">!</span>)
+        request.httpMethod <span class="hljs-operator">=</span> <span class="hljs-string">"POST"</span>
+        request.setValue(<span class="hljs-string">"application/x-www-form-urlencoded"</span>, forHTTPHeaderField: <span class="hljs-string">"Content-Type"</span>)
+        <span class="hljs-keyword">var</span> body <span class="hljs-operator">=</span> <span class="hljs-type">URLComponents</span>(); body.queryItems <span class="hljs-operator">=</span> form.map { <span class="hljs-type">URLQueryItem</span>(name: <span class="hljs-variable">$0</span>.key, value: <span class="hljs-variable">$0</span>.value) }
+        request.httpBody <span class="hljs-operator">=</span> body.percentEncodedQuery<span class="hljs-operator">?</span>.data(using: .utf8)
+        <span class="hljs-keyword">let</span> (data, <span class="hljs-keyword">_</span>) <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> <span class="hljs-type">URLSession</span>.shared.data(for: request)
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">try</span> <span class="hljs-type">JSONDecoder</span>().decode(<span class="hljs-type">TokenResponse</span>.<span class="hljs-keyword">self</span>, from: data)
+    }
+}
+</code></pre>
+<p>Then store the <strong>refresh token</strong> in the Keychain, never in <code>UserDefaults</code>, and mark it device-only:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> Security
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">TokenVault</span> {
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> account <span class="hljs-operator">=</span> <span class="hljs-string">"admob.refresh"</span>
+
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">save</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">token</span>: <span class="hljs-type">String</span>) {
+        <span class="hljs-keyword">let</span> base: [<span class="hljs-type">String</span>: <span class="hljs-keyword">Any</span>] <span class="hljs-operator">=</span> [kSecClass <span class="hljs-keyword">as</span> <span class="hljs-type">String</span>: kSecClassGenericPassword,
+                                   kSecAttrAccount <span class="hljs-keyword">as</span> <span class="hljs-type">String</span>: account]
+        <span class="hljs-type">SecItemDelete</span>(base <span class="hljs-keyword">as</span> <span class="hljs-type">CFDictionary</span>)
+        <span class="hljs-keyword">var</span> item <span class="hljs-operator">=</span> base
+        item[kSecValueData <span class="hljs-keyword">as</span> <span class="hljs-type">String</span>] <span class="hljs-operator">=</span> <span class="hljs-type">Data</span>(token.utf8)
+        item[kSecAttrAccessible <span class="hljs-keyword">as</span> <span class="hljs-type">String</span>] <span class="hljs-operator">=</span> kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+        <span class="hljs-type">SecItemAdd</span>(item <span class="hljs-keyword">as</span> <span class="hljs-type">CFDictionary</span>, <span class="hljs-literal">nil</span>)
+    }
+}
+</code></pre>
+<p><code>AfterFirstUnlockThisDeviceOnly</code> lets a widget or a background refresh read the token after the first unlock, while keeping it out of backups and off other devices. Two of Google's notes are worth building in. First, check the returned <code>scope</code>: users can grant less than you asked for, and the app should explain what's missing. Second, there are limits on how many refresh tokens are issued per client and user, so <strong>keep and reuse</strong> the refresh token rather than signing in again each time.</p>
+<p>"Revoke consent anytime" maps to two things. The user can remove access from their Google Account settings, and the app can call <code>https://oauth2.googleapis.com/revoke?token=…</code> on sign-out and then delete the Keychain item.</p>
+<hr>
+<h2 id="4-asking-ad-mob-for-a-report" tabindex="-1"><a class="observablehq-header-anchor" href="#4-asking-ad-mob-for-a-report">4. Asking AdMob for a report</a></h2>
+<p>The AdMob API's core endpoint is <code>accounts.networkReport.generate</code>, a <code>POST</code> to <code>https://admob.googleapis.com/v1/accounts/{publisherId}/networkReport:generate</code> with a <code>reportSpec</code>. Here's a request for daily earnings and clicks over the last seven days:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">ReportDate</span>: <span class="hljs-title class_ inherited__">Codable</span> { <span class="hljs-keyword">let</span> year: <span class="hljs-type">Int</span>, month: <span class="hljs-type">Int</span>, day: <span class="hljs-type">Int</span> }
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">NetworkReportRequest</span>: <span class="hljs-title class_ inherited__">Encodable</span> {
+    <span class="hljs-keyword">struct</span> <span class="hljs-title class_">Spec</span>: <span class="hljs-title class_ inherited__">Encodable</span> {
+        <span class="hljs-keyword">struct</span> <span class="hljs-title class_">Range</span>: <span class="hljs-title class_ inherited__">Encodable</span> { <span class="hljs-keyword">let</span> startDate: <span class="hljs-type">ReportDate</span>; <span class="hljs-keyword">let</span> endDate: <span class="hljs-type">ReportDate</span> }
+        <span class="hljs-keyword">struct</span> <span class="hljs-title class_">Localization</span>: <span class="hljs-title class_ inherited__">Encodable</span> { <span class="hljs-keyword">let</span> currencyCode: <span class="hljs-type">String</span>; <span class="hljs-keyword">let</span> languageCode: <span class="hljs-type">String</span> }
+        <span class="hljs-keyword">let</span> dateRange: <span class="hljs-type">Range</span>
+        <span class="hljs-keyword">let</span> dimensions: [<span class="hljs-type">String</span>]
+        <span class="hljs-keyword">let</span> metrics: [<span class="hljs-type">String</span>]
+        <span class="hljs-keyword">let</span> localizationSettings: <span class="hljs-type">Localization</span>
+        <span class="hljs-keyword">let</span> timeZone: <span class="hljs-type">String</span>
+    }
+    <span class="hljs-keyword">let</span> reportSpec: <span class="hljs-type">Spec</span>
+}
+
+<span class="hljs-keyword">func</span> <span class="hljs-title function_">weeklyRequest</span>(<span class="hljs-params">endingOn</span> <span class="hljs-params">end</span>: <span class="hljs-type">ReportDate</span>, <span class="hljs-params">start</span>: <span class="hljs-type">ReportDate</span>, <span class="hljs-params">currency</span>: <span class="hljs-type">String</span>) -&gt; <span class="hljs-type">NetworkReportRequest</span> {
+    .<span class="hljs-keyword">init</span>(reportSpec: .<span class="hljs-keyword">init</span>(
+        dateRange: .<span class="hljs-keyword">init</span>(startDate: start, endDate: end),
+        dimensions: [<span class="hljs-string">"DATE"</span>],
+        metrics: [<span class="hljs-string">"ESTIMATED_EARNINGS"</span>, <span class="hljs-string">"CLICKS"</span>, <span class="hljs-string">"IMPRESSIONS"</span>],
+        localizationSettings: .<span class="hljs-keyword">init</span>(currencyCode: currency, languageCode: <span class="hljs-string">"en-US"</span>),
+        timeZone: <span class="hljs-string">"America/Los_Angeles"</span>
+    ))
+}
+</code></pre>
+<p>Three facts from Google's reference page shape this request:</p>
+<ul>
+<li><strong><code>ESTIMATED_EARNINGS</code> is in micros.</strong> "$6.50 would be represented as 6500000." Never put that number in a <code>Double</code> and divide casually; use <code>Decimal</code>.</li>
+<li><strong>Currency comes from <code>localizationSettings.currencyCode</code>.</strong> Google says the currency unit of the earnings metrics is "determined by the localization setting for currency". The approach I'd use for "View earnings in your preferred currency" is to ask AdMob for that currency directly, so the figures are AdMob's own.</li>
+<li><strong>The time zone currently has only one supported value.</strong> Google: "Warning: The 'America/Los_Angeles' is the only supported value at the moment." Section 6 is about what that means.</li>
+</ul>
+<hr>
+<h2 id="5-decoding-a-streamed-report" tabindex="-1"><a class="observablehq-header-anchor" href="#5-decoding-a-streamed-report">5. Decoding a streamed report</a></h2>
+<p>The response isn't a simple object. It's "the result of a server-side streaming RPC": a JSON <strong>array</strong> whose first element has a <code>header</code>, then one <code>row</code> per result, then a <code>footer</code>. Each element has exactly one of those keys. So decode each element as an enum-like struct:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">ReportChunk</span>: <span class="hljs-title class_ inherited__">Decodable</span> {
+    <span class="hljs-keyword">struct</span> <span class="hljs-title class_">Row</span>: <span class="hljs-title class_ inherited__">Decodable</span> {
+        <span class="hljs-keyword">struct</span> <span class="hljs-title class_">DimensionValue</span>: <span class="hljs-title class_ inherited__">Decodable</span> { <span class="hljs-keyword">let</span> value: <span class="hljs-type">String</span> }
+        <span class="hljs-keyword">struct</span> <span class="hljs-title class_">MetricValue</span>: <span class="hljs-title class_ inherited__">Decodable</span> { <span class="hljs-keyword">let</span> microsValue: <span class="hljs-type">String</span>?; <span class="hljs-keyword">let</span> integerValue: <span class="hljs-type">String</span>?; <span class="hljs-keyword">let</span> doubleValue: <span class="hljs-type">Double</span>? }
+        <span class="hljs-keyword">let</span> dimensionValues: [<span class="hljs-type">String</span>: <span class="hljs-type">DimensionValue</span>]
+        <span class="hljs-keyword">let</span> metricValues: [<span class="hljs-type">String</span>: <span class="hljs-type">MetricValue</span>]
+    }
+    <span class="hljs-keyword">let</span> header: [<span class="hljs-type">String</span>: <span class="hljs-type">AnyDecodable</span>]<span class="hljs-operator">?</span>      <span class="hljs-comment">// dateRange, localizationSettings</span>
+    <span class="hljs-keyword">let</span> row: <span class="hljs-type">Row</span>?
+    <span class="hljs-keyword">let</span> footer: [<span class="hljs-type">String</span>: <span class="hljs-type">AnyDecodable</span>]<span class="hljs-operator">?</span>      <span class="hljs-comment">// matchingRowCount, warnings</span>
+}
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">AnyDecodable</span>: <span class="hljs-title class_ inherited__">Decodable</span> { <span class="hljs-keyword">init</span>(<span class="hljs-params">from</span> <span class="hljs-params">decoder</span>: <span class="hljs-type">Decoder</span>) <span class="hljs-keyword">throws</span> {} }   <span class="hljs-comment">// we don't need header details here</span>
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">DailyEarnings</span>: <span class="hljs-title class_ inherited__">Codable</span>, <span class="hljs-title class_ inherited__">Identifiable</span> {
+    <span class="hljs-keyword">var</span> id: <span class="hljs-type">String</span> { day }
+    <span class="hljs-keyword">let</span> day: <span class="hljs-type">String</span>          <span class="hljs-comment">// "20261022"</span>
+    <span class="hljs-keyword">let</span> earnings: <span class="hljs-type">Decimal</span>    <span class="hljs-comment">// in report currency</span>
+    <span class="hljs-keyword">let</span> clicks: <span class="hljs-type">Int</span>
+}
+
+<span class="hljs-keyword">func</span> <span class="hljs-title function_">parse</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">data</span>: <span class="hljs-type">Data</span>) <span class="hljs-keyword">throws</span> -&gt; [<span class="hljs-type">DailyEarnings</span>] {
+    <span class="hljs-keyword">try</span> <span class="hljs-type">JSONDecoder</span>().decode([<span class="hljs-type">ReportChunk</span>].<span class="hljs-keyword">self</span>, from: data).compactMap(\.row).map { row <span class="hljs-keyword">in</span>
+        <span class="hljs-keyword">let</span> micros <span class="hljs-operator">=</span> <span class="hljs-type">Decimal</span>(string: row.metricValues[<span class="hljs-string">"ESTIMATED_EARNINGS"</span>]<span class="hljs-operator">?</span>.microsValue <span class="hljs-operator">??</span> <span class="hljs-string">"0"</span>) <span class="hljs-operator">??</span> <span class="hljs-number">0</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-type">DailyEarnings</span>(day: row.dimensionValues[<span class="hljs-string">"DATE"</span>]<span class="hljs-operator">?</span>.value <span class="hljs-operator">??</span> <span class="hljs-string">""</span>,
+                             earnings: micros <span class="hljs-operator">/</span> <span class="hljs-number">1_000_000</span>,
+                             clicks: <span class="hljs-type">Int</span>(row.metricValues[<span class="hljs-string">"CLICKS"</span>]<span class="hljs-operator">?</span>.integerValue <span class="hljs-operator">??</span> <span class="hljs-string">"0"</span>) <span class="hljs-operator">??</span> <span class="hljs-number">0</span>)
+    }
+}
+</code></pre>
+<p>Google's example response shows <code>"microsValue": 6500000</code> as a bare number. The API's JSON mapping for 64-bit integers often uses strings, so I'd decode both forms in production (a small custom <code>init(from:)</code>). The <code>DATE</code> dimension value is <code>YYYYMMDD</code>, as Google's reference describes.</p>
+<p>Displaying money is then <code>earnings.formatted(.currency(code: currency))</code>. Don't hand-roll formats, because symbol placement and grouping vary by locale.</p>
+<hr>
+<h2 id="6-why-today-is-a-los-angeles-day" tabindex="-1"><a class="observablehq-header-anchor" href="#6-why-today-is-a-los-angeles-day">6. Why "today" is a Los Angeles day</a></h2>
+<p>Here's the subtle part. If reports can only be in <code>America/Los_Angeles</code>, then AdMob's "today" starts at <strong>midnight Pacific time</strong>. For me in India, that's 12:30 or 1:30 in the afternoon, depending on US daylight saving. A dashboard that labels the latest row "Today" without explanation will confuse anyone outside the Pacific time zone.</p>
+<p>The approach I'd use is to compute "today" in the report's calendar and say so in the UI:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">ReportCalendar</span> {
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> zone <span class="hljs-operator">=</span> <span class="hljs-type">TimeZone</span>(identifier: <span class="hljs-string">"America/Los_Angeles"</span>)<span class="hljs-operator">!</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">var</span> calendar: <span class="hljs-type">Calendar</span> { <span class="hljs-keyword">var</span> c <span class="hljs-operator">=</span> <span class="hljs-type">Calendar</span>(identifier: .gregorian); c.timeZone <span class="hljs-operator">=</span> zone; <span class="hljs-keyword">return</span> c }
+
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">reportDate</span>(<span class="hljs-params">for</span> <span class="hljs-params">date</span>: <span class="hljs-type">Date</span> <span class="hljs-operator">=</span> .now) -&gt; <span class="hljs-type">ReportDate</span> {
+        <span class="hljs-keyword">let</span> c <span class="hljs-operator">=</span> calendar.dateComponents([.year, .month, .day], from: date)
+        <span class="hljs-keyword">return</span> <span class="hljs-type">ReportDate</span>(year: c.year<span class="hljs-operator">!</span>, month: c.month<span class="hljs-operator">!</span>, day: c.day<span class="hljs-operator">!</span>)
+    }
+
+    <span class="hljs-comment">/// Seconds elapsed in the current *report* day; the denominator for live rates.</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">secondsIntoReportDay</span>(<span class="hljs-params">now</span>: <span class="hljs-type">Date</span> <span class="hljs-operator">=</span> .now) -&gt; <span class="hljs-type">TimeInterval</span> {
+        now.timeIntervalSince(calendar.startOfDay(for: now))
+    }
+}
+</code></pre>
+<p>The <strong>live earning rates</strong> in the listing ("per second, minute, and hour") follow naturally. Today's earnings divided by seconds into the report day gives an average rate so far:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">func</span> <span class="hljs-title function_">rates</span>(<span class="hljs-params">todayEarnings</span>: <span class="hljs-type">Decimal</span>, <span class="hljs-params">now</span>: <span class="hljs-type">Date</span> <span class="hljs-operator">=</span> .now) -&gt; (perSecond: <span class="hljs-type">Decimal</span>, perMinute: <span class="hljs-type">Decimal</span>, perHour: <span class="hljs-type">Decimal</span>) {
+    <span class="hljs-keyword">let</span> seconds <span class="hljs-operator">=</span> <span class="hljs-type">Decimal</span>(<span class="hljs-built_in">max</span>(<span class="hljs-type">ReportCalendar</span>.secondsIntoReportDay(now: now), <span class="hljs-number">60</span>))   <span class="hljs-comment">// avoid tiny denominators just after midnight</span>
+    <span class="hljs-keyword">let</span> perSecond <span class="hljs-operator">=</span> todayEarnings <span class="hljs-operator">/</span> seconds
+    <span class="hljs-keyword">return</span> (perSecond, perSecond <span class="hljs-operator">*</span> <span class="hljs-number">60</span>, perSecond <span class="hljs-operator">*</span> <span class="hljs-number">3600</span>)
+}
+</code></pre>
+<p>Label it honestly, as "average so far today". Ad revenue isn't evenly spread over a day, and AdMob's figures are <em>estimated</em> earnings that can be revised.</p>
+<hr>
+<h2 id="7-pull-to-refresh-offline-cache-and-the-weekly-view" tabindex="-1"><a class="observablehq-header-anchor" href="#7-pull-to-refresh-offline-cache-and-the-weekly-view">7. Pull to refresh, offline cache and the weekly view</a></h2>
+<p>"Pull-to-refresh for fresh data" is one modifier, <code>refreshable</code> (iOS 15+). "Offline-ready with cached data" means saving the last good response, with a timestamp, and showing it whenever the network fails:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> SwiftUI
+
+<span class="hljs-meta">@MainActor</span>
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Dashboard</span>: <span class="hljs-title class_ inherited__">ObservableObject</span> {
+    <span class="hljs-meta">@Published</span> <span class="hljs-keyword">private(set)</span> <span class="hljs-keyword">var</span> days: [<span class="hljs-type">DailyEarnings</span>] <span class="hljs-operator">=</span> []
+    <span class="hljs-meta">@Published</span> <span class="hljs-keyword">private(set)</span> <span class="hljs-keyword">var</span> updatedAt: <span class="hljs-type">Date</span>?
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">let</span> cacheURL <span class="hljs-operator">=</span> <span class="hljs-type">URL</span>.cachesDirectory.appending(path: <span class="hljs-string">"report-week.json"</span>)
+
+    <span class="hljs-keyword">init</span>() {
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> data <span class="hljs-operator">=</span> <span class="hljs-keyword">try?</span> <span class="hljs-type">Data</span>(contentsOf: cacheURL),
+           <span class="hljs-keyword">let</span> cached <span class="hljs-operator">=</span> <span class="hljs-keyword">try?</span> <span class="hljs-type">JSONDecoder</span>().decode(<span class="hljs-type">Cached</span>.<span class="hljs-keyword">self</span>, from: data) {
+            days <span class="hljs-operator">=</span> cached.days; updatedAt <span class="hljs-operator">=</span> cached.at                   <span class="hljs-comment">// instant first paint, even offline</span>
+        }
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">refresh</span>(<span class="hljs-params">using</span> <span class="hljs-params">api</span>: <span class="hljs-type">AdMobAPI</span>) <span class="hljs-keyword">async</span> {
+        <span class="hljs-keyword">do</span> {
+            <span class="hljs-keyword">let</span> fresh <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> api.lastSevenDays()
+            days <span class="hljs-operator">=</span> fresh; updatedAt <span class="hljs-operator">=</span> .now
+            <span class="hljs-keyword">try?</span> <span class="hljs-type">JSONEncoder</span>().encode(<span class="hljs-type">Cached</span>(days: fresh, at: .now)).write(to: cacheURL, options: .atomic)
+        } <span class="hljs-keyword">catch</span> {
+            <span class="hljs-comment">// Keep showing the cache; the "Updated 2 h ago" label tells the user it's stale.</span>
+        }
+    }
+
+    <span class="hljs-keyword">var</span> weeklyAverage: <span class="hljs-type">Decimal</span> {
+        days.isEmpty <span class="hljs-operator">?</span> <span class="hljs-number">0</span> : days.map(\.earnings).reduce(<span class="hljs-number">0</span>, <span class="hljs-operator">+</span>) <span class="hljs-operator">/</span> <span class="hljs-type">Decimal</span>(days.count)
+    }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">Cached</span>: <span class="hljs-title class_ inherited__">Codable</span> { <span class="hljs-keyword">let</span> days: [<span class="hljs-type">DailyEarnings</span>]; <span class="hljs-keyword">let</span> at: <span class="hljs-type">Date</span> }
+}
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">DashboardView</span>: <span class="hljs-title class_ inherited__">View</span> {
+    <span class="hljs-meta">@StateObject</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> model <span class="hljs-operator">=</span> <span class="hljs-type">Dashboard</span>()
+    <span class="hljs-keyword">let</span> api: <span class="hljs-type">AdMobAPI</span>
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">View</span> {
+        <span class="hljs-type">List</span> {
+            <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> updatedAt <span class="hljs-operator">=</span> model.updatedAt {
+                <span class="hljs-type">Text</span>(<span class="hljs-string">"Updated <span class="hljs-subst">\(updatedAt, format: .relative(presentation: .named))</span>"</span>).font(.caption)
+            }
+            <span class="hljs-type">ForEach</span>(model.days.reversed()) { day <span class="hljs-keyword">in</span>
+                <span class="hljs-type">LabeledContent</span>(day.day, value: day.earnings, format: .currency(code: <span class="hljs-string">"USD"</span>))
+            }
+        }
+        .refreshable { <span class="hljs-keyword">await</span> model.refresh(using: api) }
+        .task { <span class="hljs-keyword">await</span> model.refresh(using: api) }
+    }
+}
+</code></pre>
+<p>Putting the cache in <strong>Caches</strong> is deliberate. It's disposable, it's re-fetchable, and it holds only aggregated numbers from the user's own account on the user's own device. That fits the listing's privacy statement. (<code>AdMobAPI</code> here is the small wrapper around section 4's request, with a valid access token.)</p>
+<hr>
+<h2 id="8-real-world-example-ad-earnings-pro" tabindex="-1"><a class="observablehq-header-anchor" href="#8-real-world-example-ad-earnings-pro">8. Real-world example: AdEarnings Pro</a></h2>
+<p>This walkthrough comes from building <strong><a href="https://apps.apple.com/us/app/adearnings-pro/id6754509445" target="_blank" rel="noopener noreferrer">AdEarnings Pro</a></strong>. The code above is the approach I'd use, written for this article, not a copy of the app's source.</p>
+<p><img src="https://bestlatestapps.com/assets/blog/building-an-admob-earnings-dashboard-for-ios/adearnings-pro-screenshot-1.jpg" alt="AdEarnings Pro App Store screenshot 1"></p>
+<p>At the time of writing, its App Store listing shows:</p>
+<ul>
+<li><strong>Free</strong>, in <strong>Developer Tools</strong></li>
+<li>First released in <strong>November 2025</strong></li>
+<li>No ratings yet in the US store</li>
+<li>Supports <strong>iOS 17.6 and later</strong></li>
+</ul>
+<p>How the listing maps to this article:</p>
+<table>
+<thead>
+<tr>
+<th>What the listing says</th>
+<th>Where it's covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Secure Google Sign-In authentication" / "Google OAuth authentication is required to access AdMob API services"</td>
+<td>System-browser OAuth with PKCE, tokens in the Keychain (sections 2–3)</td>
+</tr>
+<tr>
+<td>"Your AdMob data is not saved, shared, or accessible to us"</td>
+<td>Direct device-to-Google calls, no middleman (section 1)</td>
+</tr>
+<tr>
+<td>"View today's earnings with live updates. Compare yesterday's performance."</td>
+<td><code>networkReport:generate</code> with the <code>DATE</code> dimension (sections 4–5)</td>
+</tr>
+<tr>
+<td>"Live earning rates per second, minute, and hour"</td>
+<td>Rates over the Pacific report day (section 6)</td>
+</tr>
+<tr>
+<td>"Weekly average trends for earnings and clicks"</td>
+<td><code>ESTIMATED_EARNINGS</code> and <code>CLICKS</code> (sections 4 and 7)</td>
+</tr>
+<tr>
+<td>"Convert earnings to any currency…"</td>
+<td><code>localizationSettings.currencyCode</code> (section 4)</td>
+</tr>
+<tr>
+<td>"Pull-to-refresh for fresh data" / "Offline-ready with cached data"</td>
+<td><code>refreshable</code> and a timestamped cache (section 7)</td>
+</tr>
+<tr>
+<td>"Revoke consent anytime"</td>
+<td>Google Account settings and the revoke endpoint (section 3)</td>
+</tr>
+</tbody>
+</table>
+<p><img src="https://bestlatestapps.com/assets/blog/building-an-admob-earnings-dashboard-for-ios/adearnings-pro-screenshot-2.jpg" alt="AdEarnings Pro App Store screenshot 2"></p>
+<p>The listing also mentions unpaid earnings, last payment history and GDPR consent management. Those are outside this article's scope.</p>
+<hr>
+<h2 id="9-before-you-ship-an-o-auth-powered-dashboard-a-checklist" tabindex="-1"><a class="observablehq-header-anchor" href="#9-before-you-ship-an-o-auth-powered-dashboard-a-checklist">9. Before you ship an OAuth-powered dashboard: a checklist</a></h2>
+<ol>
+<li><strong>Use the narrowest scope that works</strong>, and check the granted <code>scope</code> in the token response.</li>
+<li><strong>Use the system browser, PKCE (S256) and a <code>state</code> check.</strong> No <code>WKWebView</code> for sign-in.</li>
+<li><strong>Keep the refresh token in the Keychain</strong>, device-only, and reuse it.</li>
+<li><strong>Sign-out revokes the token</strong> and clears the Keychain and caches.</li>
+<li><strong>Handle money as <code>Decimal</code> from micros</strong>, formatted with the currency's own format.</li>
+<li><strong>Make the report time zone explicit.</strong> "Today" is a Pacific day, and the UI says so.</li>
+<li><strong>Label rates and estimates honestly</strong>: "average so far" and "estimated".</li>
+<li><strong>Show cached data instantly</strong>, with a visible "Updated…" time.</li>
+<li><strong>Complete Google's OAuth app verification</strong> if your scopes need it before public release. Google's docs describe an "unverified app" screen otherwise.</li>
+<li><strong>No third-party analytics touches the earnings data.</strong></li>
+</ol>
+<hr>
+<h2 id="wrapping-up" tabindex="-1"><a class="observablehq-header-anchor" href="#wrapping-up">Wrapping up</a></h2>
+<p>An earnings dashboard looks like a chart, but it's mostly about trust. Sign in the way Google and Apple both recommend, ask for the least access, keep tokens on the device, talk to the API directly, and be honest about what the numbers mean, including the surprising fact that AdMob's "today" is a Los Angeles day. Get those right, and a glance at your phone replaces a dozen trips to a desktop website.</p>
+<p>Try the app, or explore my other work:</p>
+<ul>
+<li><strong>AdEarnings Pro (iOS):</strong> <a href="https://apps.apple.com/us/app/adearnings-pro/id6754509445" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/adearnings-pro/id6754509445</a></li>
+<li><strong>All of my free iOS apps:</strong> <a href="https://apps.apple.com/us/developer/alok-singh/id1508795536" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/developer/alok-singh/id1508795536</a></li>
+<li><strong>My portfolio:</strong> <a href="https://bestlatestapps.com/alok/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/alok/</a></li>
+</ul>
+<p>What's the one metric you check most in your ad dashboard? Tell me in the comments.</p>
+<p><em>— Alok Kumar Singh</em></p>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/building-an-admob-earnings-dashboard-for-ios/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/building-an-admob-earnings-dashboard-for-ios/</a></em></p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./building-an-offline-quotes-app-in-swiftui"><span>Building an Offline Quotes App in SwiftUI</span></a><a rel="next" href="./building-a-tap-to-match-marble-game-with-spritekit-and-swiftui"><span>Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI</span></a></nav>
+<div>Articles by Alok Kumar Singh. Originals at <a href="https://bestlatestapps.com/blog/" target="_blank" rel="noopener noreferrer">bestlatestapps.com/blog</a>.</div>
+</footer>
+</div>
+</body>
+</html>

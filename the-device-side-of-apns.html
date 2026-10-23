@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>The Device Side of APNs: Building a Push Notification Test Client in Swift | Alok Singh, App Dev Notes</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="modulepreload" href="./_observablehq/client.097df403.js">
+<link rel="modulepreload" href="./_observablehq/runtime.fa9f71c0.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.60afab10.js">
+<link rel="canonical" href="https://bestlatestapps.com/blog/the-device-side-of-apns/"><meta name="description" content="Permission, registration, device tokens, foreground presentation and payload inspection, plus the exact HTTP/2 request your backend needs to send">
+<script type="module">
+
+import "./_observablehq/client.097df403.js";
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Alok Singh, App Dev Notes</a></li>
+  </ol>
+  <div id="observablehq-search"><input type="search" placeholder="Search"></div>
+  <div id="observablehq-search-results"></div>
+  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.755d897f.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
+  <ol>
+    <li class="observablehq-link"><a href="./tic-tac-toe-in-swiftui-done-properly">Tic Tac Toe in SwiftUI, Done Properly</a></li>
+    <li class="observablehq-link"><a href="./the-sending-side-of-apns">The Sending Side of APNs</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./the-device-side-of-apns">The Device Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./text-plus-audio-fully-offline">Text Plus Audio, Fully Offline</a></li>
+    <li class="observablehq-link"><a href="./stop-hand-rolling-unit-conversions">Stop Hand-Rolling Unit Conversions</a></li>
+    <li class="observablehq-link"><a href="./shipping-a-4k-wallpaper-app-without-running-out-of-memory">Shipping a 4K Wallpaper App Without Running Out of Memory</a></li>
+    <li class="observablehq-link"><a href="./medication-reminders-that-actually-fire">Medication Reminders That Actually Fire</a></li>
+    <li class="observablehq-link"><a href="./from-barcode-to-pdf">From Barcode to PDF</a></li>
+    <li class="observablehq-link"><a href="./drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game">Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game,</a></li>
+    <li class="observablehq-link"><a href="./convert-as-you-type-currency-conversion-in-swift">Convert-As-You-Type Currency Conversion in Swift</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-first-bible-reader-on-ios">Building an Offline-First Bible Reader on iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-ebook-reader-for-ios">Building an Offline eBook Reader for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-quotes-app-in-swiftui">Building an Offline Quotes App in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-an-admob-earnings-dashboard-for-ios">Building an AdMob Earnings Dashboard for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-tap-to-match-marble-game-with-spritekit-and-swiftui">Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine">Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine</a></li>
+    <li class="observablehq-link"><a href="./building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe">Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioE</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-ios-component-catalogue">Building a Live iOS Component Catalogue</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-temple-darshan-app-for-ios">Building a Live Temple Darshan App for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-hashtag-copier-for-ios">Building a Hashtag Copier for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-chromatic-guitar-tuner-on-ios">Building a Chromatic Guitar Tuner on iOS</a></li>
+    <li class="observablehq-link"><a href="./animating-algorithms-in-swiftui">Animating Algorithms in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./a-practical-guide-to-ios-haptics">A Practical Guide to iOS Haptics</a></li>
+    <li class="observablehq-link"><a href="./a-document-scanner-in-an-afternoon">A Document Scanner in an Afternoon</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#1-how-a-push-actually-travels">1. How a push actually travels</a></li>
+<li class="observablehq-secondary-link"><a href="#2-capabilities-and-permission">2. Capabilities and permission</a></li>
+<li class="observablehq-secondary-link"><a href="#3-getting-and-showing-the-device-token">3. Getting and showing the device token</a></li>
+<li class="observablehq-secondary-link"><a href="#4-seeing-pushes-while-the-app-is-open">4. Seeing pushes while the app is open</a></li>
+<li class="observablehq-secondary-link"><a href="#5-payload-anatomy-and-the-limits-that-bite">5. Payload anatomy, and the limits that bite</a></li>
+<li class="observablehq-secondary-link"><a href="#6-the-other-half-what-your-server-sends">6. The other half: what your server sends</a></li>
+<li class="observablehq-secondary-link"><a href="#7-reading-apns-errors-like-a-checklist">7. Reading APNs errors like a checklist</a></li>
+<li class="observablehq-secondary-link"><a href="#8-real-world-example-push-notification-client">8. Real-world example: Push Notification – Client</a></li>
+<li class="observablehq-secondary-link"><a href="#9-before-you-ship-push-notifications-a-checklist">9. Before you ship push notifications: a checklist</a></li>
+<li class="observablehq-secondary-link"><a href="#wrapping-up">Wrapping up</a></li>
+</ol>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="the-device-side-of-apns-building-a-push-notification-test-client-in-swift" tabindex="-1"><a class="observablehq-header-anchor" href="#the-device-side-of-apns-building-a-push-notification-test-client-in-swift">The Device Side of APNs: Building a Push Notification Test Client in Swift</a></h1>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/the-device-side-of-apns/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/the-device-side-of-apns/</a></em></p>
+<p><em>Permission, registration, device tokens, foreground presentation and payload inspection, plus the exact HTTP/2 request your backend needs to send</em></p>
+<p><img src="https://bestlatestapps.com/assets/blog/the-device-side-of-apns/push-notification-client-icon-512.jpg" alt="Push Notification – Client app icon"></p>
+<p>Every backend developer who has implemented Apple push notifications knows this moment. The server code is written and the request goes out. APNs answers <code>200</code>, and nothing appears on the phone. Or APNs answers <code>400 BadDeviceToken</code>, and you have no idea whether the problem is your token, your certificate, your environment or your JSON.</p>
+<p>The hard part is that the backend developer usually doesn't own the iOS app. They have to ask the mobile team for a build, a device token and the right certificate, and then wait again every time something changes.</p>
+<p>That's why I built <strong>Push Notification – Client</strong>, a small iPhone app with one job: be a known-good <em>receiver</em>. It hands you a device token, a bundle identifier and a certificate, so you can point your server code at it and see exactly what arrives. It's been on the App Store since June 2020 and is one of my more popular developer tools.</p>
+<p>This article covers both halves of that loop. First, the device side: what an iOS app has to do to receive a push, written so you can build your own test client. Then the server side: the exact request APNs expects, and the error codes you'll see when it's wrong. I've checked API names, header names and limits against Apple's documentation.</p>
+<hr>
+<h2 id="1-how-a-push-actually-travels" tabindex="-1"><a class="observablehq-header-anchor" href="#1-how-a-push-actually-travels">1. How a push actually travels</a></h2>
+<p>It helps to have the whole picture before writing code:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-operator">┌──────────┐</span> <span class="hljs-number">1</span>. register  <span class="hljs-operator">┌──────┐</span>
+<span class="hljs-operator">│</span> iOS app  <span class="hljs-operator">│─────────────▶│</span> <span class="hljs-type">APNs</span> <span class="hljs-operator">│</span>
+<span class="hljs-operator">│</span>          <span class="hljs-operator">│◀─────────────│</span>      <span class="hljs-operator">│</span> <span class="hljs-number">2</span>. device token
+<span class="hljs-operator">└────┬─────┘</span>              <span class="hljs-operator">└──▲───┘</span>
+     <span class="hljs-operator">│</span> <span class="hljs-number">3</span>. send token           <span class="hljs-operator">│</span> <span class="hljs-number">5</span>. <span class="hljs-type">HTTP</span><span class="hljs-regexp">/2 POST /</span><span class="hljs-number">3</span><span class="hljs-regexp">/device/</span><span class="hljs-operator">&lt;</span>token<span class="hljs-operator">&gt;</span>
+     <span class="hljs-operator">▼</span>                         <span class="hljs-operator">│</span>    (cert or <span class="hljs-type">JWT</span>, topic <span class="hljs-operator">=</span> bundle <span class="hljs-type">ID</span>)
+<span class="hljs-operator">┌──────────────────────────────┴──┐</span>
+<span class="hljs-operator">│</span> <span class="hljs-type">Your</span> provider server            <span class="hljs-operator">│</span> <span class="hljs-number">4</span>. store token
+<span class="hljs-operator">└─────────────────────────────────┘</span>
+               <span class="hljs-number">6</span>. <span class="hljs-type">APNs</span> delivers to the device <span class="hljs-operator">→</span> system shows it <span class="hljs-operator">/</span> app handles it
+</code></pre>
+<p>Three identities have to line up for delivery to work:</p>
+<ol>
+<li><strong>The app's bundle ID</strong> is the APNs <em>topic</em>.</li>
+<li><strong>The environment.</strong> A development build gets a sandbox token; an App Store or TestFlight build gets a production token. Tokens aren't interchangeable.</li>
+<li><strong>The credential.</strong> A push certificate for that bundle ID, or a token-signing key from the same team.</li>
+</ol>
+<p>Most "it doesn't arrive" bugs are one of these three not matching. A test client makes all three visible.</p>
+<hr>
+<h2 id="2-capabilities-and-permission" tabindex="-1"><a class="observablehq-header-anchor" href="#2-capabilities-and-permission">2. Capabilities and permission</a></h2>
+<p>In Xcode, add the <strong>Push Notifications</strong> capability. This adds the <code>aps-environment</code> entitlement, whose value (<code>development</code> or <code>production</code>) is set by your signing. If you want to test silent pushes too, add <strong>Background Modes → Remote notifications</strong>.</p>
+<p>Then ask for permission. <code>UNUserNotificationCenter.requestAuthorization(options:)</code> (iOS 10+) has an async form:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> UserNotifications
+<span class="hljs-keyword">import</span> UIKit
+
+<span class="hljs-keyword">enum</span> <span class="hljs-title class_">PushPermission</span> {
+    <span class="hljs-comment">/// Returns true if the user allowed alerts, sounds or badges.</span>
+    <span class="hljs-meta">@MainActor</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">request</span>() <span class="hljs-keyword">async</span> -&gt; <span class="hljs-type">Bool</span> {
+        <span class="hljs-keyword">let</span> center <span class="hljs-operator">=</span> <span class="hljs-type">UNUserNotificationCenter</span>.current()
+        <span class="hljs-keyword">do</span> {
+            <span class="hljs-keyword">let</span> granted <span class="hljs-operator">=</span> <span class="hljs-keyword">try</span> <span class="hljs-keyword">await</span> center.requestAuthorization(options: [.alert, .sound, .badge])
+            <span class="hljs-comment">// Register even if denied: you still get a token,</span>
+            <span class="hljs-comment">// and silent (background) pushes don't need alert permission.</span>
+            <span class="hljs-type">UIApplication</span>.shared.registerForRemoteNotifications()
+            <span class="hljs-keyword">return</span> granted
+        } <span class="hljs-keyword">catch</span> {
+            <span class="hljs-built_in">print</span>(<span class="hljs-string">"Authorization request failed: <span class="hljs-subst">\(error)</span>"</span>)
+            <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>
+        }
+    }
+
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">currentStatus</span>() <span class="hljs-keyword">async</span> -&gt; <span class="hljs-type">UNAuthorizationStatus</span> {
+        <span class="hljs-keyword">await</span> <span class="hljs-type">UNUserNotificationCenter</span>.current().notificationSettings().authorizationStatus
+    }
+}
+</code></pre>
+<p>Two details people often miss:</p>
+<ul>
+<li><strong>Registering and authorising are separate.</strong> <code>registerForRemoteNotifications()</code> gets you a device token whether or not the user allows alerts. Permission decides only how a push is <em>shown</em>.</li>
+<li><strong>Provisional authorisation</strong> (<code>.provisional</code>, iOS 12+) delivers quietly to Notification Center without prompting. For a test tool I want the real prompt, because I want the full alert, but provisional is worth knowing about for consumer apps.</li>
+</ul>
+<hr>
+<h2 id="3-getting-and-showing-the-device-token" tabindex="-1"><a class="observablehq-header-anchor" href="#3-getting-and-showing-the-device-token">3. Getting and showing the device token</a></h2>
+<p>APNs returns the token to your app delegate as raw <code>Data</code>. Servers expect a <strong>lowercase hex string</strong>. Getting this conversion wrong (for example, using <code>description</code> on the <code>Data</code>) is the classic cause of <code>BadDeviceToken</code>.</p>
+<p>In a SwiftUI app you wire the app delegate in with <code>@UIApplicationDelegateAdaptor</code> (iOS 14+):</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> SwiftUI
+<span class="hljs-keyword">import</span> UserNotifications
+
+<span class="hljs-meta">@MainActor</span>
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">PushModel</span>: <span class="hljs-title class_ inherited__">ObservableObject</span> {
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">let</span> shared <span class="hljs-operator">=</span> <span class="hljs-type">PushModel</span>()
+    <span class="hljs-meta">@Published</span> <span class="hljs-keyword">var</span> deviceToken: <span class="hljs-type">String</span>?
+    <span class="hljs-meta">@Published</span> <span class="hljs-keyword">var</span> registrationError: <span class="hljs-type">String</span>?
+    <span class="hljs-meta">@Published</span> <span class="hljs-keyword">var</span> received: [<span class="hljs-type">ReceivedPush</span>] <span class="hljs-operator">=</span> []
+}
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">ReceivedPush</span>: <span class="hljs-title class_ inherited__">Identifiable</span> {
+    <span class="hljs-keyword">let</span> id <span class="hljs-operator">=</span> <span class="hljs-type">UUID</span>()
+    <span class="hljs-keyword">let</span> date <span class="hljs-operator">=</span> <span class="hljs-type">Date</span>()
+    <span class="hljs-keyword">let</span> json: <span class="hljs-type">String</span>
+}
+
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">AppDelegate</span>: <span class="hljs-title class_ inherited__">NSObject</span>, <span class="hljs-title class_ inherited__">UIApplicationDelegate</span>, <span class="hljs-title class_ inherited__">UNUserNotificationCenterDelegate</span> {
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">application</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">application</span>: <span class="hljs-type">UIApplication</span>,
+                     <span class="hljs-params">didFinishLaunchingWithOptions</span> <span class="hljs-params">launchOptions</span>: [<span class="hljs-type">UIApplication</span>.<span class="hljs-params">LaunchOptionsKey</span>: <span class="hljs-keyword">Any</span>]<span class="hljs-operator">?</span> <span class="hljs-operator">=</span> <span class="hljs-literal">nil</span>) -&gt; <span class="hljs-type">Bool</span> {
+        <span class="hljs-type">UNUserNotificationCenter</span>.current().delegate <span class="hljs-operator">=</span> <span class="hljs-keyword">self</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">application</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">application</span>: <span class="hljs-type">UIApplication</span>,
+                     <span class="hljs-params">didRegisterForRemoteNotificationsWithDeviceToken</span> <span class="hljs-params">deviceToken</span>: <span class="hljs-type">Data</span>) {
+        <span class="hljs-keyword">let</span> hex <span class="hljs-operator">=</span> deviceToken.map { <span class="hljs-type">String</span>(format: <span class="hljs-string">"%02x"</span>, <span class="hljs-variable">$0</span>) }.joined()
+        <span class="hljs-type">Task</span> { <span class="hljs-meta">@MainActor</span> <span class="hljs-keyword">in</span> <span class="hljs-type">PushModel</span>.shared.deviceToken <span class="hljs-operator">=</span> hex }
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">application</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">application</span>: <span class="hljs-type">UIApplication</span>,
+                     <span class="hljs-params">didFailToRegisterForRemoteNotificationsWithError</span> <span class="hljs-params">error</span>: <span class="hljs-type">Error</span>) {
+        <span class="hljs-comment">// Common on the Simulator without a configured environment,</span>
+        <span class="hljs-comment">// or when the entitlement is missing.</span>
+        <span class="hljs-type">Task</span> { <span class="hljs-meta">@MainActor</span> <span class="hljs-keyword">in</span> <span class="hljs-type">PushModel</span>.shared.registrationError <span class="hljs-operator">=</span> error.localizedDescription }
+    }
+}
+
+<span class="hljs-keyword">@main</span>
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">PushClientApp</span>: <span class="hljs-title class_ inherited__">App</span> {
+    <span class="hljs-meta">@UIApplicationDelegateAdaptor</span>(<span class="hljs-type">AppDelegate</span>.<span class="hljs-keyword">self</span>) <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> appDelegate
+
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">Scene</span> {
+        <span class="hljs-type">WindowGroup</span> { <span class="hljs-type">ContentView</span>().environmentObject(<span class="hljs-type">PushModel</span>.shared) }
+    }
+}
+</code></pre>
+<p>The token screen should make the token trivially easy to get off the phone: a big monospaced label, a <strong>Copy</strong> button (<code>UIPasteboard.general.string = token</code>) and a <strong>Share</strong> button (<code>ShareLink(item: token)</code>). Show the bundle ID next to it (<code>Bundle.main.bundleIdentifier</code>), plus a clear label for the environment this build uses, because the person on the other end will need all three.</p>
+<p>One more rule: <strong>treat the token as changeable.</strong> The system can issue a new one, for example after a restore to a new device. Real apps send it to their server on every launch, not only the first.</p>
+<hr>
+<h2 id="4-seeing-pushes-while-the-app-is-open" tabindex="-1"><a class="observablehq-header-anchor" href="#4-seeing-pushes-while-the-app-is-open">4. Seeing pushes while the app is open</a></h2>
+<p>By default, if your app is in the foreground when a push arrives, iOS doesn't show a banner. For a test client that's backwards: the user is staring at the app, waiting for the push. Implement <code>userNotificationCenter(_:willPresent:withCompletionHandler:)</code> and ask for a banner anyway. While you're there, capture the payload so you can show it.</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">extension</span> <span class="hljs-title class_">AppDelegate</span> {
+
+    <span class="hljs-comment">// Foreground delivery: show it AND log it.</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">userNotificationCenter</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">center</span>: <span class="hljs-type">UNUserNotificationCenter</span>,
+                                <span class="hljs-params">willPresent</span> <span class="hljs-params">notification</span>: <span class="hljs-type">UNNotification</span>,
+                                <span class="hljs-params">withCompletionHandler</span> <span class="hljs-params">completionHandler</span>:
+                                    <span class="hljs-keyword">@escaping</span> (<span class="hljs-type">UNNotificationPresentationOptions</span>) -&gt; <span class="hljs-type">Void</span>) {
+        log(notification.request.content.userInfo)
+        completionHandler([.banner, .list, .sound, .badge])
+    }
+
+    <span class="hljs-comment">// The user tapped a notification (app was in background or not running).</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">userNotificationCenter</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">center</span>: <span class="hljs-type">UNUserNotificationCenter</span>,
+                                <span class="hljs-params">didReceive</span> <span class="hljs-params">response</span>: <span class="hljs-type">UNNotificationResponse</span>,
+                                <span class="hljs-params">withCompletionHandler</span> <span class="hljs-params">completionHandler</span>: <span class="hljs-keyword">@escaping</span> () -&gt; <span class="hljs-type">Void</span>) {
+        log(response.notification.request.content.userInfo)
+        completionHandler()
+    }
+
+    <span class="hljs-comment">// Silent pushes ("content-available": 1) arrive here, if Background Modes allows it.</span>
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">application</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">application</span>: <span class="hljs-type">UIApplication</span>,
+                     <span class="hljs-params">didReceiveRemoteNotification</span> <span class="hljs-params">userInfo</span>: [<span class="hljs-params">AnyHashable</span>: <span class="hljs-keyword">Any</span>],
+                     <span class="hljs-params">fetchCompletionHandler</span> <span class="hljs-params">completionHandler</span>:
+                        <span class="hljs-keyword">@escaping</span> (<span class="hljs-type">UIBackgroundFetchResult</span>) -&gt; <span class="hljs-type">Void</span>) {
+        log(userInfo)
+        completionHandler(.newData)
+    }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">log</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">userInfo</span>: [<span class="hljs-params">AnyHashable</span>: <span class="hljs-keyword">Any</span>]) {
+        <span class="hljs-comment">// userInfo is the decoded JSON payload. Re-serialise it so you see exactly what arrived.</span>
+        <span class="hljs-keyword">let</span> dict <span class="hljs-operator">=</span> <span class="hljs-type">Dictionary</span>(uniqueKeysWithValues: userInfo.map { (<span class="hljs-string">"<span class="hljs-subst">\(<span class="hljs-variable">$0</span>.key)</span>"</span>, <span class="hljs-variable">$0</span>.value) })
+        <span class="hljs-keyword">let</span> data <span class="hljs-operator">=</span> (<span class="hljs-keyword">try?</span> <span class="hljs-type">JSONSerialization</span>.data(withJSONObject: dict,
+                                                options: [.prettyPrinted, .sortedKeys])) <span class="hljs-operator">??</span> <span class="hljs-type">Data</span>()
+        <span class="hljs-keyword">let</span> json <span class="hljs-operator">=</span> <span class="hljs-type">String</span>(decoding: data, as: <span class="hljs-type">UTF8</span>.<span class="hljs-keyword">self</span>)
+        <span class="hljs-type">Task</span> { <span class="hljs-meta">@MainActor</span> <span class="hljs-keyword">in</span> <span class="hljs-type">PushModel</span>.shared.received.insert(<span class="hljs-type">ReceivedPush</span>(json: json), at: <span class="hljs-number">0</span>) }
+    }
+}
+</code></pre>
+<p><code>.banner</code> and <code>.list</code> are iOS 14+. They replaced the older <code>.alert</code> option.</p>
+<p>Showing the raw JSON is the single most useful debugging feature in a test client. Half the "my custom data didn't arrive" bugs turn out to be a backend nesting a key inside <code>aps</code> that belongs outside it, or the other way round.</p>
+<hr>
+<h2 id="5-payload-anatomy-and-the-limits-that-bite" tabindex="-1"><a class="observablehq-header-anchor" href="#5-payload-anatomy-and-the-limits-that-bite">5. Payload anatomy, and the limits that bite</a></h2>
+<p>A push payload is a JSON dictionary with an <code>aps</code> key for Apple-defined fields. Your own data goes <em>alongside</em> <code>aps</code>, never inside it:</p>
+<pre data-language="swift"><code class="language-swift">{
+  <span class="hljs-string">"aps"</span>: {
+    <span class="hljs-string">"alert"</span>: { <span class="hljs-string">"title"</span>: <span class="hljs-string">"Order shipped"</span>, <span class="hljs-string">"body"</span>: <span class="hljs-string">"Your parcel is on its way."</span> },
+    <span class="hljs-string">"sound"</span>: <span class="hljs-string">"default"</span>,
+    <span class="hljs-string">"badge"</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-string">"thread-id"</span>: <span class="hljs-string">"orders"</span>,
+    <span class="hljs-string">"interruption-level"</span>: <span class="hljs-string">"active"</span>
+  },
+  <span class="hljs-string">"orderId"</span>: <span class="hljs-string">"A-1042"</span>
+}
+</code></pre>
+<p>The fields I test most often:</p>
+<ul>
+<li><strong><code>alert</code></strong>: a string, or a dictionary with <code>title</code>, <code>subtitle</code> and <code>body</code>.</li>
+<li><strong><code>content-available: 1</code></strong>: a background (silent) push. Apple's docs say to <em>omit</em> <code>alert</code>, <code>badge</code> and <code>sound</code> for a silent update, and to send it with <code>apns-push-type: background</code> and <code>apns-priority: 5</code>.</li>
+<li><strong><code>mutable-content: 1</code></strong>: sends the push through your Notification Service Extension (<code>UNNotificationServiceExtension</code>, iOS 10+) before it's shown. This is how you attach images or decrypt content.</li>
+<li><strong><code>interruption-level</code></strong>: <code>passive</code>, <code>active</code>, <code>time-sensitive</code> or <code>critical</code>. Time-sensitive needs its own capability; critical needs an entitlement from Apple.</li>
+</ul>
+<p>And the hard limit: <strong>4 KB (4,096 bytes)</strong> for a normal remote notification (VoIP pushes get 5 KB). Over that, APNs answers <code>413 PayloadTooLarge</code>. Push an ID and fetch the details; don't push the whole document.</p>
+<hr>
+<h2 id="6-the-other-half-what-your-server-sends" tabindex="-1"><a class="observablehq-header-anchor" href="#6-the-other-half-what-your-server-sends">6. The other half: what your server sends</a></h2>
+<p>Here's the request in its plainest form. APNs uses <strong>HTTP/2 over TLS 1.2 or later</strong>, at <code>api.sandbox.push.apple.com</code> (development) or <code>api.push.apple.com</code> (production), on port 443 (or 2197).</p>
+<p>With a <strong>certificate</strong> (the listing's flow: use the device token, bundle ID and certificate from the app), <code>curl</code> is enough to prove the pipeline end to end:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-type">TOKEN</span><span class="hljs-operator">=&lt;</span>hex device token from the app<span class="hljs-operator">&gt;</span>
+<span class="hljs-type">TOPIC</span><span class="hljs-operator">=&lt;</span>bundle id shown <span class="hljs-keyword">in</span> the app<span class="hljs-operator">&gt;</span>
+
+curl <span class="hljs-operator">-</span>v <span class="hljs-operator">--</span>http2 \
+  <span class="hljs-operator">--</span>cert<span class="hljs-operator">-</span>type <span class="hljs-type">P12</span> <span class="hljs-operator">--</span>cert <span class="hljs-operator">./</span>push<span class="hljs-operator">-</span>cert.p12:<span class="hljs-operator">&lt;</span>p12<span class="hljs-operator">-</span>password<span class="hljs-operator">&gt;</span> \
+  <span class="hljs-operator">-</span><span class="hljs-type">H</span> <span class="hljs-string">"apns-topic: ${TOPIC}"</span> \
+  <span class="hljs-operator">-</span><span class="hljs-type">H</span> <span class="hljs-string">"apns-push-type: alert"</span> \
+  <span class="hljs-operator">-</span><span class="hljs-type">H</span> <span class="hljs-string">"apns-priority: 10"</span> \
+  <span class="hljs-operator">-</span>d '{<span class="hljs-string">"aps"</span>:{<span class="hljs-string">"alert"</span>:{<span class="hljs-string">"title"</span>:<span class="hljs-string">"Hello"</span>,<span class="hljs-string">"body"</span>:<span class="hljs-string">"From curl"</span>},<span class="hljs-string">"sound"</span>:<span class="hljs-string">"default"</span>}}' \
+  <span class="hljs-string">"https://api.sandbox.push.apple.com/3/device/${TOKEN}"</span>
+</code></pre>
+<p>With <strong>token-based auth</strong>, you sign a short JWT with your <code>.p8</code> key instead. Apple's docs require <code>ES256</code>, a 10-character key ID (<code>kid</code>) and your team ID (<code>iss</code>). Refresh the token no more than once every 20 minutes and no less than once every 60. In Python, with <code>PyJWT</code> and <code>httpx[http2]</code>:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> time, jwt, httpx
+
+<span class="hljs-type">TEAM_ID</span>, <span class="hljs-type">KEY_ID</span> <span class="hljs-operator">=</span> <span class="hljs-string">"ABCDE12345"</span>, <span class="hljs-string">"FGHIJ67890"</span>
+<span class="hljs-type">P8</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">open</span>(<span class="hljs-string">"AuthKey_FGHIJ67890.p8"</span>).read()
+
+def provider_token() -&gt; str:
+    # <span class="hljs-type">Cache</span> this and reuse it <span class="hljs-keyword">for</span> <span class="hljs-operator">~</span><span class="hljs-number">30</span><span class="hljs-operator">-</span><span class="hljs-number">50</span> minutes; don't mint one per request.
+    <span class="hljs-keyword">return</span> jwt.encode({<span class="hljs-string">"iss"</span>: <span class="hljs-type">TEAM_ID</span>, <span class="hljs-string">"iat"</span>: int(time.time())}, <span class="hljs-type">P8</span>,
+                      algorithm<span class="hljs-operator">=</span><span class="hljs-string">"ES256"</span>, headers<span class="hljs-operator">=</span>{<span class="hljs-string">"kid"</span>: <span class="hljs-type">KEY_ID</span>})
+
+def send(device_token: str, topic: str, payload: dict, sandbox: bool <span class="hljs-operator">=</span> <span class="hljs-type">True</span>):
+    host <span class="hljs-operator">=</span> <span class="hljs-string">"api.sandbox.push.apple.com"</span> <span class="hljs-keyword">if</span> sandbox <span class="hljs-keyword">else</span> <span class="hljs-string">"api.push.apple.com"</span>
+    with httpx.<span class="hljs-type">Client</span>(http2<span class="hljs-operator">=</span><span class="hljs-type">True</span>) <span class="hljs-keyword">as</span> client:
+        r <span class="hljs-operator">=</span> client.post(f<span class="hljs-string">"https://{host}/3/device/{device_token}"</span>, json<span class="hljs-operator">=</span>payload, headers<span class="hljs-operator">=</span>{
+            <span class="hljs-string">"authorization"</span>: f<span class="hljs-string">"bearer {provider_token()}"</span>,
+            <span class="hljs-string">"apns-topic"</span>: topic,
+            <span class="hljs-string">"apns-push-type"</span>: <span class="hljs-string">"alert"</span>,
+            <span class="hljs-string">"apns-priority"</span>: <span class="hljs-string">"10"</span>,
+        })
+    <span class="hljs-built_in">print</span>(r.status_code, r.headers.get(<span class="hljs-string">"apns-id"</span>), r.text)
+</code></pre>
+<p>The app's listing includes guidance and code examples for Java, Go, Python, Ruby, Erlang and Node.js. The shape is the same in every language: an HTTP/2 POST to <code>/3/device/&lt;token&gt;</code>, the topic header, the push-type header, and either a client certificate or a bearer token.</p>
+<hr>
+<h2 id="7-reading-apns-errors-like-a-checklist" tabindex="-1"><a class="observablehq-header-anchor" href="#7-reading-apns-errors-like-a-checklist">7. Reading APNs errors like a checklist</a></h2>
+<p>When it fails, APNs tells you why, in a JSON body with a <code>reason</code>. These are the ones I see most, straight from Apple's response table:</p>
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th><code>reason</code></th>
+<th>What it usually means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>400</td>
+<td><code>BadDeviceToken</code></td>
+<td>Token is malformed, or <strong>doesn't match the environment</strong> (sandbox token sent to production, or vice versa)</td>
+</tr>
+<tr>
+<td>400</td>
+<td><code>DeviceTokenNotForTopic</code></td>
+<td>The token belongs to a different bundle ID than your <code>apns-topic</code></td>
+</tr>
+<tr>
+<td>400</td>
+<td><code>TopicDisallowed</code> / <code>BadTopic</code></td>
+<td>The topic isn't one your credential may push to</td>
+</tr>
+<tr>
+<td>403</td>
+<td><code>BadCertificateEnvironment</code></td>
+<td>Development certificate against the production host, or the reverse</td>
+</tr>
+<tr>
+<td>403</td>
+<td><code>ExpiredProviderToken</code> / <code>InvalidProviderToken</code></td>
+<td>JWT too old (over an hour), or signed with the wrong key, key ID or team</td>
+</tr>
+<tr>
+<td>410</td>
+<td><code>Unregistered</code> / <code>ExpiredToken</code></td>
+<td>The token is no longer active: stop sending to it</td>
+</tr>
+<tr>
+<td>413</td>
+<td><code>PayloadTooLarge</code></td>
+<td>Over 4 KB</td>
+</tr>
+<tr>
+<td>429</td>
+<td><code>TooManyRequests</code></td>
+<td>Too many pushes to the same token; back off</td>
+</tr>
+</tbody>
+</table>
+<p>Apple's docs are explicit that you shouldn't retry <code>BadDeviceToken</code>, <code>DeviceTokenNotForTopic</code>, <code>Forbidden</code>, <code>ExpiredToken</code>, <code>Unregistered</code> or <code>PayloadTooLarge</code>; only <code>TooManyRequests</code> is worth retrying after a delay. And a <code>200</code> means APNs <em>accepted</em> the push, not that the device displayed it. That's precisely the gap a test client closes.</p>
+<hr>
+<h2 id="8-real-world-example-push-notification-client" tabindex="-1"><a class="observablehq-header-anchor" href="#8-real-world-example-push-notification-client">8. Real-world example: Push Notification – Client</a></h2>
+<p>This is what <strong><a href="https://apps.apple.com/us/app/push-notification-client/id1516378834" target="_blank" rel="noopener noreferrer">Push Notification – Client</a></strong> is for. The code above is the approach I'd use to build any receiver like it; I'm describing the technique rather than publishing the app's source.</p>
+<p><img src="https://bestlatestapps.com/assets/blog/the-device-side-of-apns/push-notification-client-screenshot-1.jpg" alt="Push Notification – Client App Store screenshot 1"></p>
+<p>At the time of writing, its App Store listing shows:</p>
+<ul>
+<li><strong>Free</strong>, in <strong>Developer Tools</strong> and <strong>Utilities</strong></li>
+<li>First released in <strong>June 2020</strong></li>
+<li><strong>58 ratings</strong> in the US store, averaging about <strong>4.1 stars</strong></li>
+<li>Supports <strong>iOS 17.6 and later</strong></li>
+</ul>
+<p>The listing describes it in one line: "Test your server-side APNS implementation by sending push notifications to this testing app." Mapping that to the sections above:</p>
+<table>
+<thead>
+<tr>
+<th>What the listing says</th>
+<th>Where it's covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Simply use the device token, bundle identifier, and certificate provided through the app"</td>
+<td>Token capture and display (section 3), the three identities (section 1), certificate-based <code>curl</code> (section 6)</td>
+</tr>
+<tr>
+<td>"Guidelines with code examples… Java, Go, Python, Ruby, Erlang, Node.js"</td>
+<td>The request shape in section 6, which is identical across languages</td>
+</tr>
+<tr>
+<td>"Perfect for backend and server-side developers… who want to test their code"</td>
+<td>Foreground presentation and raw-payload logging (section 4), the error table (section 7)</td>
+</tr>
+</tbody>
+</table>
+<p><img src="https://bestlatestapps.com/assets/blog/the-device-side-of-apns/push-notification-client-screenshot-2.jpg" alt="Push Notification – Client App Store screenshot 2"></p>
+<p>It has a sibling on the Mac: <strong><a href="https://apps.apple.com/us/app/push-notification-tester/id1516154713" target="_blank" rel="noopener noreferrer">Push Notification – Tester</a></strong> sends APNs pushes from your Mac using a certificate from Keychain, with no server at all. Between the two you can test both ends of the pipe. I'm writing up the Mac side, Keychain identities and client-certificate auth in <code>URLSession</code>, as a separate article.</p>
+<hr>
+<h2 id="9-before-you-ship-push-notifications-a-checklist" tabindex="-1"><a class="observablehq-header-anchor" href="#9-before-you-ship-push-notifications-a-checklist">9. Before you ship push notifications: a checklist</a></h2>
+<ol>
+<li><strong>The capability and entitlement are present</strong> in every target that needs them, and your build's <code>aps-environment</code> matches the APNs host your server uses.</li>
+<li><strong>The token is hex-encoded correctly</strong>, sent to your server on every launch, and replaced when it changes.</li>
+<li><strong>Foreground behaviour is deliberate.</strong> <code>willPresent</code> returns the options you actually want; don't leave it to the default.</li>
+<li><strong>Custom data sits outside <code>aps</code></strong>, and the whole payload is comfortably under 4 KB.</li>
+<li><strong>Silent pushes are silent.</strong> <code>content-available: 1</code>, no alert, badge or sound, <code>apns-push-type: background</code>, priority 5. Don't rely on them for anything critical; the system may throttle them.</li>
+<li><strong>Server credentials are rotated safely.</strong> JWTs are cached and refreshed every 20–60 minutes; certificates have a calendar reminder before they expire.</li>
+<li><strong>Errors drive cleanup.</strong> On <code>410 Unregistered</code>, delete the token. On <code>BadDeviceToken</code>, check the environment before blaming the token.</li>
+<li><strong>You've tested on a real device in both environments</strong>: a development build <em>and</em> a TestFlight build.</li>
+</ol>
+<hr>
+<h2 id="wrapping-up" tabindex="-1"><a class="observablehq-header-anchor" href="#wrapping-up">Wrapping up</a></h2>
+<p>Push notifications are a three-party protocol, and when it breaks the problem is usually a mismatched identity, not your code. Build the device side once, properly: permission, registration, a correctly encoded token, foreground presentation and raw-payload logging. The server side then becomes a single, well-understood HTTP/2 request with a readable error table.</p>
+<p>If you'd rather skip building the receiver, the apps are free:</p>
+<ul>
+<li><strong>Push Notification – Client (iOS):</strong> <a href="https://apps.apple.com/us/app/push-notification-client/id1516378834" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/push-notification-client/id1516378834</a></li>
+<li><strong>Push Notification – Tester (Mac):</strong> <a href="https://apps.apple.com/us/app/push-notification-tester/id1516154713" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/push-notification-tester/id1516154713</a></li>
+<li><strong>All of my free apps:</strong> <a href="https://apps.apple.com/us/developer/alok-singh/id1508795536" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/developer/alok-singh/id1508795536</a></li>
+<li><strong>My portfolio:</strong> <a href="https://bestlatestapps.com/alok/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/alok/</a></li>
+</ul>
+<p>What's the strangest APNs bug you've chased? The one I hear about most is a perfectly valid sandbox token sent to the production host. Tell me yours in the comments.</p>
+<p><em>— Alok Kumar Singh</em></p>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/the-device-side-of-apns/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/the-device-side-of-apns/</a></em></p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./the-sending-side-of-apns"><span>The Sending Side of APNs</span></a><a rel="next" href="./text-plus-audio-fully-offline"><span>Text Plus Audio, Fully Offline</span></a></nav>
+<div>Articles by Alok Kumar Singh. Originals at <a href="https://bestlatestapps.com/blog/" target="_blank" rel="noopener noreferrer">bestlatestapps.com/blog</a>.</div>
+</footer>
+</div>
+</body>
+</html>

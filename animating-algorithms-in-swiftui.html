@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>Animating Algorithms in SwiftUI: A Step-Recorder Pattern for Visualising Sorts, Searches and Graphs | Alok Singh, App Dev Notes</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air,near-midnight.b050d634.css">
+<link rel="modulepreload" href="./_observablehq/client.097df403.js">
+<link rel="modulepreload" href="./_observablehq/runtime.fa9f71c0.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.60afab10.js">
+<link rel="canonical" href="https://bestlatestapps.com/blog/animating-algorithms-in-swiftui/"><meta name="description" content="Separate the algorithm from the animation, record every step as data, then play it back with play, pause, speed and scrubbing, accessibly">
+<script type="module">
+
+import "./_observablehq/client.097df403.js";
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Alok Singh, App Dev Notes</a></li>
+  </ol>
+  <div id="observablehq-search"><input type="search" placeholder="Search"></div>
+  <div id="observablehq-search-results"></div>
+  <script>{const o=document.querySelector("#observablehq-search");o.setAttribute("data-shortcut",`${/Mac|iPhone/.test(navigator.platform)?"\u2318":"Alt-"}K`);const t=o.querySelector("input"),r=()=>import("./_observablehq/search.755d897f.js");t.addEventListener("focus",r,{once:!0}),t.addEventListener("keydown",r,{once:!0});const c=document.querySelector("#observablehq-sidebar-toggle");addEventListener("keydown",e=>{(e.code==="KeyK"&&e.metaKey&&!e.altKey&&!e.ctrlKey||e.key==="/"&&!e.metaKey&&!e.altKey&&!e.ctrlKey&&e.target===document.body)&&(c.checked?t.focus():(c.click(),t.focus(),c.click()),t.select(),e.preventDefault())});}</script>
+  <ol>
+    <li class="observablehq-link"><a href="./tic-tac-toe-in-swiftui-done-properly">Tic Tac Toe in SwiftUI, Done Properly</a></li>
+    <li class="observablehq-link"><a href="./the-sending-side-of-apns">The Sending Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./the-device-side-of-apns">The Device Side of APNs</a></li>
+    <li class="observablehq-link"><a href="./text-plus-audio-fully-offline">Text Plus Audio, Fully Offline</a></li>
+    <li class="observablehq-link"><a href="./stop-hand-rolling-unit-conversions">Stop Hand-Rolling Unit Conversions</a></li>
+    <li class="observablehq-link"><a href="./shipping-a-4k-wallpaper-app-without-running-out-of-memory">Shipping a 4K Wallpaper App Without Running Out of Memory</a></li>
+    <li class="observablehq-link"><a href="./medication-reminders-that-actually-fire">Medication Reminders That Actually Fire</a></li>
+    <li class="observablehq-link"><a href="./from-barcode-to-pdf">From Barcode to PDF</a></li>
+    <li class="observablehq-link"><a href="./drag-to-connect-and-game-center-leaderboards-in-a-swiftui-puzzle-game">Drag-to-Connect and Game Center Leaderboards in a SwiftUI Puzzle Game,</a></li>
+    <li class="observablehq-link"><a href="./convert-as-you-type-currency-conversion-in-swift">Convert-As-You-Type Currency Conversion in Swift</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-first-bible-reader-on-ios">Building an Offline-First Bible Reader on iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-ebook-reader-for-ios">Building an Offline eBook Reader for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-an-offline-quotes-app-in-swiftui">Building an Offline Quotes App in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-an-admob-earnings-dashboard-for-ios">Building an AdMob Earnings Dashboard for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-tap-to-match-marble-game-with-spritekit-and-swiftui">Building a Tap-to-Match Marble Game with SpriteKit and SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./building-a-real-time-mic-to-speaker-app-on-ios-with-avaudioengine">Building a Real-Time Mic-to-Speaker App on iOS with AVAudioEngine</a></li>
+    <li class="observablehq-link"><a href="./building-a-low-latency-virtual-piano-and-drum-kit-on-ios-with-avaudioe">Building a Low-Latency Virtual Piano and Drum Kit on iOS with AVAudioE</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-ios-component-catalogue">Building a Live iOS Component Catalogue</a></li>
+    <li class="observablehq-link"><a href="./building-a-live-temple-darshan-app-for-ios">Building a Live Temple Darshan App for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-hashtag-copier-for-ios">Building a Hashtag Copier for iOS</a></li>
+    <li class="observablehq-link"><a href="./building-a-chromatic-guitar-tuner-on-ios">Building a Chromatic Guitar Tuner on iOS</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./animating-algorithms-in-swiftui">Animating Algorithms in SwiftUI</a></li>
+    <li class="observablehq-link"><a href="./a-practical-guide-to-ios-haptics">A Practical Guide to iOS Haptics</a></li>
+    <li class="observablehq-link"><a href="./a-document-scanner-in-an-afternoon">A Document Scanner in an Afternoon</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#1-the-problem-with-animating-inside-the-algorithm">1. The problem with animating inside the algorithm</a></li>
+<li class="observablehq-secondary-link"><a href="#2-the-step-model">2. The step model</a></li>
+<li class="observablehq-secondary-link"><a href="#3-recording-an-algorithm">3. Recording an algorithm</a></li>
+<li class="observablehq-secondary-link"><a href="#4-the-player-play-pause-speed-and-scrub">4. The player: play, pause, speed and scrub</a></li>
+<li class="observablehq-secondary-link"><a href="#5-rendering-bars-that-animate-themselves">5. Rendering bars that animate themselves</a></li>
+<li class="observablehq-secondary-link"><a href="#6-beyond-arrays-binary-search-and-bfs">6. Beyond arrays: binary search and BFS</a></li>
+<li class="observablehq-secondary-link"><a href="#7-complexity-charts-with-swift-charts">7. Complexity charts with Swift Charts</a></li>
+<li class="observablehq-secondary-link"><a href="#8-accessibility-and-running-user-code">8. Accessibility and running user code</a></li>
+<li class="observablehq-secondary-link"><a href="#9-real-world-example-dsa-master-data-and-algorithms">9. Real-world example: DSA Master – Data &amp; Algorithms</a></li>
+<li class="observablehq-secondary-link"><a href="#10-before-you-ship-an-algorithm-visualiser-a-checklist">10. Before you ship an algorithm visualiser: a checklist</a></li>
+<li class="observablehq-secondary-link"><a href="#wrapping-up">Wrapping up</a></li>
+</ol>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="animating-algorithms-in-swift-ui-a-step-recorder-pattern-for-visualising-sorts-searches-and-graphs" tabindex="-1"><a class="observablehq-header-anchor" href="#animating-algorithms-in-swift-ui-a-step-recorder-pattern-for-visualising-sorts-searches-and-graphs">Animating Algorithms in SwiftUI: A Step-Recorder Pattern for Visualising Sorts, Searches and Graphs</a></h1>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/animating-algorithms-in-swiftui/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/animating-algorithms-in-swiftui/</a></em></p>
+<p><em>Separate the algorithm from the animation, record every step as data, then play it back with play, pause, speed and scrubbing, accessibly</em></p>
+<p><img src="https://bestlatestapps.com/assets/blog/animating-algorithms-in-swiftui/dsa-master-icon-512.jpg" alt="DSA Master app icon"></p>
+<p>When I was learning data structures, the textbook diagrams were always a frame or two short. You'd see the array before the merge and the array after, and the interesting part, the moment the two halves interleave, happened somewhere off the page.</p>
+<p>That's the gap <strong>DSA Master – Data &amp; Algorithms</strong> tries to fill. It's my learning app for data structures and algorithms. It covers arrays and linked lists through segment trees, Dijkstra and KMP, with code in several languages, practice challenges and, the part I care about most, step-by-step animated visualisations you can play, pause, replay and slow down.</p>
+<p>The first visualiser I wrote was the obvious one: put <code>Task.sleep</code> inside the sorting loop and update some <code>@State</code> between comparisons. It worked for bubble sort and fell apart immediately after. Pause was a hack, rewind was impossible, the speed slider fought the animation, and every algorithm had UI code tangled through it.</p>
+<p>The fix is a pattern I now use for every visualisation: <strong>record, then replay</strong>. The algorithm runs once, at full speed, and emits a list of <em>steps</em> as plain data. A separate player walks through those steps and the views render whatever the current step says. This article builds that pattern in SwiftUI, from the step model to the player, sorting bars, binary search, BFS on a graph and complexity charts, with notes on accessibility and on running user code. The approach is the one I'd use and recommend; I'm not publishing the app's exact source.</p>
+<hr>
+<h2 id="1-the-problem-with-animating-inside-the-algorithm" tabindex="-1"><a class="observablehq-header-anchor" href="#1-the-problem-with-animating-inside-the-algorithm">1. The problem with animating inside the algorithm</a></h2>
+<p>Here's the tempting version:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-comment">// Don't do this.</span>
+<span class="hljs-keyword">func</span> <span class="hljs-title function_">bubbleSortAnimated</span>() <span class="hljs-keyword">async</span> {
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-number">0</span><span class="hljs-operator">..&lt;</span>values.count {
+        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-number">0</span><span class="hljs-operator">..&lt;</span>values.count <span class="hljs-operator">-</span> i <span class="hljs-operator">-</span> <span class="hljs-number">1</span> {
+            highlighted <span class="hljs-operator">=</span> [j, j <span class="hljs-operator">+</span> <span class="hljs-number">1</span>]
+            <span class="hljs-keyword">try?</span> <span class="hljs-keyword">await</span> <span class="hljs-type">Task</span>.sleep(for: .milliseconds(<span class="hljs-number">300</span>))
+            <span class="hljs-keyword">if</span> values[j] <span class="hljs-operator">&gt;</span> values[j <span class="hljs-operator">+</span> <span class="hljs-number">1</span>] { values.swapAt(j, j <span class="hljs-operator">+</span> <span class="hljs-number">1</span>) }
+        }
+    }
+}
+</code></pre>
+<p>It looks fine, but:</p>
+<ul>
+<li><strong>You can't go backwards.</strong> The state is gone once the loop moves on.</li>
+<li><strong>Pause and speed changes leak into the algorithm.</strong> Every algorithm needs the same <code>if paused { … }</code> plumbing.</li>
+<li><strong>The algorithm isn't testable.</strong> You can't assert on "the sequence of comparisons" without running the UI.</li>
+<li><strong>Recursive algorithms get ugly.</strong> Merge sort and DFS turn into <code>async</code> recursion just to show a highlight.</li>
+</ul>
+<p>Recording steps as values fixes all four.</p>
+<hr>
+<h2 id="2-the-step-model" tabindex="-1"><a class="observablehq-header-anchor" href="#2-the-step-model">2. The step model</a></h2>
+<p>A step is a snapshot of <em>what the viewer should see</em>, plus a sentence explaining it. For array algorithms:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">Bar</span>: <span class="hljs-title class_ inherited__">Identifiable</span>, <span class="hljs-title class_ inherited__">Hashable</span> {
+    <span class="hljs-keyword">let</span> id: <span class="hljs-type">Int</span>        <span class="hljs-comment">// stable identity, so SwiftUI can animate moves</span>
+    <span class="hljs-keyword">let</span> value: <span class="hljs-type">Int</span>
+}
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">ArrayStep</span>: <span class="hljs-title class_ inherited__">Hashable</span> {
+    <span class="hljs-keyword">enum</span> <span class="hljs-title class_">Action</span>: <span class="hljs-title class_ inherited__">Hashable</span> { <span class="hljs-keyword">case</span> compare, swap, overwrite, markSorted, done }
+
+    <span class="hljs-keyword">var</span> bars: [<span class="hljs-type">Bar</span>]
+    <span class="hljs-keyword">var</span> action: <span class="hljs-type">Action</span>
+    <span class="hljs-keyword">var</span> active: <span class="hljs-type">Set</span>&lt;<span class="hljs-type">Int</span>&gt; <span class="hljs-operator">=</span> []      <span class="hljs-comment">// indices being looked at</span>
+    <span class="hljs-keyword">var</span> sorted: <span class="hljs-type">Set</span>&lt;<span class="hljs-type">Int</span>&gt; <span class="hljs-operator">=</span> []      <span class="hljs-comment">// indices known to be final</span>
+    <span class="hljs-keyword">var</span> caption: <span class="hljs-type">String</span>
+}
+</code></pre>
+<p>Two design choices matter here.</p>
+<p><strong>Each bar has a stable <code>id</code>, separate from its value.</strong> Duplicate values are common in sample data; if identity were the value, SwiftUI couldn't tell two <code>5</code>s apart and the swap animation would glitch.</p>
+<p><strong>A step holds the full array, not a diff.</strong> For the sizes you visualise (10–40 elements), copying an array per step costs almost nothing, and it makes scrubbing to any step O(1). Diffs are an optimisation you probably don't need.</p>
+<hr>
+<h2 id="3-recording-an-algorithm" tabindex="-1"><a class="observablehq-header-anchor" href="#3-recording-an-algorithm">3. Recording an algorithm</a></h2>
+<p>The algorithm becomes a pure function: input in, <code>[ArrayStep]</code> out. Here's insertion sort with a small recorder helper:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">StepRecorder</span> {
+    <span class="hljs-keyword">private(set)</span> <span class="hljs-keyword">var</span> steps: [<span class="hljs-type">ArrayStep</span>] <span class="hljs-operator">=</span> []
+    <span class="hljs-keyword">var</span> bars: [<span class="hljs-type">Bar</span>]
+    <span class="hljs-keyword">var</span> sorted: <span class="hljs-type">Set</span>&lt;<span class="hljs-type">Int</span>&gt; <span class="hljs-operator">=</span> []
+
+    <span class="hljs-keyword">init</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">values</span>: [<span class="hljs-type">Int</span>]) {
+        bars <span class="hljs-operator">=</span> values.enumerated().map { <span class="hljs-type">Bar</span>(id: <span class="hljs-variable">$0</span>.offset, value: <span class="hljs-variable">$0</span>.element) }
+        record(.compare, [], <span class="hljs-string">"Start with <span class="hljs-subst">\(values.count)</span> unsorted values."</span>)
+    }
+
+    <span class="hljs-keyword">mutating</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">record</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">action</span>: <span class="hljs-type">ArrayStep</span>.<span class="hljs-type">Action</span>, <span class="hljs-keyword">_</span> <span class="hljs-params">active</span>: <span class="hljs-type">Set</span>&lt;<span class="hljs-type">Int</span>&gt;, <span class="hljs-keyword">_</span> <span class="hljs-params">caption</span>: <span class="hljs-type">String</span>) {
+        steps.append(<span class="hljs-type">ArrayStep</span>(bars: bars, action: action,
+                               active: active, sorted: sorted, caption: caption))
+    }
+}
+
+<span class="hljs-keyword">func</span> <span class="hljs-title function_">insertionSortSteps</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">input</span>: [<span class="hljs-type">Int</span>]) -&gt; [<span class="hljs-type">ArrayStep</span>] {
+    <span class="hljs-keyword">var</span> r <span class="hljs-operator">=</span> <span class="hljs-type">StepRecorder</span>(input)
+    <span class="hljs-keyword">guard</span> r.bars.count <span class="hljs-operator">&gt;</span> <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> r.steps }
+
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-number">1</span><span class="hljs-operator">..&lt;</span>r.bars.count {
+        <span class="hljs-keyword">var</span> j <span class="hljs-operator">=</span> i
+        r.record(.compare, [j], <span class="hljs-string">"Take <span class="hljs-subst">\(r.bars[j].value)</span> and insert it into the sorted left part."</span>)
+        <span class="hljs-keyword">while</span> j <span class="hljs-operator">&gt;</span> <span class="hljs-number">0</span> {
+            r.record(.compare, [j <span class="hljs-operator">-</span> <span class="hljs-number">1</span>, j], <span class="hljs-string">"Compare <span class="hljs-subst">\(r.bars[j <span class="hljs-operator">-</span> <span class="hljs-number">1</span>].value)</span> and <span class="hljs-subst">\(r.bars[j].value)</span>."</span>)
+            <span class="hljs-keyword">guard</span> r.bars[j <span class="hljs-operator">-</span> <span class="hljs-number">1</span>].value <span class="hljs-operator">&gt;</span> r.bars[j].value <span class="hljs-keyword">else</span> { <span class="hljs-keyword">break</span> }
+            r.bars.swapAt(j <span class="hljs-operator">-</span> <span class="hljs-number">1</span>, j)
+            r.record(.swap, [j <span class="hljs-operator">-</span> <span class="hljs-number">1</span>, j], <span class="hljs-string">"<span class="hljs-subst">\(r.bars[j].value)</span> is larger, so shift it right."</span>)
+            j <span class="hljs-operator">-=</span> <span class="hljs-number">1</span>
+        }
+    }
+    r.sorted <span class="hljs-operator">=</span> <span class="hljs-type">Set</span>(r.bars.indices)
+    r.record(.done, [], <span class="hljs-string">"Sorted."</span>)
+    <span class="hljs-keyword">return</span> r.steps
+}
+</code></pre>
+<p>That's the whole visualisation logic for insertion sort, with no SwiftUI and no timers, and it's unit-testable:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> XCTest
+
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">InsertionSortStepTests</span>: <span class="hljs-title class_ inherited__">XCTestCase</span> {
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">testFinalStepIsSorted</span>() {
+        <span class="hljs-keyword">let</span> steps <span class="hljs-operator">=</span> insertionSortSteps([<span class="hljs-number">5</span>, <span class="hljs-number">2</span>, <span class="hljs-number">4</span>, <span class="hljs-number">6</span>, <span class="hljs-number">1</span>, <span class="hljs-number">3</span>])
+        <span class="hljs-type">XCTAssertEqual</span>(steps.last<span class="hljs-operator">?</span>.bars.map(\.value), [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span>])
+        <span class="hljs-type">XCTAssertEqual</span>(steps.last<span class="hljs-operator">?</span>.action, .done)
+    }
+}
+</code></pre>
+<p>Recursive algorithms are just as easy, because the recorder is a value you pass <code>inout</code>. Merge sort records <code>.overwrite</code> steps as it copies values back from the temporary buffer. Quick sort records the pivot as <code>active</code> and the partition boundary in the caption. Each algorithm stays readable as an <em>algorithm</em>.</p>
+<hr>
+<h2 id="4-the-player-play-pause-speed-and-scrub" tabindex="-1"><a class="observablehq-header-anchor" href="#4-the-player-play-pause-speed-and-scrub">4. The player: play, pause, speed and scrub</a></h2>
+<p>The player owns an index into the step array, and nothing else about the algorithm:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> SwiftUI
+
+<span class="hljs-meta">@MainActor</span>
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">StepPlayer</span>&lt;<span class="hljs-type">Step</span>&gt;: <span class="hljs-title class_ inherited__">ObservableObject</span> {
+    <span class="hljs-meta">@Published</span> <span class="hljs-keyword">private(set)</span> <span class="hljs-keyword">var</span> index <span class="hljs-operator">=</span> <span class="hljs-number">0</span>
+    <span class="hljs-meta">@Published</span> <span class="hljs-keyword">var</span> isPlaying <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>
+    <span class="hljs-meta">@Published</span> <span class="hljs-keyword">var</span> speed: <span class="hljs-type">Double</span> <span class="hljs-operator">=</span> <span class="hljs-number">1.0</span>          <span class="hljs-comment">// 0.5x, 1x, 2x …</span>
+
+    <span class="hljs-keyword">let</span> steps: [<span class="hljs-type">Step</span>]
+    <span class="hljs-keyword">var</span> baseInterval: <span class="hljs-type">Duration</span> <span class="hljs-operator">=</span> .milliseconds(<span class="hljs-number">600</span>)
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> playTask: <span class="hljs-type">Task</span>&lt;<span class="hljs-type">Void</span>, <span class="hljs-type">Never</span>&gt;?
+
+    <span class="hljs-keyword">init</span>(<span class="hljs-params">steps</span>: [<span class="hljs-type">Step</span>]) { <span class="hljs-keyword">self</span>.steps <span class="hljs-operator">=</span> steps }
+
+    <span class="hljs-keyword">var</span> current: <span class="hljs-type">Step</span> { steps[index] }
+    <span class="hljs-keyword">var</span> isAtEnd: <span class="hljs-type">Bool</span> { index <span class="hljs-operator">==</span> steps.count <span class="hljs-operator">-</span> <span class="hljs-number">1</span> }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">play</span>() {
+        <span class="hljs-keyword">guard</span> <span class="hljs-operator">!</span>isPlaying <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+        <span class="hljs-keyword">if</span> isAtEnd { index <span class="hljs-operator">=</span> <span class="hljs-number">0</span> }                  <span class="hljs-comment">// "replay"</span>
+        isPlaying <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>
+        playTask <span class="hljs-operator">=</span> <span class="hljs-type">Task</span> { [<span class="hljs-keyword">weak</span> <span class="hljs-keyword">self</span>] <span class="hljs-keyword">in</span>
+            <span class="hljs-keyword">while</span> <span class="hljs-keyword">let</span> <span class="hljs-keyword">self</span>, <span class="hljs-keyword">self</span>.isPlaying, <span class="hljs-operator">!</span><span class="hljs-keyword">self</span>.isAtEnd {
+                <span class="hljs-keyword">try?</span> <span class="hljs-keyword">await</span> <span class="hljs-type">Task</span>.sleep(for: <span class="hljs-keyword">self</span>.baseInterval <span class="hljs-operator">/</span> <span class="hljs-keyword">self</span>.speed)
+                <span class="hljs-keyword">guard</span> <span class="hljs-operator">!</span><span class="hljs-type">Task</span>.isCancelled, <span class="hljs-keyword">self</span>.isPlaying <span class="hljs-keyword">else</span> { <span class="hljs-keyword">return</span> }
+                <span class="hljs-keyword">self</span>.index <span class="hljs-operator">+=</span> <span class="hljs-number">1</span>
+            }
+            <span class="hljs-keyword">self</span><span class="hljs-operator">?</span>.isPlaying <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>
+        }
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">pause</span>() {
+        isPlaying <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>
+        playTask<span class="hljs-operator">?</span>.cancel()
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">step</span>(<span class="hljs-params">by</span> <span class="hljs-params">delta</span>: <span class="hljs-type">Int</span>) {
+        pause()
+        index <span class="hljs-operator">=</span> <span class="hljs-built_in">min</span>(<span class="hljs-built_in">max</span>(index <span class="hljs-operator">+</span> delta, <span class="hljs-number">0</span>), steps.count <span class="hljs-operator">-</span> <span class="hljs-number">1</span>)
+    }
+
+    <span class="hljs-keyword">func</span> <span class="hljs-title function_">seek</span>(<span class="hljs-params">to</span> <span class="hljs-params">newIndex</span>: <span class="hljs-type">Int</span>) {
+        pause()
+        index <span class="hljs-operator">=</span> <span class="hljs-built_in">min</span>(<span class="hljs-built_in">max</span>(newIndex, <span class="hljs-number">0</span>), steps.count <span class="hljs-operator">-</span> <span class="hljs-number">1</span>)
+    }
+}
+</code></pre>
+<p>Because the speed is read on every tick, changing it mid-playback just works. Step back is <code>step(by: -1)</code>, and a scrubber is a <code>Slider</code> bound to <code>seek(to:)</code>. None of this knows what sorting is, so the same player drives arrays, trees and graphs.</p>
+<hr>
+<h2 id="5-rendering-bars-that-animate-themselves" tabindex="-1"><a class="observablehq-header-anchor" href="#5-rendering-bars-that-animate-themselves">5. Rendering bars that animate themselves</a></h2>
+<p>With stable identity, SwiftUI does the hard animation work for you. Render the current step and attach an animation to the step index:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">ArrayStepView</span>: <span class="hljs-title class_ inherited__">View</span> {
+    <span class="hljs-meta">@ObservedObject</span> <span class="hljs-keyword">var</span> player: <span class="hljs-type">StepPlayer</span>&lt;<span class="hljs-type">ArrayStep</span>&gt;
+
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">View</span> {
+        <span class="hljs-keyword">let</span> step <span class="hljs-operator">=</span> player.current
+        <span class="hljs-keyword">let</span> maxValue <span class="hljs-operator">=</span> <span class="hljs-built_in">max</span>(step.bars.map(\.value).max() <span class="hljs-operator">??</span> <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)
+
+        <span class="hljs-type">VStack</span>(spacing: <span class="hljs-number">16</span>) {
+            <span class="hljs-type">HStack</span>(alignment: .bottom, spacing: <span class="hljs-number">6</span>) {
+                <span class="hljs-type">ForEach</span>(<span class="hljs-type">Array</span>(step.bars.enumerated()), id: \.element.id) { index, bar <span class="hljs-keyword">in</span>
+                    <span class="hljs-type">VStack</span>(spacing: <span class="hljs-number">4</span>) {
+                        <span class="hljs-type">RoundedRectangle</span>(cornerRadius: <span class="hljs-number">4</span>)
+                            .fill(color(for: index, in: step))
+                            .frame(height: <span class="hljs-type">CGFloat</span>(bar.value) <span class="hljs-operator">/</span> <span class="hljs-type">CGFloat</span>(maxValue) <span class="hljs-operator">*</span> <span class="hljs-number">180</span>)
+                        <span class="hljs-type">Text</span>(<span class="hljs-string">"<span class="hljs-subst">\(bar.value)</span>"</span>).font(.caption2.monospacedDigit())
+                    }
+                }
+            }
+            .frame(height: <span class="hljs-number">210</span>)
+            .animation(.spring(duration: <span class="hljs-number">0.35</span>), value: player.index)
+
+            <span class="hljs-type">Text</span>(step.caption)
+                .font(.callout)
+                .multilineTextAlignment(.center)
+                .frame(minHeight: <span class="hljs-number">44</span>)
+
+            <span class="hljs-type">HStack</span>(spacing: <span class="hljs-number">24</span>) {
+                <span class="hljs-type">Button</span> { player.step(by: <span class="hljs-operator">-</span><span class="hljs-number">1</span>) } label: { <span class="hljs-type">Image</span>(systemName: <span class="hljs-string">"backward.frame.fill"</span>) }
+                <span class="hljs-type">Button</span> { player.isPlaying <span class="hljs-operator">?</span> player.pause() : player.play() } label: {
+                    <span class="hljs-type">Image</span>(systemName: player.isPlaying <span class="hljs-operator">?</span> <span class="hljs-string">"pause.fill"</span> : <span class="hljs-string">"play.fill"</span>)
+                }
+                <span class="hljs-type">Button</span> { player.step(by: <span class="hljs-number">1</span>) } label: { <span class="hljs-type">Image</span>(systemName: <span class="hljs-string">"forward.frame.fill"</span>) }
+                <span class="hljs-type">Picker</span>(<span class="hljs-string">"Speed"</span>, selection: <span class="hljs-variable">$player</span>.speed) {
+                    <span class="hljs-type">Text</span>(<span class="hljs-string">"0.5×"</span>).tag(<span class="hljs-number">0.5</span>); <span class="hljs-type">Text</span>(<span class="hljs-string">"1×"</span>).tag(<span class="hljs-number">1.0</span>); <span class="hljs-type">Text</span>(<span class="hljs-string">"2×"</span>).tag(<span class="hljs-number">2.0</span>)
+                }
+                .pickerStyle(.segmented).frame(width: <span class="hljs-number">150</span>)
+            }
+            .font(.title2)
+        }
+        .padding()
+    }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">func</span> <span class="hljs-title function_">color</span>(<span class="hljs-params">for</span> <span class="hljs-params">index</span>: <span class="hljs-type">Int</span>, <span class="hljs-params">in</span> <span class="hljs-params">step</span>: <span class="hljs-type">ArrayStep</span>) -&gt; <span class="hljs-type">Color</span> {
+        <span class="hljs-keyword">if</span> step.sorted.contains(index) { <span class="hljs-keyword">return</span> .green }
+        <span class="hljs-keyword">if</span> step.active.contains(index) { <span class="hljs-keyword">return</span> step.action <span class="hljs-operator">==</span> .swap <span class="hljs-operator">?</span> .orange : .yellow }
+        <span class="hljs-keyword">return</span> .blue.opacity(<span class="hljs-number">0.6</span>)
+    }
+}
+</code></pre>
+<p><code>ForEach</code> uses <code>\.element.id</code>, not the index. When two bars swap places in the array, SwiftUI sees the <em>same</em> views in new positions and slides them, with no custom geometry code. The <code>.animation(_:value:)</code> modifier (iOS 13+) ties the animation to step changes only, so unrelated state changes don't animate.</p>
+<hr>
+<h2 id="6-beyond-arrays-binary-search-and-bfs" tabindex="-1"><a class="observablehq-header-anchor" href="#6-beyond-arrays-binary-search-and-bfs">6. Beyond arrays: binary search and BFS</a></h2>
+<p>The pattern generalises by changing only the step type.</p>
+<p><strong>Binary search</strong> needs a window, not swaps:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">SearchStep</span>: <span class="hljs-title class_ inherited__">Hashable</span> {
+    <span class="hljs-keyword">var</span> low: <span class="hljs-type">Int</span>, high: <span class="hljs-type">Int</span>, mid: <span class="hljs-type">Int</span>?
+    <span class="hljs-keyword">var</span> found: <span class="hljs-type">Int</span>?
+    <span class="hljs-keyword">var</span> caption: <span class="hljs-type">String</span>
+}
+
+<span class="hljs-keyword">func</span> <span class="hljs-title function_">binarySearchSteps</span>(<span class="hljs-keyword">_</span> <span class="hljs-params">sorted</span>: [<span class="hljs-type">Int</span>], <span class="hljs-params">target</span>: <span class="hljs-type">Int</span>) -&gt; [<span class="hljs-type">SearchStep</span>] {
+    <span class="hljs-keyword">var</span> steps: [<span class="hljs-type">SearchStep</span>] <span class="hljs-operator">=</span> []
+    <span class="hljs-keyword">var</span> low <span class="hljs-operator">=</span> <span class="hljs-number">0</span>, high <span class="hljs-operator">=</span> sorted.count <span class="hljs-operator">-</span> <span class="hljs-number">1</span>
+    <span class="hljs-keyword">while</span> low <span class="hljs-operator">&lt;=</span> high {
+        <span class="hljs-keyword">let</span> mid <span class="hljs-operator">=</span> low <span class="hljs-operator">+</span> (high <span class="hljs-operator">-</span> low) <span class="hljs-operator">/</span> <span class="hljs-number">2</span>
+        steps.append(.<span class="hljs-keyword">init</span>(low: low, high: high, mid: mid, found: <span class="hljs-literal">nil</span>,
+                           caption: <span class="hljs-string">"Check the middle: <span class="hljs-subst">\(sorted[mid])</span>."</span>))
+        <span class="hljs-keyword">if</span> sorted[mid] <span class="hljs-operator">==</span> target {
+            steps.append(.<span class="hljs-keyword">init</span>(low: low, high: high, mid: mid, found: mid,
+                               caption: <span class="hljs-string">"Found <span class="hljs-subst">\(target)</span> at index <span class="hljs-subst">\(mid)</span>."</span>))
+            <span class="hljs-keyword">return</span> steps
+        }
+        <span class="hljs-keyword">if</span> sorted[mid] <span class="hljs-operator">&lt;</span> target {
+            low <span class="hljs-operator">=</span> mid <span class="hljs-operator">+</span> <span class="hljs-number">1</span>
+            steps.append(.<span class="hljs-keyword">init</span>(low: low, high: high, mid: <span class="hljs-literal">nil</span>, found: <span class="hljs-literal">nil</span>,
+                               caption: <span class="hljs-string">"<span class="hljs-subst">\(sorted[mid])</span> &lt; <span class="hljs-subst">\(target)</span>: discard the left half."</span>))
+        } <span class="hljs-keyword">else</span> {
+            high <span class="hljs-operator">=</span> mid <span class="hljs-operator">-</span> <span class="hljs-number">1</span>
+            steps.append(.<span class="hljs-keyword">init</span>(low: low, high: high, mid: <span class="hljs-literal">nil</span>, found: <span class="hljs-literal">nil</span>,
+                               caption: <span class="hljs-string">"<span class="hljs-subst">\(sorted[mid])</span> &gt; <span class="hljs-subst">\(target)</span>: discard the right half."</span>))
+        }
+    }
+    steps.append(.<span class="hljs-keyword">init</span>(low: low, high: high, mid: <span class="hljs-literal">nil</span>, found: <span class="hljs-literal">nil</span>,
+                       caption: <span class="hljs-string">"The window is empty: <span class="hljs-subst">\(target)</span> isn't in the array."</span>))
+    <span class="hljs-keyword">return</span> steps
+}
+</code></pre>
+<p><strong>Breadth-first search</strong> records the frontier and visited set at each step. The graph is laid out once with fixed node positions, and each step only changes colours:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">GraphStep</span>: <span class="hljs-title class_ inherited__">Hashable</span> {
+    <span class="hljs-keyword">var</span> visited: <span class="hljs-type">Set</span>&lt;<span class="hljs-type">Int</span>&gt;
+    <span class="hljs-keyword">var</span> frontier: [<span class="hljs-type">Int</span>]       <span class="hljs-comment">// the queue</span>
+    <span class="hljs-keyword">var</span> current: <span class="hljs-type">Int</span>?
+    <span class="hljs-keyword">var</span> caption: <span class="hljs-type">String</span>
+}
+
+<span class="hljs-keyword">func</span> <span class="hljs-title function_">bfsSteps</span>(<span class="hljs-params">adjacency</span>: [<span class="hljs-params">Int</span>: [<span class="hljs-type">Int</span>]], <span class="hljs-params">start</span>: <span class="hljs-type">Int</span>) -&gt; [<span class="hljs-type">GraphStep</span>] {
+    <span class="hljs-keyword">var</span> steps: [<span class="hljs-type">GraphStep</span>] <span class="hljs-operator">=</span> []
+    <span class="hljs-keyword">var</span> visited: <span class="hljs-type">Set</span>&lt;<span class="hljs-type">Int</span>&gt; <span class="hljs-operator">=</span> [start]
+    <span class="hljs-keyword">var</span> queue <span class="hljs-operator">=</span> [start]
+    steps.append(.<span class="hljs-keyword">init</span>(visited: visited, frontier: queue, current: <span class="hljs-literal">nil</span>,
+                       caption: <span class="hljs-string">"Start at <span class="hljs-subst">\(start)</span>."</span>))
+
+    <span class="hljs-keyword">while</span> <span class="hljs-operator">!</span>queue.isEmpty {
+        <span class="hljs-keyword">let</span> node <span class="hljs-operator">=</span> queue.removeFirst()
+        steps.append(.<span class="hljs-keyword">init</span>(visited: visited, frontier: queue, current: node,
+                           caption: <span class="hljs-string">"Visit <span class="hljs-subst">\(node)</span>."</span>))
+        <span class="hljs-keyword">for</span> next <span class="hljs-keyword">in</span> adjacency[node, <span class="hljs-keyword">default</span>: []] <span class="hljs-keyword">where</span> <span class="hljs-operator">!</span>visited.contains(next) {
+            visited.insert(next)
+            queue.append(next)
+            steps.append(.<span class="hljs-keyword">init</span>(visited: visited, frontier: queue, current: node,
+                               caption: <span class="hljs-string">"Discover <span class="hljs-subst">\(next)</span>; add it to the queue."</span>))
+        }
+    }
+    steps.append(.<span class="hljs-keyword">init</span>(visited: visited, frontier: [], current: <span class="hljs-literal">nil</span>, caption: <span class="hljs-string">"Done."</span>))
+    <span class="hljs-keyword">return</span> steps
+}
+</code></pre>
+<p>Draw nodes with <code>Circle()</code> at fixed positions and edges with a <code>Path</code> inside a <code>Canvas</code> or <code>ZStack</code>. Show the queue underneath as a row of chips, because watching the queue is how BFS finally "clicks". DFS is the same with a stack. Dijkstra adds a distance label per node and a priority queue in the caption.</p>
+<hr>
+<h2 id="7-complexity-charts-with-swift-charts" tabindex="-1"><a class="observablehq-header-anchor" href="#7-complexity-charts-with-swift-charts">7. Complexity charts with Swift Charts</a></h2>
+<p>Complexity is easier to feel than to read. Swift Charts (iOS 16+) turns "O(n log n) vs O(n²)" into a picture in a few lines:</p>
+<pre data-language="swift"><code class="language-swift"><span class="hljs-keyword">import</span> Charts
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">ComplexityPoint</span>: <span class="hljs-title class_ inherited__">Identifiable</span> {
+    <span class="hljs-keyword">let</span> id <span class="hljs-operator">=</span> <span class="hljs-type">UUID</span>()
+    <span class="hljs-keyword">let</span> n: <span class="hljs-type">Int</span>
+    <span class="hljs-keyword">let</span> ops: <span class="hljs-type">Double</span>
+    <span class="hljs-keyword">let</span> label: <span class="hljs-type">String</span>
+}
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">ComplexityChart</span>: <span class="hljs-title class_ inherited__">View</span> {
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> points: [<span class="hljs-type">ComplexityPoint</span>] {
+        <span class="hljs-built_in">stride</span>(from: <span class="hljs-number">1</span>, through: <span class="hljs-number">64</span>, by: <span class="hljs-number">3</span>).flatMap { n -&gt; [<span class="hljs-type">ComplexityPoint</span>] <span class="hljs-keyword">in</span>
+            <span class="hljs-keyword">let</span> x <span class="hljs-operator">=</span> <span class="hljs-type">Double</span>(n)
+            <span class="hljs-keyword">return</span> [
+                .<span class="hljs-keyword">init</span>(n: n, ops: log2(x), label: <span class="hljs-string">"O(log n)"</span>),
+                .<span class="hljs-keyword">init</span>(n: n, ops: x, label: <span class="hljs-string">"O(n)"</span>),
+                .<span class="hljs-keyword">init</span>(n: n, ops: x <span class="hljs-operator">*</span> log2(<span class="hljs-built_in">max</span>(x, <span class="hljs-number">2</span>)), label: <span class="hljs-string">"O(n log n)"</span>),
+                .<span class="hljs-keyword">init</span>(n: n, ops: x <span class="hljs-operator">*</span> x, label: <span class="hljs-string">"O(n²)"</span>)
+            ]
+        }
+    }
+
+    <span class="hljs-keyword">var</span> body: <span class="hljs-keyword">some</span> <span class="hljs-type">View</span> {
+        <span class="hljs-type">Chart</span>(points) { p <span class="hljs-keyword">in</span>
+            <span class="hljs-type">LineMark</span>(x: .value(<span class="hljs-string">"n"</span>, p.n), y: .value(<span class="hljs-string">"Operations"</span>, p.ops))
+                .foregroundStyle(by: .value(<span class="hljs-string">"Complexity"</span>, p.label))
+        }
+        .chartYScale(domain: <span class="hljs-number">0</span><span class="hljs-operator">...</span><span class="hljs-number">600</span>)       <span class="hljs-comment">// clip n², or it flattens everything else</span>
+        .frame(height: <span class="hljs-number">240</span>)
+    }
+}
+</code></pre>
+<p>The <code>chartYScale</code> clip is the teaching trick: let O(n²) shoot off the top of the chart, and learners see immediately why it matters.</p>
+<hr>
+<h2 id="8-accessibility-and-running-user-code" tabindex="-1"><a class="observablehq-header-anchor" href="#8-accessibility-and-running-user-code">8. Accessibility and running user code</a></h2>
+<p><strong>VoiceOver.</strong> An animation is invisible to a VoiceOver user, but the <em>captions</em> aren't. Because every step already has a sentence, accessibility is nearly free: give the visualisation an <code>accessibilityLabel</code> of the current caption, and announce it when the step changes while playing:</p>
+<pre data-language="swift"><code class="language-swift">.onChange(of: player.index) { <span class="hljs-keyword">_</span> <span class="hljs-keyword">in</span>
+    <span class="hljs-type">UIAccessibility</span>.post(notification: .announcement, argument: player.current.caption)
+}
+</code></pre>
+<p>(<code>onChange(of:perform:)</code> with one parameter is the iOS 16-compatible form; iOS 17 adds the two-parameter version.) Also slow the default speed when VoiceOver is running (<code>UIAccessibility.isVoiceOverRunning</code>) so announcements aren't cut off, and honour Reduce Motion by swapping the spring for a cross-fade.</p>
+<p><strong>A code playground.</strong> The listing describes a live playground that runs Python, JavaScript, Java, C++, Kotlin, Dart and Go. I won't claim how the app does it. Here are the two routes I know of:</p>
+<ul>
+<li><strong>On-device JavaScript</strong> with <code>JSContext</code> from JavaScriptCore (iOS 7+). It's sandboxed and fast, and it needs no network.</li>
+<li><strong>A remote, sandboxed runner</strong> for compiled languages: send the source, get back output, errors and timing. You need strict timeouts and resource limits on the server.</li>
+</ul>
+<p>Either way, read App Store Review Guideline 2.5.2. It forbids downloading or executing code that changes the app's functionality, with a narrow exception for educational apps that teach or let students test code, provided the code is fully viewable and editable by the user.</p>
+<hr>
+<h2 id="9-real-world-example-dsa-master-data-and-algorithms" tabindex="-1"><a class="observablehq-header-anchor" href="#9-real-world-example-dsa-master-data-and-algorithms">9. Real-world example: DSA Master – Data &amp; Algorithms</a></h2>
+<p>Everything above is the approach I'd use, and I'd recommend it for any teaching visualiser. You'll find it in spirit in <strong><a href="https://apps.apple.com/us/app/dsa-master-data-algorithms/id1672776683" target="_blank" rel="noopener noreferrer">DSA Master – Data &amp; Algorithms</a></strong>.</p>
+<p><img src="https://bestlatestapps.com/assets/blog/animating-algorithms-in-swiftui/dsa-master-screenshot-1.jpg" alt="DSA Master App Store screenshot 1"></p>
+<p>At the time of writing, its App Store listing shows:</p>
+<ul>
+<li><strong>Free</strong>, in <strong>Education</strong> and <strong>Developer Tools</strong></li>
+<li>First released in <strong>February 2023</strong></li>
+<li><strong>36 ratings</strong> in the US store, averaging about <strong>4.1 stars</strong></li>
+<li>Supports <strong>iOS 16.2 and later</strong></li>
+</ul>
+<p>How the listing maps to this article:</p>
+<table>
+<thead>
+<tr>
+<th>What the listing says</th>
+<th>Where it's covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Step-by-Step Animations… Play, pause, replay, and control animation speed"</td>
+<td>Recorded steps and <code>StepPlayer</code> (sections 2–4)</td>
+</tr>
+<tr>
+<td>"Visual Data Flow – See how data structures transform during algorithm execution"</td>
+<td>Stable-identity bars that animate themselves (section 5)</td>
+</tr>
+<tr>
+<td>"Multiple Visualization Types – Sorting, searching, tree traversal, graph algorithms"</td>
+<td>The same player with different step types (section 6)</td>
+</tr>
+<tr>
+<td>"Time Complexity Charts – Visual comparisons of algorithm performance"</td>
+<td>Swift Charts <code>LineMark</code> curves (section 7)</td>
+</tr>
+<tr>
+<td>"Accessibility – Full VoiceOver support"</td>
+<td>Captions as labels and announcements (section 8)</td>
+</tr>
+<tr>
+<td>"Live Code Playground… Python, JavaScript, Java, C++, Kotlin, Dart, and Go"</td>
+<td>Options and the Review Guideline note (section 8)</td>
+</tr>
+</tbody>
+</table>
+<p><img src="https://bestlatestapps.com/assets/blog/animating-algorithms-in-swiftui/dsa-master-screenshot-2.jpg" alt="DSA Master App Store screenshot 2"></p>
+<p>The listing's content library is broad: dynamic arrays, deques, AVL, red-black, segment and Fenwick trees, tries, suffix trees, topological sort, Bellman-Ford, Floyd-Warshall, Kruskal, Prim, KMP and Rabin-Karp. The record-then-replay pattern is what makes that breadth manageable. Each new topic is a pure function that returns steps, plus, at most, a new step view.</p>
+<hr>
+<h2 id="10-before-you-ship-an-algorithm-visualiser-a-checklist" tabindex="-1"><a class="observablehq-header-anchor" href="#10-before-you-ship-an-algorithm-visualiser-a-checklist">10. Before you ship an algorithm visualiser: a checklist</a></h2>
+<ol>
+<li><strong>Algorithms are pure.</strong> Each one takes input and returns <code>[Step]</code>; no SwiftUI, no timers, no <code>async</code>.</li>
+<li><strong>There are unit tests per algorithm</strong>: the final step is correct, and the step count is sane for small inputs.</li>
+<li><strong>Identity is stable.</strong> Elements have IDs independent of their values, so duplicates animate correctly.</li>
+<li><strong>The player is generic.</strong> Play, pause, step, scrub, replay and speed work for every step type.</li>
+<li><strong>Every step has a caption.</strong> It's your explanation, your VoiceOver label and your test oracle, all at once.</li>
+<li><strong>Reduce Motion and VoiceOver are respected</strong>: a slower default, announcements and cross-fades instead of springs.</li>
+<li><strong>Inputs are capped.</strong> Arrays of 10–40 elements; bigger inputs don't teach better, they just get slower.</li>
+<li><strong>Code execution passes review.</strong> If you run user code, make sure you meet Guideline 2.5.2, and that remote runners are sandboxed with timeouts.</li>
+</ol>
+<hr>
+<h2 id="wrapping-up" tabindex="-1"><a class="observablehq-header-anchor" href="#wrapping-up">Wrapping up</a></h2>
+<p>The trick to visualising algorithms is to stop animating them. Record what happens as plain data, then let a small, generic player and SwiftUI's identity-based animations do the presenting. You get pause, rewind, speed control, tests and accessibility almost for free, and every new algorithm becomes a short, readable function.</p>
+<p>Try the app, or explore my other work:</p>
+<ul>
+<li><strong>DSA Master – Data &amp; Algorithms (iOS):</strong> <a href="https://apps.apple.com/us/app/dsa-master-data-algorithms/id1672776683" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/dsa-master-data-algorithms/id1672776683</a></li>
+<li><strong>All of my free iOS apps:</strong> <a href="https://apps.apple.com/us/developer/alok-singh/id1508795536" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/developer/alok-singh/id1508795536</a></li>
+<li><strong>My portfolio:</strong> <a href="https://bestlatestapps.com/alok/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/alok/</a></li>
+</ul>
+<p>Which algorithm only made sense to you once you <em>saw</em> it? For me it was the partition step in quick sort. Tell me yours in the comments.</p>
+<p><em>— Alok Kumar Singh</em></p>
+<p><em>Originally published at <a href="https://bestlatestapps.com/blog/animating-algorithms-in-swiftui/" target="_blank" rel="noopener noreferrer">https://bestlatestapps.com/blog/animating-algorithms-in-swiftui/</a></em></p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./building-a-chromatic-guitar-tuner-on-ios"><span>Building a Chromatic Guitar Tuner on iOS</span></a><a rel="next" href="./a-practical-guide-to-ios-haptics"><span>A Practical Guide to iOS Haptics</span></a></nav>
+<div>Articles by Alok Kumar Singh. Originals at <a href="https://bestlatestapps.com/blog/" target="_blank" rel="noopener noreferrer">bestlatestapps.com/blog</a>.</div>
+</footer>
+</div>
+</body>
+</html>
