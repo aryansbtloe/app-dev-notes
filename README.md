@@ -32,4 +32,6 @@ Originals (canonical) are on [bestlatestapps.com/blog](https://bestlatestapps.co
 ## Layout
 
 - `docs.json` + `docs/*.mdx`: the docs.page site.
-- `mintlify/`: the Mintlify project (its own `docs.json` and pages). Set the Mintlify docs path to `/mintlify`.
+- `mintlify/`: the Mintlify project (its own `docs.json` and pages). Set the Mintlify docs path to `/mintlify`. Live: https://aloksinghdev.mintlify.site
+- `posit/`: a Quarto website for Posit Connect Cloud (primary file `posit/_quarto.yml`).
+- `gh-pages` branch: an Observable Framework build served at https://aryansbtloe.github.io/app-dev-notes/
